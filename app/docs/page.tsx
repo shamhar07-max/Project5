@@ -1,5 +1,5 @@
 import { PublicPage } from "../public-page";
-export default function Docs(){return <PublicPage eyebrow="Guides" title={<>Using <em>DigitalBurj.</em></>} art={{ seed: "docs-hero", variant: "mesh" }} hue={["#6366f1", "#10b981"]} intro="Find the right service, manage your workspace context and understand how your information is handled." sections={[
+export default function Docs(){return <PublicPage eyebrow="Guides" title={<>Using <em>DigitalBurj.</em></>} hue={["#6366f1", "#10b981"]} intro="Find the right service, manage your workspace context and understand how your information is handled." sections={[
   {title:"Getting started",body:"Choose your goal from Get Started. You can use multiple divisions with the same account.",href:"/get-started"},
   {title:"Organizations",body:"Create an organization, invite members and switch context before working with shared records.",href:"/workspace/organizations"},
   {title:"Academy",body:"Practical learning should include missions, feedback and evidence. Course completion is separate from independent verification.",href:"/academy"},

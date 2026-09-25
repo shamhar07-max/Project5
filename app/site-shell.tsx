@@ -40,16 +40,16 @@ export function SiteFooter() {
   return <footer className="site-footer">
     <div className="footer-glow" aria-hidden="true" />
     <div className="shell footer-cta">
-      <h2>Bring us the <em>problem.</em></h2>
+      <div><span className="footer-cta-kicker">A good place to begin</span><h2>Tell us what you are<br /><em>working through.</em></h2><p>We will help you decide whether to learn, build, improve a process or find the right people.</p></div>
       <div className="footer-cta-actions">
-        <MagneticLink href="/get-started">Get started</MagneticLink>
-        <MagneticLink href="/connect/whatsapp" variant="whatsapp">WhatsApp us</MagneticLink>
+        <MagneticLink href="/get-started" variant="light">Find the right path</MagneticLink>
+        <MagneticLink href="/connect/whatsapp" variant="glass">Talk to our team</MagneticLink>
       </div>
     </div>
     <div className="shell footer-main">
       <div className="footer-brand">
         <Wordmark light />
-        <p>Learn. Build. Transform.<br />One technology company, three engines of progress.</p>
+        <p>Practical learning, useful software and better operations — connected by evidence of what people can do.</p>
         <div className="footer-domains">{divisions.map(d => <span key={d.slug} style={{ "--a": d.hue[0] } as React.CSSProperties}>{d.domain}</span>)}</div>
       </div>
       <div><h2>Academy</h2><Link href="/academy">Overview</Link><Link href="/academy/catalogue">Catalogue</Link><Link href="/academy/tools">Tool library</Link><Link href="/workspace/academy">My learning</Link></div>

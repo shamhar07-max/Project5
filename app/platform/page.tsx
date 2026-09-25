@@ -16,7 +16,7 @@ const steps = [
 export default function Platform() {
   return <main className="public-site" style={{ "--a": "#2563eb", "--b": "#22d3ee" } as CSSProperties}>
     <SiteHeader />
-    <PageHero kicker="DigitalBurj web app · app.digitalburj.com" title={<>One private workspace. <em>Every step visible.</em></>} intro="Enquiries, engagement briefs, Academy practice, capability evidence, job tracking, files and messages — scoped to you or your organization, in any browser." art={{ seed: "platform-hero", variant: "circuit" }} hue={["#2563eb", "#22d3ee"]}>
+    <PageHero kicker="DigitalBurj web app · app.digitalburj.com" title={<>One private workspace. <em>Every step visible.</em></>} intro="Enquiries, engagement briefs, Academy practice, capability evidence, job tracking, files and messages — scoped to you or your organization, in any browser." hue={["#2563eb", "#22d3ee"]}>
       <MagneticLink href="/workspace">Open the workspace</MagneticLink>
       <MagneticLink href="/app" variant="glass">Install on your phone</MagneticLink>
     </PageHero>

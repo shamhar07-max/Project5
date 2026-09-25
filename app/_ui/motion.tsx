@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -45,7 +45,7 @@ export function MotionLayer() {
 
     const scrubs = Array.from(document.querySelectorAll<HTMLElement>("[data-scrub]"));
 
-    const parallax = Array.from(document.querySelectorAll<HTMLElement>("[data-parallax]"));
+    const parallax = window.matchMedia("(pointer: fine)").matches && !still ? Array.from(document.querySelectorAll<HTMLElement>("[data-parallax]")) : [];
     const stories = Array.from(document.querySelectorAll<HTMLElement>("[data-sticky-story]"));
     let ticking = false;
     const frame = () => {
@@ -98,32 +98,6 @@ export function MotionLayer() {
     return () => cleanups.forEach(f => f());
   }, [pathname]);
   return <div className="read-progress" aria-hidden="true" />;
-}
-
-/** Cinematic wipe between routes, plus a one-time brand reveal on the first visit of a session. */
-export function RouteCurtain() {
-  const pathname = usePathname();
-  const [phase, setPhase] = useState<"idle" | "intro" | "wipe">("idle");
-  const first = useRef(true);
-  useEffect(() => {
-    if (reduced()) return;
-    let next: "intro" | "wipe" | null = null;
-    if (first.current) {
-      first.current = false;
-      let seen = false;
-      try { seen = sessionStorage.getItem("db-intro") === "1"; sessionStorage.setItem("db-intro", "1"); } catch { seen = true; }
-      if (!seen && pathname === "/") next = "intro";
-    } else if (!pathname.startsWith("/workspace")) next = "wipe";
-    if (!next) return;
-    const start = requestAnimationFrame(() => setPhase(next));
-    const end = setTimeout(() => setPhase("idle"), next === "intro" ? 1500 : 900);
-    return () => { cancelAnimationFrame(start); clearTimeout(end); };
-  }, [pathname]);
-  if (phase === "idle") return null;
-  return <div className={`curtain curtain-${phase}`} aria-hidden="true">
-    <span className="curtain-panel p1" /><span className="curtain-panel p2" /><span className="curtain-panel p3" />
-    {phase === "intro" && <span className="curtain-mark"><b>DIGITAL</b><i>BURJ</i><em>Learn · Build · Transform</em></span>}
-  </div>;
 }
 
 /** Words rendered as spans so MotionLayer can light them progressively while scrolling. */

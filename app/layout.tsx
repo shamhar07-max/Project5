@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { MotionLayer, RouteCurtain } from "./_ui/motion";
+import { MotionLayer } from "./_ui/motion";
 import { CommandPalette } from "./_ui/command-palette";
 import { MobileDock } from "./_ui/mobile-nav";
 import { PwaRegister } from "./_ui/pwa";
@@ -30,7 +30,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       </head>
       <body className="antialiased">
         <MotionLayer />
-        <RouteCurtain />
         {children}
         <MobileDock />
         <CommandPalette />

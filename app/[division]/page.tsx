@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
-import { ArrowUpRight, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, BadgeCheck, BarChart3, BookOpen, Bot, BriefcaseBusiness, CalendarCheck, Code2, Cog, FileCheck2, FileText, Layers, ListChecks, LockKeyhole, Network, PanelsTopLeft, Search, ShieldCheck, UserRound, Users, Workflow } from "lucide-react";
+import { BrandMark, type MarkName } from "../_ui/brand-mark";
 import { SiteHeader, SiteFooter } from "../site-shell";
 import { divisionBySlug, type DivisionSlug, type MediaKey } from "../brand-data";
 import { MagneticLink } from "../_ui/magnetic";
 import { ChannelRow, PageHero, SectionHead } from "../_ui/sections";
-import { GenArt } from "../gen-art";
 
 type Content = {
   hero: MediaKey; title: [string, string]; intro: string;
@@ -21,7 +21,7 @@ type Content = {
 const content: Record<Exclude<DivisionSlug, "academy">, Content> = {
   studio: {
     hero: "heroStudio", title: ["Build what", "deserves to exist."],
-    intro: "Validation-first product engineering. We start with the problem, prove the direction, then design, engineer, test and deploy software that earns its place.",
+    intro: "Bring us the idea and the problem behind it. We will test the assumptions, agree on a useful scope, then design, build and support the product.",
     position: "Validation-first product engineering, not commodity development.", signature: "BUILD / RESHAPE / STOP", output: "Validated products, production software, architecture and measured delivery.",
     services: [
       { t: "Discovery & validation", d: "Problem definition, users, market signals, assumptions, feasibility and a clear decision." },
@@ -43,7 +43,7 @@ const content: Record<Exclude<DivisionSlug, "academy">, Content> = {
   },
   business: {
     hero: "heroBusiness", title: ["Fix the process.", "Then automate it."],
-    intro: "Technology is not the starting point — the operation is. We observe how work really happens, measure the leak, redesign the workflow and apply automation and AI where they can be governed.",
+    intro: "We start by watching how the work gets done. Then we measure delays and errors, simplify the process and automate the steps that benefit from it.",
     position: "Business transformation using systems, automation and AI.", signature: "Technology is not the starting point; the operation is.", output: "Redesigned workflows, controlled automation and measured improvement.",
     services: [
       { t: "Operational diagnosis", d: "Process mapping, bottlenecks, cost, time and error analysis, root cause." },
@@ -66,7 +66,7 @@ const content: Record<Exclude<DivisionSlug, "academy">, Content> = {
   },
   talent: {
     hero: "heroTalent", title: ["Capability you can see.", "Evidence you can trust."],
-    intro: "An evidence-backed professional profile — not a CV warehouse. Declared, assessed and verified capability are always shown separately, and you decide who sees what.",
+    intro: "Show the work behind your skills. Your profile separates what you have listed, what has been assessed and what has been independently verified. You control its visibility.",
     position: "Evidence-backed professional capability platform.", signature: "Declared ≠ assessed ≠ verified.", output: "A Capability Passport with evidence, projects, assessments and verification history.",
     services: [
       { t: "Professional profile", d: "Experience, education, specialization and availability in one place." },
@@ -88,7 +88,7 @@ const content: Record<Exclude<DivisionSlug, "academy">, Content> = {
   },
   jobs: {
     hero: "heroJobs", title: ["More than applications.", "Better hiring decisions."],
-    intro: "A structured recruitment platform, not merely a listings board. Candidates see a clear path; employers make decisions with better evidence.",
+    intro: "Find open roles, track each application and choose which evidence to share. Employers can review candidates through a clear process.",
     position: "Structured recruitment platform.", signature: "Academy participation is not required to apply.", output: "Transparent applications, reviews, interviews and outcomes.",
     services: [
       { t: "Find opportunities", d: "Listings organized by category and company." },
@@ -103,10 +103,6 @@ const content: Record<Exclude<DivisionSlug, "academy">, Content> = {
     cta: "Open Jobs workspace", href: "/workspace/jobs", note: "Hiring decisions remain with employers. DigitalBurj does not guarantee jobs or visas.",
   },
 };
-
-const variants = ["mesh", "circuit", "wave", "orbit", "bars"] as const;
-
-export function generateStaticParams() { return Object.keys(content).map(division => ({ division })); }
 
 export default async function DivisionPage({ params }: { params: Promise<{ division: string }> }) {
   const { division } = await params;
@@ -131,19 +127,19 @@ export default async function DivisionPage({ params }: { params: Promise<{ divis
 
     <section className="section tinted-sec">
       <div className="shell">
-        <SectionHead index="02" kicker="What we do" title={<>Built around <em>your challenge.</em></>}><p>Each capability is a way in. Start with the one closest to your problem — we will connect the rest.</p></SectionHead>
+        <SectionHead index="02" kicker="What we do" title={<>Built around <em>your challenge.</em></>}><p>Start with the service closest to your immediate need. We can bring in other specialists when the work calls for it.</p></SectionHead>
         <div className="gcard-grid">
-          {c.services.map((s, i) => <article key={s.t} className="gcard" data-spotlight data-reveal="up" style={{ "--i": i % 3 } as CSSProperties}>
-            <div className="gcard-art"><GenArt seed={`${division}-svc-${i}`} variant={variants[(i + division.length) % 5]} hue={i % 2 ? [d.hue[1], d.hue[0]] : d.hue} /><span>{String(i + 1).padStart(2, "0")}</span></div>
+          {c.services.map((s, i) => { return <article key={s.t} className="gcard" data-reveal="up" style={{ "--i": i % 3 } as CSSProperties}>
+            <div className="gcard-index"><BrandMark name={division as MarkName} className="gcard-mark" /><span>{String(i + 1).padStart(2, "0")}</span></div>
             <div className="gcard-body"><h3>{s.t}</h3><p>{s.d}</p></div>
-          </article>)}
+          </article>; })}
         </div>
       </div>
     </section>
 
     <section className="section dark-sec">
       <div className="shell">
-        <SectionHead light index="03" kicker="The workflow" title={<>From question <em>to outcome.</em></>}><p>Every engagement follows a visible sequence, so you always know the current step and the next decision.</p></SectionHead>
+        <SectionHead light index="03" kicker="The workflow" title={<>From question <em>to outcome.</em></>}><p>See the steps in the work, the decision at each point and what comes next.</p></SectionHead>
         <ol className="timeline">
           {c.flow.map((f, i) => <li key={f} data-reveal="up" style={{ "--i": i % 6 } as CSSProperties}><span>{String(i + 1).padStart(2, "0")}</span><strong>{f}</strong></li>)}
         </ol>
@@ -152,7 +148,7 @@ export default async function DivisionPage({ params }: { params: Promise<{ divis
 
     {c.states && <section className="section">
       <div className="shell">
-        <SectionHead index="04" kicker={c.statesTitle || "States"} title={<>Clear states. <em>No inflated claims.</em></>} />
+        <SectionHead index="04" kicker={c.statesTitle || "States"} title={<>What each <em>status means.</em></>} />
         <div className="states">
           {c.states.map((s, i) => <div key={s.k} className="state" data-reveal="up" data-spotlight style={{ "--i": i, "--p": (i + 1) / c.states!.length } as CSSProperties}>
             <span className="state-meter"><i /></span>
