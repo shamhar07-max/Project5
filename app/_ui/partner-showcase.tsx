@@ -18,7 +18,13 @@ export function PartnerShowcase() {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [tabVisible, setTabVisible] = useState(true);
   const still = useReducedMotion();
+  useEffect(() => {
+    const update = () => setTabVisible(!document.hidden);
+    document.addEventListener("visibilitychange", update);
+    return () => document.removeEventListener("visibilitychange", update);
+  }, []);
   useEffect(() => {
     if (!section.current || !("IntersectionObserver" in window)) { setVisible(true); return; }
     const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), { threshold: .15 });
@@ -32,10 +38,10 @@ export function PartnerShowcase() {
     setActive(next);
   }, [still]);
   useEffect(() => {
-    if (paused || still || !visible) return;
+    if (paused || still || !visible || !tabVisible) return;
     const id = window.setInterval(() => go(active + 1), 5200);
     return () => window.clearInterval(id);
-  }, [active, paused, still, visible, go]);
+  }, [active, paused, still, visible, tabVisible, go]);
   return <div ref={section} className="partner-showcase" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={e => { if (!e.currentTarget.contains(e.relatedTarget)) setPaused(false); }}>
     <div className="shell partner-showcase-top"><span>SELECTED IDENTITIES / 01—09</span><div className="partner-controls"><span aria-live="polite">{String(active + 1).padStart(2, "0")} / {String(partners.length).padStart(2, "0")}</span><button type="button" aria-label="Previous project" onClick={() => go(active - 1)}><ArrowLeft size={19} /></button><button type="button" aria-label="Next project" onClick={() => go(active + 1)}><ArrowRight size={19} /></button></div></div>
     <div className="partner-gallery" ref={rail} onScroll={() => { const el = rail.current; if (!el) return; const cards = Array.from(el.children) as HTMLElement[]; let closest = 0, distance = Infinity; cards.forEach((card, i) => { const d = Math.abs(card.offsetLeft - el.offsetLeft - el.scrollLeft); if (d < distance) { distance = d; closest = i; } }); setActive(closest); }} aria-label="Completed DigitalBurj projects and brand partners">

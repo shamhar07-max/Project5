@@ -319,3 +319,4 @@
   .bcard-scene .sc-stage, .bcard-studio .bcard-scene .sc-stage, .bcard-business .bcard-scene .sc-stage { inset: 0 0 auto 0; height: 50%; padding: 4rem 1rem 0; align-items: center; justify-content: center; }
   .bcard-scene .sc-seal { width: min(46%, 180px); }
 }
+.sc-glow { will-change: transform, opacity; }

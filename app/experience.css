@@ -1273,3 +1273,19 @@ html.scrolled .header-inner { background: #fcfbf8f2; box-shadow: 0 16px 50px -20
 .js [data-reveal="image"].rv:not(.in) { clip-path: inset(0 100% 0 0); }
 [data-reveal="image"].rv { clip-path: inset(0); transition: clip-path .85s var(--ease-out), transform .8s var(--ease-out), filter .6s; }
 @media (max-width: 760px), (prefers-reduced-motion: reduce) { .js [data-reveal="image"].rv:not(.in) { clip-path: none; } [data-reveal="image"].rv { transition: none; } }
+
+/* Looping animations pause while their section is off screen (set by MotionLayer). */
+[data-offscreen], [data-offscreen] *, [data-offscreen]::before, [data-offscreen]::after, [data-offscreen] *::before, [data-offscreen] *::after { animation-play-state: paused !important; }
+/* Hidden sticky-story panels do not animate. */
+.story[data-active="0"] .story-img:not([data-idx="0"]) *,
+.story[data-active="0"] .story-img:not([data-idx="0"]) *::before,
+.story[data-active="0"] .story-img:not([data-idx="0"]) *::after,
+.story:not([data-active]) .story-img:not([data-idx="0"]) *,
+.story:not([data-active]) .story-img:not([data-idx="0"]) *::before,
+.story:not([data-active]) .story-img:not([data-idx="0"]) *::after,
+.story[data-active="1"] .story-img:not([data-idx="1"]) *,
+.story[data-active="1"] .story-img:not([data-idx="1"]) *::before,
+.story[data-active="1"] .story-img:not([data-idx="1"]) *::after,
+.story[data-active="2"] .story-img:not([data-idx="2"]) *,
+.story[data-active="2"] .story-img:not([data-idx="2"]) *::before,
+.story[data-active="2"] .story-img:not([data-idx="2"]) *::after { animation-play-state: paused !important; }
