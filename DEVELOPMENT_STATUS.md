@@ -56,25 +56,16 @@ No route labels a practice draft as a credential, a prototype price as a confirm
 
 For local development, put these in `.dev.vars` (ignored by Git) and run `npm run deploy:local`, which applies every migration in `drizzle/` to the local D1 database.
 
-## Visual direction and performance (public site)
+## Visual direction: authored imagery, no generated photography
 
-The public site is an editorial, corporate system (`app/site.css`): warm paper, deep navy ink and brand red used sparingly. Headlines use Source Serif 4 and text uses IBM Plex Sans; both are self-hosted variable fonts (≈97 KB, preloaded, metric-matched fallbacks). There are no gradients on text, no glass effects and no looping animations.
+Every photograph the site previously used was AI-generated. They have been removed. Imagery is now authored from things that are true about DigitalBurj:
 
-- **Imagery.** The AI-generated photographs are gone. Scenes (`app/_ui/scenes.tsx`) show real product documents on drafting paper, over a line elevation of the Burj. The glyphs (`app/_ui/glyphs.tsx`) are a bespoke line-icon family. Partner logos are shown as supplied, with thumbnails sized for the grid. `npm run check:media` enforces all of this.
-- **Motion.** Scroll reveals use native scroll-driven CSS animations, so no JavaScript runs while scrolling. Page changes fade in over 0.3 s. Everything switches off for reduced-motion users.
-- **JavaScript diet.**
-  - Removed the scroll/parallax/magnetic motion layer, the mobile dock, the auto-rotating hero and phone showcase, the partner carousel and the tabbed tour. They are replaced by server-rendered markup.
-  - The search palette loads only on ⌘K or when someone taps Search.
-  - Public pages use plain `<img>` instead of `next/image`.
-  - The closed mobile menu no longer renders links, so their pages are no longer prefetched.
-- **Measured** on the home page (local production build, slow 4G and 4× CPU throttling):
-  - main-thread blocking fell from 1,768 ms to 388 ms
-  - first paint fell from 2.2 s to 1.6 s, and now includes the fonts
-  - DOM nodes fell from 1,659 to 674
-  - CSS fell from 55 KB to 35 KB (gzip)
-  - background prefetches fell from 13 to 3
+- **Product scenes** (`app/_ui/scenes.tsx`, `app/scenes.css`): each placement shows a real part of the platform — the Academy mission rubric and review console, the credential seal, Studio's BUILD / RESHAPE / STOP gate and release checklist, a Business AI process leak, measured before/after and risk dial, the Capability Passport, the hiring pipeline and an approved offer, the WhatsApp first conversation. They sit on a blueprint of the Burj elevation, with its real coordinates and height.
+- **DigitalBurj glyphs** (`app/_ui/glyphs.tsx`): a bespoke line-icon family on a 48-unit grid. The accent stroke carries the division colour, draws in on reveal, idles gently and speeds up on hover; tiles light a turning ring on hover. All motion stops under reduced-motion settings.
+- **Genuine assets kept:** the approved wordmark and iconmark, and the partner logos from completed work.
+- `npm run check:media` now verifies that each scene is placed exactly once and that no source references a photo outside the brand marks and partner logos.
 
-Two partner files are low quality as supplied (Rootiva Herbal and The Imam Collective are blurred on black). Replace them with clean logo files when available.
+If DigitalBurj commissions real photography (team, workshops, client sessions), it can be added back through the registry in `app/brand-data.ts`.
 
 ## Own Cloudflare deployment
 

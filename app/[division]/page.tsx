@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
-import { ShieldCheck } from "lucide-react";
+import { ArrowUpRight, ShieldCheck } from "lucide-react";
+import { BrandMark, type MarkName } from "../_ui/brand-mark";
 import { SiteHeader, SiteFooter } from "../site-shell";
 import { divisionBySlug, type DivisionSlug, type SceneKey } from "../brand-data";
-import { Arrow, ChannelRow, PageHero, SectionHead } from "../_ui/sections";
+import { MagneticLink } from "../_ui/magnetic";
+import { ChannelRow, PageHero, SectionHead } from "../_ui/sections";
 
 type Content = {
   hero: SceneKey; title: [string, string]; intro: string;
@@ -108,55 +110,64 @@ export default async function DivisionPage({ params }: { params: Promise<{ divis
   if (!c) notFound();
   const d = divisionBySlug[division as DivisionSlug];
   const accent = { "--a": d.hue[0], "--b": d.hue[1] } as CSSProperties;
-  return <main className="site" style={accent}>
+  return <main className="public-site" style={accent}>
     <SiteHeader />
-    <PageHero kicker={`DigitalBurj ${d.name}`} title={<>{c.title[0]} <em>{c.title[1]}</em></>} intro={c.intro} scene={c.hero} hue={d.hue}>
-      <Link href={c.href} className="btn btn-primary">{c.cta} <Arrow /></Link>
-      <Link href={`/connect/whatsapp?topic=${division}`} className="btn btn-secondary">Ask on WhatsApp</Link>
+    <PageHero kicker={`DigitalBurj ${d.name} · ${d.domain}`} title={<>{c.title[0]} <em>{c.title[1]}</em></>} intro={c.intro} scene={c.hero} hue={d.hue}>
+      <MagneticLink href={c.href}>{c.cta}</MagneticLink>
+      <MagneticLink href={`/connect/whatsapp?topic=${division}`} variant="glass">Ask on WhatsApp</MagneticLink>
     </PageHero>
 
-    <section className="band-tight band-rule">
-      <div className="wrap">
-        <dl className="cols cols-3 pillars">
-          {[["Our position", c.position], ["What makes it different", c.signature], ["What you leave with", c.output]].map(([k, v]) => <div key={k} className="rule-col" data-reveal><dt className="eyebrow">{k}</dt><dd>{v}</dd></div>)}
-        </dl>
-      </div>
-    </section>
-
-    <section className="band band-sand">
-      <div className="wrap split">
-        <div data-reveal><span className="eyebrow">What we do</span><h2 className="h2">Built around the problem you actually have.</h2><p className="muted" style={{ marginTop: 16 }}>Start with the service closest to your need. We bring in other specialists when the work calls for it.</p></div>
-        <ol className="entries">{c.services.map((sv, i) => <li key={sv.t} data-reveal><span className="n num">{String(i + 1).padStart(2, "0")}</span><div><h3 className="h3">{sv.t}</h3><p>{sv.d}</p></div></li>)}</ol>
-      </div>
-    </section>
-
-    <section className="band band-ink">
-      <div className="wrap">
-        <SectionHead kicker="How the work runs" title="From first question to outcome."><p>Each step has a clear owner and a clear decision before the next one starts.</p></SectionHead>
-        <ol className="steps steps-wrap">{c.flow.map((f, i) => <li key={f} data-reveal><small className="num">Step {i + 1}</small><strong>{f}</strong></li>)}</ol>
-      </div>
-    </section>
-
-    {c.states && <section className="band">
-      <div className="wrap">
-        <SectionHead kicker={c.statesTitle || "Statuses"} title="What each status means." />
-        <div className="cols cols-3">{c.states.map(st => <div key={st.k} className="card" data-reveal><h3 className="h3">{st.k}</h3><p>{st.d}</p></div>)}</div>
-        {c.note && <p className="note" style={{ marginTop: 28 }}><ShieldCheck size={18} aria-hidden="true" /> {c.note}</p>}
-      </div>
-    </section>}
-    {!c.states && c.note && <section className="band-tight"><div className="wrap"><p className="note"><ShieldCheck size={18} aria-hidden="true" /> {c.note}</p></div></section>}
-
-    <section className="band band-rule">
-      <div className="wrap split">
-        <div data-reveal><span className="eyebrow">Ways to work together</span><h2 className="h2">Pick the arrangement that fits.</h2></div>
-        <div data-reveal>
-          <div className="tags">{c.models.map(m => <span key={m} className="tag">{m}</span>)}</div>
-          <p style={{ marginTop: 24 }}><Link href="/get-started" className="link">Not sure which? Find your starting point <Arrow /></Link></p>
+    <section className="section">
+      <div className="shell">
+        <div className="pillars">
+          {[["Position", c.position], ["Signature", c.signature], ["Primary output", c.output]].map(([k, v], i) => <div key={k} className="pillar" data-reveal="up" style={{ "--i": i } as CSSProperties}><span className="kicker"><b>0{i + 1}</b>{k}</span><p>{v}</p></div>)}
         </div>
       </div>
     </section>
 
-    <ChannelRow topic={division} title={`Talk to ${d.name} in the way that suits you.`} />
+    <section className="section tinted-sec">
+      <div className="shell">
+        <SectionHead index="02" kicker="What we do" title={<>Built around <em>your challenge.</em></>}><p>Start with the service closest to your immediate need. We can bring in other specialists when the work calls for it.</p></SectionHead>
+        <div className="gcard-grid">
+          {c.services.map((s, i) => { return <article key={s.t} className="gcard" data-reveal="up" style={{ "--i": i % 3 } as CSSProperties}>
+            <div className="gcard-index"><BrandMark name={division as MarkName} className="gcard-mark" /><span>{String(i + 1).padStart(2, "0")}</span></div>
+            <div className="gcard-body"><h3>{s.t}</h3><p>{s.d}</p></div>
+          </article>; })}
+        </div>
+      </div>
+    </section>
+
+    <section className="section dark-sec">
+      <div className="shell">
+        <SectionHead light index="03" kicker="The workflow" title={<>From question <em>to outcome.</em></>}><p>See the steps in the work, the decision at each point and what comes next.</p></SectionHead>
+        <ol className="timeline">
+          {c.flow.map((f, i) => <li key={f} data-reveal="up" style={{ "--i": i % 6 } as CSSProperties}><span>{String(i + 1).padStart(2, "0")}</span><strong>{f}</strong></li>)}
+        </ol>
+      </div>
+    </section>
+
+    {c.states && <section className="section">
+      <div className="shell">
+        <SectionHead index="04" kicker={c.statesTitle || "States"} title={<>What each <em>status means.</em></>} />
+        <div className="states">
+          {c.states.map((s, i) => <div key={s.k} className="state" data-reveal="up" data-spotlight style={{ "--i": i, "--p": (i + 1) / c.states!.length } as CSSProperties}>
+            <span className="state-meter"><i /></span>
+            <strong>{s.k}</strong><p>{s.d}</p>
+          </div>)}
+        </div>
+        {c.note && <p className="note" data-reveal="up"><ShieldCheck size={18} /> {c.note}</p>}
+      </div>
+    </section>}
+    {!c.states && c.note && <section className="section"><div className="shell"><p className="note" data-reveal="up"><ShieldCheck size={18} /> {c.note}</p></div></section>}
+
+    <section className="section tinted-sec">
+      <div className="shell models-wrap">
+        <SectionHead index="05" kicker="Engagement models" title={<>Ways to <em>work together.</em></>}><Link href="/get-started" className="link-arrow">Not sure? Find your path <ArrowUpRight size={16} /></Link></SectionHead>
+        <div className="models">{c.models.map((m, i) => <span key={m} data-reveal="scale" style={{ "--i": i } as CSSProperties}>{m}</span>)}</div>
+      </div>
+    </section>
+
+    <ChannelRow topic={division} title={`Talk to ${d.name} on the channel that suits you.`} />
     <SiteFooter />
   </main>;
 }

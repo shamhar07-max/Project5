@@ -1,34 +1,38 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { PaletteHost } from "./_ui/palette-host";
+import { MotionLayer } from "./_ui/motion";
+import { CommandPalette } from "./_ui/command-palette";
+import { MobileDock } from "./_ui/mobile-nav";
 import { PwaRegister } from "./_ui/pwa";
 
 export const metadata: Metadata = {
   title: "DigitalBurj | Learn. Build. Transform.",
-  description: "A Dubai technology company. We teach practical skills, build useful software and fix the processes that slow businesses down.",
+  description: "One technology company with three engines of progress: Academy, Studio and Business AI — connected to Verified Talent and Jobs.",
   icons: {
     icon: [{ url: "/favicon-64.png", type: "image/png", sizes: "64x64" }, { url: "/icon-192.png", type: "image/png", sizes: "192x192" }],
     shortcut: "/favicon-64.png",
     apple: "/apple-touch-icon.png",
   },
   manifest: "/site.webmanifest",
-  appleWebApp: { capable: true, title: "DigitalBurj", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "DigitalBurj", statusBarStyle: "black-translucent" },
 };
 
-export const viewport: Viewport = { themeColor: "#f6f3ee", width: "device-width", initialScale: 1, viewportFit: "cover" };
+export const viewport: Viewport = { themeColor: "#070d1b", width: "device-width", initialScale: 1, viewportFit: "cover" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Two self-hosted variable fonts (≈97 KB total), preloaded so text paints in its final face. */}
-        <link rel="preload" href="/fonts/plex-sans.woff2" as="font" type="font/woff2" crossOrigin="" />
-        <link rel="preload" href="/fonts/source-serif.woff2" as="font" type="font/woff2" crossOrigin="" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&family=Manrope:wght@400;500;600;700;800&display=swap" />
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
       </head>
       <body className="antialiased">
+        <MotionLayer />
         {children}
-        <PaletteHost />
+        <MobileDock />
+        <CommandPalette />
         <PwaRegister />
       </body>
     </html>
