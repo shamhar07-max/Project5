@@ -128,18 +128,24 @@ export function MotionLayer() {
     // Spotlight + tilt (delegated)
     const fine = window.matchMedia("(pointer: fine)").matches;
     if (fine && !still) {
+      let pointerFrame = 0;
       const move = (e: PointerEvent) => {
         const t = (e.target as HTMLElement | null)?.closest?.<HTMLElement>("[data-spotlight],[data-tilt]");
         if (!t) return;
-        const r = t.getBoundingClientRect();
-        const x = e.clientX - r.left, y = e.clientY - r.top;
-        t.style.setProperty("--px", `${x}px`); t.style.setProperty("--py", `${y}px`);
-        if (t.hasAttribute("data-tilt")) { t.style.setProperty("--rx", `${((y / r.height) - .5) * -7}deg`); t.style.setProperty("--ry", `${((x / r.width) - .5) * 9}deg`); }
+        if (pointerFrame) cancelAnimationFrame(pointerFrame);
+        const { clientX, clientY } = e;
+        pointerFrame = requestAnimationFrame(() => {
+          const r = t.getBoundingClientRect();
+          const x = clientX - r.left, y = clientY - r.top;
+          t.style.setProperty("--px", `${x}px`); t.style.setProperty("--py", `${y}px`);
+          if (t.hasAttribute("data-tilt")) { t.style.setProperty("--rx", `${((y / r.height) - .5) * -7}deg`); t.style.setProperty("--ry", `${((x / r.width) - .5) * 9}deg`); }
+          pointerFrame = 0;
+        });
       };
       const out = (e: PointerEvent) => { const t = (e.target as HTMLElement | null)?.closest?.<HTMLElement>("[data-tilt]"); if (t && !t.contains(e.relatedTarget as Node)) { t.style.setProperty("--rx", "0deg"); t.style.setProperty("--ry", "0deg"); } };
       document.addEventListener("pointermove", move, { passive: true });
       document.addEventListener("pointerout", out, { passive: true });
-      cleanups.push(() => { document.removeEventListener("pointermove", move); document.removeEventListener("pointerout", out); });
+      cleanups.push(() => { cancelAnimationFrame(pointerFrame); document.removeEventListener("pointermove", move); document.removeEventListener("pointerout", out); });
     }
     return () => cleanups.forEach(f => f());
   }, [pathname]);

@@ -434,3 +434,12 @@
 .lx-aurora-page i:nth-child(2) { background: radial-gradient(circle, color-mix(in srgb, var(--b) 65%, transparent), transparent 68%); }
 .lx-aurora-page i:nth-child(3) { background: radial-gradient(circle, #e1061355, transparent 68%); }
 .page-hero-inner { position: relative; z-index: 2; }
+
+/* Cinematic tower photograph (hero-image.tsx) sits under the aurora; the dark left side carries the headline. */
+.lx-hero > .cinematic-image { z-index: -4; background: #04070f; }
+.lx-hero > .cinematic-image img { object-position: 65% center; opacity: .62; }
+.lx-hero::before { content: ""; position: absolute; inset: 0; z-index: -3; background: linear-gradient(90deg, #04070fe6 0%, #04070fa8 40%, #04070f33 72%, #04070f66 100%), linear-gradient(0deg, #04070fcc 0%, transparent 40%); pointer-events: none; }
+@media (max-width: 900px) { .lx-hero::before { background: linear-gradient(0deg, #04070f 0%, #04070fd9 50%, #04070f80 100%); } }
+/* Keep each page's product card crisp above the photograph, shade and light layers. */
+.page-hero > .page-hero-scene { z-index: 1; pointer-events: none; }
+.page-hero > .page-hero-scene .sc-tower, .page-hero > .page-hero-scene .sc-grid, .page-hero > .page-hero-scene .sc-glow { opacity: .25; }

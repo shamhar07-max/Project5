@@ -6,6 +6,7 @@ import { HeroConstellation } from "./_ui/lux/hero-constellation";
 import { DivisionPanels } from "./_ui/lux/division-panels";
 import { TechBento } from "./_ui/lux/tech-bento";
 import { LaunchPad } from "./_ui/lux/launch-pad";
+import { HeroImage } from "./_ui/hero-image";
 import { PartnerShowcase } from "./_ui/partner-showcase";
 import { SiteHeader, SiteFooter } from "./site-shell";
 import { outcomes, divisionBySlug, type SceneKey } from "./brand-data";
@@ -35,6 +36,7 @@ export default function Home() {
 
     {/* 01 — Cinematic hero */}
     <section className="lx-hero">
+      <HeroImage />
       <div className="lx-hero-backdrop" aria-hidden="true"><Scene k="homeHero" /></div>
       <div className="lx-aurora" aria-hidden="true"><i /><i /><i /><i /></div>
       <div className="lx-hero-grid-lines" aria-hidden="true" />
