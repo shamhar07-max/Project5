@@ -1,11 +1,51 @@
 import Link from "next/link";
 import { academyCourses } from "../../academy-data";
+import { divisionBySlug } from "../../brand-data";
+import { SiteHeader, SiteFooter } from "../../site-shell";
+import { Arrow } from "../../_ui/sections";
 
-export default async function Catalogue({searchParams}:{searchParams:Promise<{q?:string;family?:string;course?:string}>}) {
-  const p=await searchParams;
-  const selected=academyCourses.find(c=>c.code===p.course);
-  const query=(p.q||"").trim().toLowerCase();
-  const family=p.family||"All";
-  const courses=academyCourses.filter(c=>(family==="All"||c.family===family)&&(c.title.toLowerCase().includes(query)||c.code.toLowerCase().includes(query)));
-  return <main className="min-h-screen bg-[#f3f5f7] text-[#102b4c]"><header className="border-b border-[#d6dfe7] bg-white px-6 py-5"><div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-4"><Link href="/academy" className="font-bold text-[#d10b1a]">← Academy</Link><Link href="/workspace/academy" className="font-bold text-[#102b4c]">My learning →</Link></div></header><div className="mx-auto max-w-7xl px-6 py-12"><p className="text-sm font-bold uppercase tracking-[.15em] text-[#d10b1a]">Public catalogue</p><h1 className="mt-3 font-[Georgia] text-4xl font-semibold">Technology & professional learning</h1><p className="mt-4 max-w-3xl leading-7 text-[#61717a]">Curriculum units from the Academy reference. “Planning” and “Proposed” units are shown for discovery; enrollment opens only when teaching materials and assessment are available.</p><form className="mt-8 flex flex-wrap gap-3"><input name="q" defaultValue={p.q||""} placeholder="Search title or code" className="min-w-56 flex-1 rounded-xl border border-[#cbd5df] bg-white p-3"/><select name="family" defaultValue={family} className="rounded-xl border border-[#cbd5df] bg-white p-3"><option>All</option><option>Technology</option><option>Professional</option><option>Assessment</option></select><button className="rounded-xl bg-[#d10b1a] px-6 py-3 font-bold text-white">Search</button></form><div className="mt-10 grid gap-7 lg:grid-cols-[1fr_350px]"><div className="grid auto-rows-min gap-3 md:grid-cols-2">{courses.map(c=><Link key={c.code} href={`/academy/catalogue?course=${encodeURIComponent(c.code)}`} className={`rounded-2xl border bg-white p-5 ${selected?.code===c.code?"border-[#d10b1a] shadow-md":"border-[#d6dfe7]"}`}><div className="flex flex-wrap justify-between gap-2 text-xs font-bold"><span className="text-[#d10b1a]">{c.code}</span><span className="text-[#61717a]">{c.maturity}</span></div><h2 className="mt-4 font-[Georgia] text-xl font-semibold">{c.title}</h2><p className="mt-4 text-sm text-[#61717a]">{c.level} · {c.hours} hours · {c.family}</p></Link>)}{!courses.length && <p className="rounded-2xl border border-[#d6dfe7] bg-white p-6">No units found.</p>}</div><aside className="h-fit rounded-2xl border border-[#d6dfe7] bg-white p-6 lg:sticky lg:top-6">{selected ? <><p className="text-sm font-bold text-[#d10b1a]">{selected.code} · {selected.family}</p><h2 className="mt-3 font-[Georgia] text-2xl font-semibold">{selected.title}</h2><dl className="mt-6 grid gap-3 text-sm"><div className="flex justify-between gap-3"><dt>Status</dt><dd className="font-bold">{selected.maturity}</dd></div><div className="flex justify-between gap-3"><dt>Level</dt><dd className="font-bold">{selected.level}</dd></div><div className="flex justify-between gap-3"><dt>Learning hours</dt><dd className="font-bold">{selected.hours}</dd></div><div className="flex justify-between gap-3"><dt>Prerequisite</dt><dd className="font-bold">{selected.prereq}</dd></div></dl><div className="mt-6 rounded-xl bg-[#f2f5f7] p-4 text-sm leading-6">Course contract: foundations, scenario practice, a practical mission and an evidence review. Specific lessons and assessments are released separately.</div><Link href={`/workspace/academy?course=${encodeURIComponent(selected.code)}`} className="mt-6 block rounded-xl bg-[#d10b1a] px-5 py-3 text-center font-bold text-white">Open learner workspace</Link></> : <><h2 className="font-[Georgia] text-xl font-semibold">Course contract</h2><p className="mt-3 text-sm leading-6 text-[#61717a]">Select a unit to view its level, prerequisite, learning hours and maturity.</p></>}</aside></div></div></main>;
+const d = divisionBySlug.academy;
+
+export default async function Catalogue({ searchParams }: { searchParams: Promise<{ q?: string; family?: string; course?: string }> }) {
+  const p = await searchParams;
+  const selected = academyCourses.find(c => c.code === p.course);
+  const query = (p.q || "").trim().toLowerCase();
+  const family = p.family || "All";
+  const courses = academyCourses.filter(c => (family === "All" || c.family === family) && (c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)));
+  return <main className="site" style={{ "--a": d.hue[0] } as React.CSSProperties}>
+    <SiteHeader />
+    <section className="page-hero">
+      <div className="wrap">
+        <nav className="crumb" aria-label="Breadcrumb"><Link href="/academy">Academy</Link><span>/</span><span>Catalogue</span></nav>
+        <h1 className="h1">Technology and professional learning</h1>
+        <p className="lede">Units from the Academy curriculum. Planned and proposed units are listed so you can see what is coming; enrolment opens when teaching material and assessment are ready.</p>
+        <form className="row" style={{ marginTop: 28, maxWidth: 760 }}>
+          <input name="q" defaultValue={p.q || ""} placeholder="Search by title or code" aria-label="Search units" style={{ flex: "1 1 260px", width: "auto" }} />
+          <select name="family" defaultValue={family} aria-label="Family" style={{ width: "auto" }}><option>All</option><option>Technology</option><option>Professional</option><option>Assessment</option></select>
+          <button className="btn btn-primary">Search</button>
+        </form>
+      </div>
+    </section>
+    <section className="band-tight">
+      <div className="wrap catalogue">
+        <div className="cols cols-2" style={{ alignContent: "start" }}>
+          {courses.map(c => <Link key={c.code} href={`/academy/catalogue?course=${encodeURIComponent(c.code)}${p.q ? `&q=${encodeURIComponent(p.q)}` : ""}${family !== "All" ? `&family=${family}` : ""}`} className={`card ${selected?.code === c.code ? "card-selected" : ""}`} scroll={false}>
+            <div className="card-top"><span className="small num" style={{ fontWeight: 600, color: "var(--red-text)" }}>{c.code}</span><span className="pill">{c.maturity}</span></div>
+            <h2 className="h3">{c.title}</h2><p className="small muted" style={{ marginTop: 8 }}>Level {c.level.replace("L", "")} · {c.hours} hours · {c.family}</p>
+          </Link>)}
+          {!courses.length && <p className="card">No units match that search.</p>}
+        </div>
+        <aside className="card catalogue-aside">
+          {selected ? <>
+            <span className="eyebrow">{selected.code} · {selected.family}</span>
+            <h2 className="h2" style={{ fontSize: "1.7rem" }}>{selected.title}</h2>
+            <dl className="kv" style={{ marginTop: 20 }}><dt>Status</dt><dd>{selected.maturity}</dd><dt>Level</dt><dd>{selected.level}</dd><dt>Learning hours</dt><dd>{selected.hours}</dd><dt>Prerequisite</dt><dd>{selected.prereq}</dd></dl>
+            <p className="small muted" style={{ marginTop: 20 }}>Every unit follows the same contract: foundations, scenario practice, a practical mission and an evidence review.</p>
+            <Link href={`/workspace/academy?course=${encodeURIComponent(selected.code)}`} className="btn btn-primary" style={{ marginTop: 20, width: "100%" }}>Open in my learning <Arrow /></Link>
+          </> : <><h2 className="h3">Choose a unit</h2><p className="small muted" style={{ marginTop: 8 }}>Select a unit to see its level, prerequisite, learning hours and status.</p></>}
+        </aside>
+      </div>
+    </section>
+    <SiteFooter />
+  </main>;
 }

@@ -1,62 +1,66 @@
 import Link from "next/link";
-import Image from "next/image";
-import { ArrowUpRight, ChevronDown, MessageCircle, MonitorSmartphone, Smartphone } from "lucide-react";
-import { channelNav, divisions, primaryNav } from "./brand-data";
-import { MagneticLink } from "./_ui/magnetic";
-import { PaletteButton } from "./_ui/command-palette";
+import { divisions } from "./brand-data";
+import { PaletteButton } from "./_ui/palette-host";
 import { MobileNav } from "./_ui/mobile-nav";
 
 export { divisions };
 
-function Wordmark({ light = false }: { light?: boolean }) {
-  return <span className={`brand-wordmark ${light ? "brand-wordmark-tile" : ""}`}><Image src="/brand/digitalburj-wordmark-approved.webp" width={2048} height={512} alt="" unoptimized /></span>;
+const nav = [
+  { href: "/academy", label: "Academy" },
+  { href: "/studio", label: "Studio" },
+  { href: "/business", label: "Business AI" },
+  { href: "/talent", label: "Talent" },
+  { href: "/jobs", label: "Jobs" },
+  { href: "/company", label: "Company" },
+];
+
+/** The approved wordmark, trimmed to a transparent 6 KB file; `light` is the version for dark backgrounds. */
+export function Wordmark({ light = false }: { light?: boolean }) {
+  // A plain <img> keeps the next/image client runtime off public pages.
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img className="wordmark" src={light ? "/brand/wordmark-paper.png" : "/brand/wordmark-ink.png"} width={770} height={96} alt="DigitalBurj" fetchPriority={light ? "low" : "high"} decoding="async" />;
 }
 
 export function SiteHeader() {
-  const channelIcons = [MonitorSmartphone, Smartphone, MessageCircle];
   return <header className="site-header">
-    <div className="shell header-inner">
-      <Link href="/" aria-label="DigitalBurj home" className="brand-link"><Wordmark /></Link>
-      <nav aria-label="Main navigation" className="desktop-nav">
-        {primaryNav.slice(0, 3).map(n => <Link key={n.href} href={n.href}>{n.label}</Link>)}
-        <div className="nav-drop">
-          <button type="button" aria-haspopup="true">Connect <ChevronDown size={14} aria-hidden="true" /></button>
-          <div className="nav-drop-panel">
-            {channelNav.map((c, i) => { const Icon = channelIcons[i]; return <Link key={c.href} href={c.href}><span className={`nav-ico nav-ico-${i}`}><Icon size={18} /></span><span><strong>{c.label}</strong><small>{c.note}</small></span></Link>; })}
-          </div>
-        </div>
-        {primaryNav.slice(3).map(n => <Link key={n.href} href={n.href}>{n.label}</Link>)}
-      </nav>
-      <div className="header-tools">
+    <div className="wrap site-header-row">
+      <Link href="/" className="brand" aria-label="DigitalBurj home"><Wordmark /></Link>
+      <nav aria-label="Main" className="site-nav">{nav.map(n => <Link key={n.href} href={n.href}>{n.label}</Link>)}</nav>
+      <div className="site-tools">
         <PaletteButton />
-        <MagneticLink href="/get-started" variant="ink" className="header-cta">Start</MagneticLink>
+        <Link href="/get-started" className="btn btn-primary btn-sm header-cta">Get started</Link>
         <MobileNav />
       </div>
     </div>
   </header>;
 }
 
+const columns: [string, [string, string][]][] = [
+  ["Divisions", divisions.map(d => [`/${d.slug}`, d.name] as [string, string])],
+  ["Start", [["/get-started", "Find your starting point"], ["/workspace/intake?service=studio", "Start a Studio project"], ["/workspace/intake?service=business", "Book a Business AI consultation"], ["/jobs/board", "Open roles"], ["/academy/catalogue", "Academy catalogue"]]],
+  ["Company", [["/company", "About DigitalBurj"], ["/technology", "Technology"], ["/ecosystem", "How it connects"], ["/contact", "Contact"], ["/status", "Service status"]]],
+  ["Use DigitalBurj", [["/platform", "Web app"], ["/app", "Mobile app"], ["/connect/whatsapp", "WhatsApp"], ["/support", "Help centre"], ["/docs/api", "API for developers"]]],
+];
+
 export function SiteFooter() {
   return <footer className="site-footer">
-    <div className="footer-glow" aria-hidden="true" />
-    <div className="shell footer-cta">
-      <div><span className="footer-cta-kicker">A good place to begin</span><h2>Tell us what you are<br /><em>working through.</em></h2><p>We will help you decide whether to learn, build, improve a process or find the right people.</p></div>
+    <div className="wrap footer-cta">
+      <h2>Tell us what you are working on. <span>We will tell you honestly where to start.</span></h2>
       <div className="footer-cta-actions">
-        <MagneticLink href="/get-started" variant="light">Find the right path</MagneticLink>
-        <MagneticLink href="/connect/whatsapp" variant="glass">Talk to our team</MagneticLink>
+        <Link href="/get-started" className="btn btn-light">Find your starting point</Link>
+        <Link href="/connect/whatsapp" className="btn btn-outline-light">Message us on WhatsApp</Link>
       </div>
     </div>
-    <div className="shell footer-main">
-      <div className="footer-brand">
+    <div className="wrap footer-grid">
+      <div className="footer-about">
         <Wordmark light />
-        <p>Practical learning, useful software and better operations — connected by evidence of what people can do.</p>
-        <div className="footer-domains">{divisions.map(d => <span key={d.slug} style={{ "--a": d.hue[0] } as React.CSSProperties}>{d.domain}</span>)}</div>
+        <p>A technology company in Dubai. We teach practical skills, build useful software and fix the processes that slow businesses down.</p>
       </div>
-      <div><h2>Academy</h2><Link href="/academy">Overview</Link><Link href="/academy/catalogue">Catalogue</Link><Link href="/academy/tools">Tool library</Link><Link href="/workspace/academy">My learning</Link></div>
-      <div><h2>Studio &amp; AI</h2><Link href="/studio">Studio</Link><Link href="/workspace/intake?service=studio">Start a project</Link><Link href="/business">Business AI</Link><Link href="/workspace/intake?service=business">Consultation</Link></div>
-      <div><h2>Ecosystem</h2><Link href="/talent">Verified Talent</Link><Link href="/jobs">Jobs</Link><Link href="/jobs/board">Open roles</Link><Link href="/ecosystem">How it connects</Link><Link href="/technology">Technology</Link></div>
-      <div><h2>Resources</h2><Link href="/platform">Web app</Link><Link href="/app">Mobile app</Link><Link href="/support">Help center</Link><Link href="/docs/api">API</Link><Link href="/status">Status</Link><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></div>
+      {columns.map(([title, links]) => <div key={title} className="footer-col"><h3>{title}</h3><ul>{links.map(([href, label]) => <li key={href}><Link href={href}>{label}</Link></li>)}</ul></div>)}
     </div>
-    <div className="shell footer-bottom"><span>© {new Date().getFullYear()} DigitalBurj</span><Link href="/company">Evidence before claims <ArrowUpRight size={14} /></Link></div>
+    <div className="wrap footer-base">
+      <span>© {new Date().getFullYear()} DigitalBurj. All rights reserved.</span>
+      <span><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></span>
+    </div>
   </footer>;
 }

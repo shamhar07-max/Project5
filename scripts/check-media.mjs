@@ -7,7 +7,7 @@ import { join } from "node:path";
 const registry = readFileSync("app/brand-data.ts", "utf8");
 const block = registry.slice(registry.indexOf("export const scenes"), registry.indexOf("} as const;", registry.indexOf("export const scenes")));
 const scenes = [...block.matchAll(/^\s*(\w+):\s*"/gm)].map(m => m[1]);
-const allowed = [/^\/brand\/digitalburj-wordmark-approved\.webp$/, /^\/brand\/db-iconmark\.png$/, /^\/brand\/wordmark\.png$/, /^\/brand\/partners\//];
+const allowed = [/^\/brand\/digitalburj-wordmark-approved\.webp$/, /^\/brand\/db-iconmark\.png$/, /^\/brand\/wordmark(-ink|-paper)?\.png$/, /^\/brand\/partners\//];
 
 const files = [];
 (function walk(dir) { for (const f of readdirSync(dir)) { const p = join(dir, f); if (statSync(p).isDirectory()) walk(p); else if (/\.(tsx?|css)$/.test(f)) files.push(p); } })("app");
