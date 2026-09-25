@@ -5,11 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight, Compass, Home, LayoutGrid, MessageCircle, Search, Smartphone, X } from "lucide-react";
 import { divisions } from "../brand-data";
-import { OPEN_PALETTE } from "./command-palette";
+import { OPEN_PALETTE } from "./palette-host";
 
 /** Full-screen premium mobile navigation with staggered division rows and channel shortcuts. */
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  // The sheet is only in the DOM while open or animating closed, so its links are not
+  // prefetched on every page load (hidden links still count as "visible" to the prefetcher).
+  const [rendered, setRendered] = useState(false);
   const pathname = usePathname();
   const closeBtn = useRef<HTMLButtonElement>(null);
   const openBtn = useRef<HTMLButtonElement>(null);
@@ -35,9 +38,15 @@ export function MobileNav() {
     const trigger = openBtn.current;
     return () => { window.removeEventListener("keydown", esc); trigger?.focus(); };
   }, [open]);
+  useEffect(() => {
+    if (open || !rendered) return;
+    const t = window.setTimeout(() => setRendered(false), 600);
+    return () => window.clearTimeout(t);
+  }, [open, rendered]);
+  const show = () => { setRendered(true); requestAnimationFrame(() => requestAnimationFrame(() => setOpen(true))); };
   return <>
-    <button ref={openBtn} type="button" className="burger" aria-label="Open menu" aria-expanded={open} aria-controls="mobile-sheet" onClick={() => setOpen(true)}><span /><span /></button>
-    {mounted && createPortal(<div ref={sheetRef} id="mobile-sheet" className={`msheet ${open ? "open" : ""}`} role="dialog" aria-modal="true" aria-label="Menu" inert={!open} aria-hidden={!open}>
+    <button ref={openBtn} type="button" className="burger" aria-label="Open menu" aria-expanded={open} aria-controls="mobile-sheet" onClick={show}><span /><span /></button>
+    {mounted && rendered && createPortal(<div ref={sheetRef} id="mobile-sheet" className={`msheet ${open ? "open" : ""}`} role="dialog" aria-modal="true" aria-label="Menu" inert={!open} aria-hidden={!open}>
       <div className="msheet-aurora" aria-hidden="true" />
       <div className="msheet-top">
         <span className="msheet-kicker">DIGITALBURJ / MENU</span>

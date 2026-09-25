@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import Image from "next/image";
+import { Img } from "./img";
 import { Glyph, type GlyphName } from "./glyphs";
 import { divisionBySlug, type DivisionSlug } from "../brand-data";
 
@@ -13,7 +13,7 @@ export function BrandMark({ name, className = "", lockup = false }: { name: Mark
   const hue = accent(name);
   return <span className={`brand-mark ${className}`} aria-hidden="true" style={hue ? { "--a": hue[0], "--b": hue[1] } as CSSProperties : undefined}>
     <Glyph name={name} tile size={64} />
-    {lockup && <span className="brand-mark-lockup"><Image src="/brand/digitalburj-wordmark-approved.webp" width={2048} height={512} alt="" unoptimized /><b>{label[name] ?? name.toUpperCase()}</b></span>}
+    {lockup && <span className="brand-mark-lockup"><Img src="/brand/digitalburj-wordmark-800.webp" width={2048} height={512} alt="" /><b>{label[name] ?? name.toUpperCase()}</b></span>}
   </span>;
 }
 
