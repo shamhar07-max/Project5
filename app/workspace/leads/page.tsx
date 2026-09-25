@@ -29,7 +29,7 @@ export default async function LeadsPage() {
           <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="font-bold"><span className="mr-2 rounded bg-[#10273c] px-2 py-1 font-mono text-xs text-white">{l.reference}</span>{leadTopics[l.topic as LeadTopic] ?? l.topic}{l.intent && ` · ${l.intent}`}</h2><span className="text-sm font-semibold">{l.status}</span></div>
           <p className="mt-3 whitespace-pre-wrap text-[#304356]">{l.message}</p>
           <p className="mt-3 text-sm text-[#52677a]">{l.name}{l.company && ` · ${l.company}`}{staff && ` · ${l.contact}`} · via {l.channel}{l.timing && ` · ${leadTimings[l.timing] ?? l.timing}`} · {l.createdAt.toLocaleString("en-AE")}</p>
-          {staff && <form action={updateLeadStatus} className="mt-4 flex flex-wrap gap-2"><input type="hidden" name="id" value={l.id}/>{statuses.map(s => <button key={s} name="status" value={s} disabled={s === l.status} className="border border-[#b9cad5] px-3 py-1.5 text-sm font-semibold disabled:bg-[#10273c] disabled:text-white">{s}</button>)}</form>}
+          {staff && <div className="mt-4 flex flex-wrap gap-2">{statuses.map(s => <form key={s} action={updateLeadStatus}><input type="hidden" name="id" value={l.id}/><input type="hidden" name="status" value={s}/><button disabled={s === l.status} className="border border-[#b9cad5] px-3 py-1.5 text-sm font-semibold disabled:bg-[#10273c] disabled:text-white">{s}</button></form>)}</div>}
         </article>)}
         {!rows.length && !unavailable && <p className="border border-dashed border-[#b9cad5] bg-white p-6 text-[#52677a]">No requests yet. <Link href="/connect/whatsapp" className="font-bold text-[#e31b23]">Start one →</Link></p>}
       </div>

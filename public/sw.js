@@ -1,11 +1,19 @@
 // DigitalBurj service worker: network-first pages with an offline fallback,
 // cache-first for static brand assets. Workspace and API traffic is never cached.
-const VERSION = "db-v1";
+const VERSION = "db-v2";
 const OFFLINE = "/offline.html";
-const PRECACHE = [OFFLINE, "/icon-192.png", "/icon-512.png", "/brand/db-iconmark.png"];
+const PRECACHE = ["/icon-192.png", "/icon-512.png", "/brand/db-iconmark.png"];
+
+// Production asset serving may redirect /offline.html to /offline. A redirected response
+// cannot answer a navigation, so store a fresh, non-redirected copy under the OFFLINE key.
+async function cacheOfflinePage(cache) {
+  const res = await fetch(OFFLINE, { cache: "reload" });
+  if (!res.ok) throw new Error("Offline page unavailable");
+  await cache.put(OFFLINE, new Response(await res.blob(), { status: 200, headers: { "content-type": "text/html; charset=utf-8" } }));
+}
 
 self.addEventListener("install", e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VERSION).then(c => Promise.all([c.addAll(PRECACHE), cacheOfflinePage(c)])).then(() => self.skipWaiting()));
 });
 self.addEventListener("activate", e => {
   e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim()));
