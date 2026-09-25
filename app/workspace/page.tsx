@@ -34,6 +34,7 @@ export default async function Workspace({ searchParams }: { searchParams: Promis
       <Link href="/workspace/support" className="flex shrink-0 items-center gap-3 border-l-4 border-transparent px-4 py-3 text-sm font-semibold hover:bg-white/10">Support</Link>
       <Link href="/workspace/messages" className="flex shrink-0 items-center gap-3 border-l-4 border-transparent px-4 py-3 text-sm font-semibold hover:bg-white/10">Messages</Link>
       <Link href="/workspace/files" className="flex shrink-0 items-center gap-3 border-l-4 border-transparent px-4 py-3 text-sm font-semibold hover:bg-white/10">Files</Link>
+      <Link href="/workspace/leads" className="flex shrink-0 items-center gap-3 border-l-4 border-transparent px-4 py-3 text-sm font-semibold hover:bg-white/10">Channel requests</Link>
       <Link href="/workspace/security" className="flex shrink-0 items-center gap-3 border-l-4 border-transparent px-4 py-3 text-sm font-semibold hover:bg-white/10">Security centre</Link>
       {modules.map(m=><Link key={m.key} href={m.key==="academy"?"/workspace/academy":m.key==="studio"?"/workspace/engagements?service=studio":m.key==="business"?"/workspace/engagements?service=business":`/workspace/${m.key}`} className={`flex shrink-0 items-center gap-3 border-l-4 px-4 py-3 text-sm font-semibold ${active?.key===m.key ? "border-[#e31b23] bg-white/10":"border-transparent hover:bg-white/10"}`}><m.icon size={19}/>{m.title}</Link>)}
     </nav></aside>

@@ -1,6 +1,18 @@
 import { SiteHeader, SiteFooter } from "../site-shell";
 import { PathFinder } from "./path-finder";
-import { HeroCarousel } from "../hero-carousel";
-export default function GetStarted(){
-  return <main className="public-site"><SiteHeader/><section className="page-hero path-hero"><HeroCarousel frames={[{src:"/brand/collaboration.jpg",label:"Grow together"},{src:"/brand/hero-digitalburj-v2.webp",label:"Find your path"}]}/><div className="shell page-hero-content"><span className="eyebrow eyebrow-light">Your path / DigitalBurj</span><h1>Start with what<br/><span className="serif-accent">matters to you.</span></h1><p>Choose a goal. We&apos;ll take you to the right place to explore or tell us what you need.</p></div></section><PathFinder/><SiteFooter/></main>;
+import { ChannelRow, PageHero, SectionHead } from "../_ui/sections";
+
+export default function GetStarted() {
+  return <main className="public-site">
+    <SiteHeader />
+    <PageHero kicker="Your path · DigitalBurj" title={<>Start with the <em>outcome you need.</em></>} intro="Three quick choices. We will point you to the right team and the channel you prefer — web, mobile or WhatsApp." image="getStartedHero" hue={["#e10613", "#f59e0b"]} />
+    <section className="section tinted-sec">
+      <div className="shell">
+        <SectionHead index="01" kicker="Path finder" title={<>What brings <em>you here?</em></>}><p>Change your answers any time. Nothing is submitted until you choose to.</p></SectionHead>
+        <div data-reveal="up"><PathFinder /></div>
+      </div>
+    </section>
+    <ChannelRow />
+    <SiteFooter />
+  </main>;
 }
