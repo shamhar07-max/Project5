@@ -63,17 +63,6 @@ function Rail({ steps, at }: { steps: string[]; at: number }) {
   return <ol className="sc-rail">{steps.map((s, i) => <li key={s} className={i < at ? "done" : i === at ? "now" : ""} style={{ "--i": i } as CSSProperties}>{s}</li>)}</ol>;
 }
 
-function Seal({ id, code }: { id: string; code: string }) {
-  return <div className="sc-seal">
-    <svg viewBox="0 0 120 120" className="sc-seal-ring">
-      <defs><path id={`${id}-ring`} d="M60 60m-46 0a46 46 0 1 1 92 0a46 46 0 1 1-92 0" /></defs>
-      <circle cx="60" cy="60" r="56" className="sc-seal-edge" />
-      <text><textPath href={`#${id}-ring`}>INDEPENDENTLY VERIFIED · DIGITALBURJ ACADEMY · </textPath></text>
-    </svg>
-    <div className="sc-seal-core"><Glyph name="security" size={34} /><b>{code}</b></div>
-  </div>;
-}
-
 const mission = <Card className="sc-mission" label={<><span>Mission · DB-03</span><span className="sc-chip sc-chip-ok">Passed</span></>}>
   <strong className="sc-title">Book appointments without double-booking a doctor</strong>
   <Bars rows={[["Solves the stated problem", 3, 3], ["Prevents overlapping slots", 3, 3], ["Explains the trade-offs", 2, 3]]} />
@@ -97,12 +86,6 @@ function ProcessMap({ id }: { id: string }) {
     <div className="sc-kv"><span>Leak class</span><b>Duplicate data entry</b><span>Time lost</span><b>9.1 h / week · measured</b></div>
   </Card>;
 }
-
-const metric = <Card className="sc-metric" label={<><span>Invoice handling</span><span className="sc-chip sc-chip-ok">Measured</span></>}>
-  <div className="sc-delta"><span><small>Before</small>12.0h</span><i>→</i><span className="after"><small>After</small>3.2h</span></div>
-  <svg viewBox="0 0 200 48" className="sc-spark"><path d="M2 8L28 10 54 9 80 17 106 30 132 36 158 39 198 40" pathLength={1} /></svg>
-  <small className="sc-foot">per week, same team, same volume</small>
-</Card>;
 
 const risk = <Card className="sc-risk" label={<><span>Automation · Invoice triage</span><span>Risk tier</span></>}>
   <div className="sc-dial">
@@ -154,10 +137,6 @@ const release = <Card className="sc-release" label={<><span>Release readiness</s
   <ul className="sc-checks">{["Functional QA", "Regression", "API testing", "Performance", "Security checks", "Accessibility", "Monitoring", "Rollback plan", "Client approval"].map((t, i) => <li key={t} className={i < 7 ? "done" : i === 7 ? "now" : ""} style={{ "--i": i } as CSSProperties}>{t}</li>)}</ul>
 </Card>;
 
-const wire = <Card className="sc-wire" label={<><span>Milestone 2 · Booking flow</span><span className="sc-chip sc-chip-ok">Client approved</span></>}>
-  <div className="sc-wire-frame"><i className="w1" /><i className="w2" /><i className="w3" /><i className="w4" /><i className="w5" /><i className="w6" /></div>
-</Card>;
-
 const chat = <Card className="sc-chat" label={<><span>WhatsApp · DigitalBurj</span><span className="sc-dot-live">online</span></>}>
   <p className="sc-msg me">Hello DigitalBurj 👋<br />Topic: Business AI<br />Goal: stop re-keying invoices</p>
   <p className="sc-msg">Thanks — reference DB-7Q2K. Can we see the process for 30 minutes this week?</p>
@@ -181,9 +160,6 @@ const ledger = <Card className="sc-ledger" label={<><span>Operating principles</
 
 const compositions: Record<SceneKey, { hue: Hue; tower?: "right" | "center" | "none"; body?: ReactNode | ((id: string) => ReactNode) }> = {
   homeHero: { hue: ["#e10613", "#2563eb"], tower: "right" },
-  cardAcademy: { hue: hueOf("academy"), tower: "none", body: id => <Seal id={id} code="DBC-7Q2K" /> },
-  cardStudio: { hue: hueOf("studio"), tower: "none", body: wire },
-  cardBusiness: { hue: hueOf("business"), tower: "none", body: metric },
   storyAcademy: { hue: hueOf("academy"), tower: "none", body: mission },
   storyStudio: { hue: hueOf("studio"), tower: "none", body: decision },
   storyBusiness: { hue: hueOf("business"), tower: "none", body: id => <ProcessMap id={id} /> },

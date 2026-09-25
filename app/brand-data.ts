@@ -7,9 +7,6 @@
 
 export const scenes = {
   homeHero: "Blueprint elevation of the tower DigitalBurj is named after",
-  cardAcademy: "Academy credential seal, independently verified",
-  cardStudio: "Studio milestone wireframe approved by the client",
-  cardBusiness: "Business AI metric: invoice handling cut from 12 to 3.2 hours a week",
   storyAcademy: "An assessed Academy mission with its rubric scores",
   storyStudio: "Studio validation decision scored on eight criteria",
   storyBusiness: "Business AI process map with a duplicate-entry leak highlighted",
