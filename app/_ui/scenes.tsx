@@ -91,6 +91,7 @@ function ProcessMap({ id }: { id: string }) {
   return <Card className="sc-process" label={<><span>Process map · Accounts payable</span><span className="sc-chip sc-chip-warn">1 leak found</span></>}>
     <svg viewBox="0 0 420 110" className="sc-process-svg">
       <path id={`${id}-flow`} d={path} className="sc-flow" />
+      {[0, 1, 2].map(i => <circle key={i} r="3.2" className="sc-packet"><animateMotion dur="4.8s" begin={`${i * 1.6}s`} repeatCount="indefinite"><mpath href={`#${id}-flow`} /></animateMotion></circle>)}
       {nodes.map(([x, y, t], i) => <g key={t} className={i === 1 ? "sc-node sc-leak" : "sc-node"}><circle cx={x} cy={y} r="11" /><text x={x} y={y + 30}>{t}</text></g>)}
     </svg>
     <div className="sc-kv"><span>Leak class</span><b>Duplicate data entry</b><span>Time lost</span><b>9.1 h / week · measured</b></div>
@@ -179,7 +180,7 @@ const ledger = <Card className="sc-ledger" label={<><span>Operating principles</
 /* ---------- Compositions: one per placement ---------- */
 
 const compositions: Record<SceneKey, { hue: Hue; tower?: "right" | "center" | "none"; body?: ReactNode | ((id: string) => ReactNode) }> = {
-  homeHero: { hue: ["#e10613", "#0f2233"], tower: "center" },
+  homeHero: { hue: ["#e10613", "#2563eb"], tower: "right" },
   cardAcademy: { hue: hueOf("academy"), tower: "none", body: id => <Seal id={id} code="DBC-7Q2K" /> },
   cardStudio: { hue: hueOf("studio"), tower: "none", body: wire },
   cardBusiness: { hue: hueOf("business"), tower: "none", body: metric },

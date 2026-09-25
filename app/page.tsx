@@ -1,138 +1,189 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { CSSProperties } from "react";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { BrandMark, type MarkName } from "./_ui/brand-mark";
+import { HeroSystem } from "./_ui/hero-system";
+import { PartnerShowcase } from "./_ui/partner-showcase";
 import { SiteHeader, SiteFooter } from "./site-shell";
-import { divisions, divisionBySlug, type SceneKey } from "./brand-data";
-import { academyCourses, academyStages } from "./academy-data";
+import { divisions, outcomes, divisionBySlug, type SceneKey } from "./brand-data";
 import { Scene } from "./_ui/scenes";
 import { Glyph, type GlyphName } from "./_ui/glyphs";
-import { Arrow, ChannelRow } from "./_ui/sections";
+import { academyCourses, academyStages } from "./academy-data";
+import { MagneticLink } from "./_ui/magnetic";
+import { ScrubText } from "./_ui/motion";
+import { Flywheel } from "./_ui/flywheel";
+import { SignatureLab } from "./_ui/signature-lab";
+import { ChannelStage } from "./_ui/channel-stage";
+import { Marquee, SectionHead } from "./_ui/sections";
 
-const engines: { d: "academy" | "studio" | "business"; scene: SceneKey; title: string; body: string; flow: string[]; cta: string; href: string }[] = [
-  { d: "academy", scene: "storyAcademy", title: "Learning that leaves evidence behind.", body: "Every Academy unit ends in practical work that a reviewer scores against a rubric. The strongest work is checked again by someone independent, and what passes becomes a credential anyone can verify.", flow: ["Mission", "Submit", "Review", "Verify", "Credential"], cta: "Explore the Academy", href: "/academy" },
-  { d: "studio", scene: "storyStudio", title: "We start with the problem, not the code.", body: "Before we build, we test the idea against eight questions — from real user need to who has the authority to decide. Then we recommend one of three things: build it, reshape it, or stop.", flow: ["Enquiry", "Discovery", "Decision", "Build", "Release"], cta: "How Studio works", href: "/studio" },
-  { d: "business", scene: "storyBusiness", title: "Fix the process first. Then automate it.", body: "We sit with the people who do the work, measure where time and money leak, and redesign the process. Only then do we automate — with a person approving anything that carries real risk.", flow: ["Observe", "Measure", "Redesign", "Approve", "Automate"], cta: "How Business AI works", href: "/business" },
+const cardScenes: Record<string, SceneKey> = { academy: "cardAcademy", studio: "cardStudio", business: "cardBusiness" };
+const storyScenes: SceneKey[] = ["storyAcademy", "storyStudio", "storyBusiness"];
+
+const stories = [
+  { d: "academy", quote: "Learning should produce capability and evidence, not just completion.", flow: ["Discover", "Mission", "Submit", "Review", "Assess", "Verify", "Evidence"] },
+  { d: "studio", quote: "We do not start with code. We start with the problem.", flow: ["Enquiry", "Discovery", "Validation", "Decision", "Engineering", "QA", "Deploy"] },
+  { d: "business", quote: "Automating the wrong process only makes the wrong process faster.", flow: ["Observe", "Diagnose", "Baseline", "Redesign", "Approve", "Automate", "Measure"] },
+] as const;
+const outcomeMarks: MarkName[] = ["academy", "studio", "business", "talent", "jobs", "contact"];
+
+const capabilities: { t: string; d: string; g: GlyphName; spec: string; hue: [string, string] }[] = [
+  { t: "Software & SaaS", d: "Web platforms, portals, marketplaces and internal systems.", g: "code", spec: "TypeScript · React · edge runtime", hue: ["#2563eb", "#22d3ee"] },
+  { t: "AI products", d: "Assistants, extraction, classification and decision support — evaluated and governed.", g: "ai", spec: "Evaluated · human approval for high risk", hue: ["#8b5cf6", "#ec4899"] },
+  { t: "Data & reporting", d: "Baselines, dashboards and before/after measurement.", g: "data", spec: "Measured vs estimated, always labelled", hue: ["#10b981", "#a3e635"] },
+  { t: "Cloud & reliability", d: "Deployment, monitoring, backup and rollback plans.", g: "cloud", spec: "Rollback plan with every release", hue: ["#0ea5e9", "#6366f1"] },
+  { t: "Enterprise systems", d: "CRM and ERP fit, configuration and data flows.", g: "enterprise", spec: "Fit before customisation", hue: ["#f59e0b", "#f97316"] },
+  { t: "Security", d: "Server-side authorization, tenant boundaries and audit trails.", g: "security", spec: "Every action checked and audited", hue: ["#e10613", "#f43f5e"] },
+  { t: "APIs & integrations", d: "Identity, payments and legacy systems connected cleanly.", g: "integrations", spec: "Scoped keys · signed webhooks", hue: ["#14b8a6", "#3b82f6"] },
 ];
 
-const beliefs = [
-  { t: "Validate before building", d: "An idea earns engineering time by passing a written decision: build, reshape or stop." },
-  { t: "Measure before and after", d: "Every improvement starts with a baseline, labelled measured or estimated, so results are honest." },
-  { t: "People approve what matters", d: "Automation that touches money, customers or compliance waits for a named person to approve it." },
-];
-
-// Each identity is shown as supplied, on the background colour of its own file.
-const partners = [
-  ["Resilianta", "resilianta.webp", "#fcfbf4"], ["Medina Bridge", "medina-bridge.webp", "#faf7ed"], ["HospyQ", "hospyq.webp", "#fffbf3"],
-  ["Attesora", "attesora.webp", "#f4ece3"], ["Procurazo", "procurazo.webp", "#fefefe"], ["Rootiva Herbal", "rootiva.webp", "#000000"],
-  ["The Imam Collective", "imam-collective.webp", "#000000"], ["VelozTrade", "veloztrade.webp", "#010610"], ["Loadbyton", "loadbyton.svg", "#ffffff"],
-];
-
-/** Plain <img>: already-sized thumbnails, so the next/image client runtime is not needed. */
-function Logo({ src, name }: { src: string; name: string }) {
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt={`${name} logo`} width={480} height={320} loading="lazy" decoding="async" />;
-}
-
+const principles = ["Problems before technology", "Practical capability over passive completion", "Evidence before claims", "Validate before major engineering", "Measure before and after transformation", "Human control for consequential automation", "One identity, contextual roles", "Shared infrastructure, bounded domains"];
+const disciplines = ["SaaS platforms", "AI agents & copilots", "Workflow automation", "Data pipelines", "Mobile apps", "APIs & integrations", "Cloud architecture", "Security reviews", "Design systems", "Quality engineering", "Practical missions", "Capability passports"];
 export default function Home() {
-  return <main className="site">
+  return <main className="public-site">
     <SiteHeader />
 
-    <section className="hero">
-      <div className="wrap hero-grid">
-        <div>
-          <span className="eyebrow">Technology company · Dubai</span>
-          <h1 className="display">We teach, build and fix the way work gets done.</h1>
-          <p className="lede">DigitalBurj brings practical education, product engineering and process improvement under one roof — so the skills people learn, the software we build and the operations we repair all pull in the same direction.</p>
-          <div className="actions">
-            <Link href="/get-started" className="btn btn-primary">Find your starting point <Arrow /></Link>
-            <Link href="/connect/whatsapp" className="btn btn-secondary">Talk to our team</Link>
+    {/* 01 — Cinematic hero */}
+    <section className="home-hero">
+      <div className="home-hero-backdrop"><Scene k="homeHero" /></div>
+      <div className="home-hero-shade" />
+      <div className="shell home-hero-grid">
+        <div className="home-hero-copy">
+          <span className="kicker kicker-glass beam"><i className="pulse" />DigitalBurj · Technology and opportunity</span>
+          <h1 className="mega">
+            <span className="mw" style={{ "--i": 0, "--a": "#93c5fd", "--b": "#7dd3fc" } as CSSProperties}>Learn.</span>{" "}
+            <span className="mw" style={{ "--i": 1, "--a": "#c4b5fd", "--b": "#a5b4fc" } as CSSProperties}>Build.</span>{" "}
+            <span className="mw mw-serif" style={{ "--i": 2, "--a": "#5eead4", "--b": "#86efac" } as CSSProperties}>Transform.</span>
+          </h1>
+          <p className="hero-lede">Learn by doing, build useful software, and improve the work that happens inside a business. Your progress can become evidence others can trust.</p>
+          <div className="hero-actions">
+            <MagneticLink href="/get-started">Find your path</MagneticLink>
+            <MagneticLink href="/connect/whatsapp" variant="glass">Chat on WhatsApp</MagneticLink>
           </div>
+          <div className="hero-meta"><span><b>{academyCourses.length}</b> Academy units</span><span><b>5</b> connected divisions</span><span><b>1</b> workspace</span></div>
         </div>
-        <figure>
-          <div className="figure figure-tall"><Scene k="homeHero" /></div>
-          <figcaption className="caption">Named after the tallest tower in the world. We build the same way: foundations first.</figcaption>
-        </figure>
+        <HeroSystem />
+      </div>
+      <a href="#statement" className="scroll-cue"><span className="scroll-mouse"><i /></span>Scroll to explore <ArrowDown size={15} /></a>
+    </section>
+
+    {/* 02 — Brand statement */}
+    <section id="statement" className="statement section">
+      <div className="shell">
+        <span className="kicker" data-reveal="up"><b>01</b>The idea</span>
+        <ScrubText className="statement-text" accent={["Academy", "Studio", "Business", "AI", "capability", "technology", "operations"]} text="At DigitalBurj, learning leads to practical work. Studio turns worthwhile ideas into software. Business AI helps teams repair a process before they automate it. Verified Talent makes capability visible, while Jobs gives people and employers a clearer way to connect." />
+        <div className="stat-row">
+          {[{ n: academyCourses.length, l: "Academy units in the catalogue", mark: "academy" }, { n: academyStages.length, l: "stages in every practical task", mark: "talent" }, { n: 7, l: "operational leak classes we diagnose", mark: "business" }, { n: 4, l: "risk tiers governing AI automation", mark: "security" }].map((s, i) => <div key={s.l} className="stat" data-reveal="up" style={{ "--i": i } as CSSProperties}><BrandMark name={s.mark as MarkName} className="stat-mark" /><strong data-count={s.n}>{s.n}</strong><span>{s.l}</span></div>)}
+        </div>
       </div>
     </section>
 
-    <section className="band-tight">
-      <div className="wrap">
-        <div className="row" style={{ justifyContent: "space-between", marginBottom: 16 }}>
-          <span className="eyebrow" style={{ margin: 0 }}>Five divisions, one company</span>
-          <Link href="/ecosystem" className="link small">How they connect <Arrow /></Link>
-        </div>
-        <nav className="index" aria-label="Divisions">
-          {divisions.map((d, i) => <Link key={d.slug} href={`/${d.slug}`} style={{ "--a": d.hue[0] } as CSSProperties} data-reveal>
-            <span className="n num">0{i + 1}</span><strong>{d.name}</strong><span className="d">{d.description}</span><Arrow />
+    {/* 03 — Divisions bento */}
+    <section className="section divisions-sec">
+      <div className="shell">
+        <SectionHead index="02" kicker="The ecosystem" title={<>Five paths. <em>One company.</em></>}><p>Five connected teams, each with a clear job. Start with the one that matches what you need today.</p></SectionHead>
+        <div className="bento">
+          {divisions.slice(0, 3).map((d, i) => <Link key={d.slug} href={`/${d.slug}`} className={`bcard bcard-${d.slug}`} data-spotlight data-tilt data-reveal="up" style={{ "--i": i, "--a": d.hue[0], "--b": d.hue[1] } as CSSProperties}>
+            <span className="bcard-scene"><Scene k={cardScenes[d.slug]} /></span>
+            <span className="bcard-shade" />
+            <span className="bcard-top"><span className="bcard-tag">0{i + 1} · {d.verb}</span><span className="orb"><ArrowUpRight size={20} /></span></span>
+            <span className="bcard-body"><span className="bcard-division-lockup"><Image src="/brand/digitalburj-wordmark-approved.webp" alt="" width={2048} height={512} unoptimized /><b>{d.name}</b></span><strong>{d.name}</strong><em>{d.tagline}</em><small>{d.description}</small></span>
           </Link>)}
-        </nav>
-      </div>
-    </section>
-
-    <section className="band band-sand">
-      <div className="wrap split">
-        <div data-reveal><span className="eyebrow">Why we exist</span><h2 className="h2">Most technology projects go wrong before anyone writes a line of code.</h2></div>
-        <div className="prose lede" data-reveal>
-          <p>They start with a tool instead of a problem. They automate a process nobody has looked at closely. They hire on a CV instead of evidence of what someone can actually do.</p>
-          <p>We built DigitalBurj to work the other way round. Learn by doing real work. Build only what has earned it. Improve the process, measure it, and then automate it. Keep people in charge of the decisions that matter.</p>
-          <p className="muted small">— The DigitalBurj team, Dubai</p>
-        </div>
-      </div>
-    </section>
-
-    {engines.map((e, i) => { const d = divisionBySlug[e.d]; return <section key={e.d} className="band band-rule" style={{ "--a": d.hue[0], "--b": d.hue[1] } as CSSProperties}>
-      <div className="wrap split-even split engine" data-flip={i % 2 === 1 ? "" : undefined}>
-        <div className="figure" data-reveal><Scene k={e.scene} /></div>
-        <div data-reveal>
-          <span className="accent-bar" aria-hidden="true" />
-          <span className="eyebrow">{d.name}</span>
-          <h2 className="h2">{e.title}</h2>
-          <p className="lede" style={{ marginTop: 18 }}>{e.body}</p>
-          <ol className="steps" style={{ marginTop: 28 }}>{e.flow.map((f, j) => <li key={f}><small className="num">Step {j + 1}</small><strong>{f}</strong></li>)}</ol>
-          <div className="actions"><Link href={e.href} className="link">{e.cta} <Arrow /></Link></div>
-        </div>
-      </div>
-    </section>; })}
-
-    <section className="band band-rule">
-      <div className="wrap">
-        <div className="sec-head"><div data-reveal><span className="eyebrow">Connected to the work</span><h2 className="h2">Capability that is shown, not claimed.</h2></div><p className="sec-head-aside" data-reveal>Credentials earned in the Academy feed a profile the owner controls, and verified employers hire from it through a clear, structured process.</p></div>
-        <div className="cols cols-2">
-          {(["talent", "jobs"] as const).map(s => { const d = divisionBySlug[s]; return <Link key={s} href={`/${s}`} className="card card-accent" style={{ "--a": d.hue[0] } as CSSProperties} data-reveal>
-            <div className="card-top"><Glyph name={s as GlyphName} tile size={40} /><Arrow /></div>
-            <h3 className="h3">{d.name}</h3><p>{d.description}</p><p className="muted small" style={{ marginTop: 10 }}>{d.tagline}</p>
+          {divisions.slice(3).map((d, i) => { return <Link key={d.slug} href={`/${d.slug}`} className="bcard bcard-slim" data-reveal="up" style={{ "--i": i + 3, "--a": d.hue[0], "--b": d.hue[1] } as CSSProperties}>
+            <BrandMark name={d.slug as MarkName} className="bcard-symbol-mark" lockup />
+            <span className="bcard-top"><span className="bcard-tag">0{i + 4} · {d.verb}</span><span className="orb"><ArrowUpRight size={20} /></span></span>
+            <span className="bcard-body"><strong>{d.name}</strong><em>{d.tagline}</em></span>
           </Link>; })}
         </div>
       </div>
     </section>
 
-    <section className="band band-ink">
-      <div className="wrap">
-        <div className="sec-head"><div data-reveal><span className="eyebrow">Built on structure</span><h2 className="h2">The numbers behind the method.</h2></div><p className="sec-head-aside muted" data-reveal>Not vanity metrics — the building blocks every learner, client and team works with.</p></div>
-        <div className="facts">
-          {[[academyCourses.length, "Academy units in the catalogue"], [academyStages.length, "stages in every practical task"], [7, "kinds of operational leak we diagnose"], [4, "risk tiers that decide who approves automation"]].map(([n, l]) => <div key={l} data-reveal><strong className="num">{n}</strong><span>{l}</span></div>)}
+    {/* 04 — Flywheel */}
+    <section className="section dark-sec flywheel-sec">
+      <div className="shell flywheel-grid">
+        <SectionHead light index="03" kicker="The connected ecosystem" title={<>The work <em>stays connected.</em></>}><p>A learner can build assessed work, share it with consent and pursue an opportunity. A business can take a problem from diagnosis through design and delivery without losing the context.</p><Link href="/ecosystem" className="link-arrow">How it connects <ArrowUpRight size={16} /></Link></SectionHead>
+        <Flywheel />
+      </div>
+    </section>
+
+    {/* 05 — Sticky storytelling */}
+    <section className="story" data-sticky-story="3">
+      <div className="story-sticky">
+        <div className="story-media">
+          {stories.map((s, i) => { return <div key={s.d} className="story-img story-scene" data-idx={i} style={{ "--a": divisionBySlug[s.d].hue[0] } as CSSProperties}><Scene k={storyScenes[i]} /><span className="story-scene-tag">0{i + 1} / {divisionBySlug[s.d].name}</span></div>; })}
+          <div className="story-media-shade" />
+          <div className="story-counter"><span className="story-bar" /><span className="story-dots">{stories.map((s, i) => <i key={s.d} data-idx={i} />)}</span></div>
+        </div>
+      </div>
+      <div className="story-chapters">
+        {stories.map((s, i) => { const d = divisionBySlug[s.d]; return <article key={s.d} className="chapter" style={{ "--a": d.hue[0], "--b": d.hue[1] } as CSSProperties}>
+          <span className="kicker"><b>0{i + 4}</b>{d.name} story</span>
+          <blockquote>“{s.quote}”</blockquote>
+          <ol className="flow-chips">{s.flow.map((f, j) => <li key={f} style={{ "--i": j } as CSSProperties}>{f}</li>)}</ol>
+          <Link href={`/${d.slug}`} className="link-arrow">Explore {d.name} <ArrowUpRight size={16} /></Link>
+        </article>; })}
+      </div>
+    </section>
+
+    {/* 06 — Signature decisions */}
+    <section className="section lab-sec">
+      <div className="shell">
+        <SectionHead index="07" kicker="How we decide" title={<>Decisions behind <em>the work.</em></>}><p>Validate before building. Diagnose before automating. Keep humans responsible for consequential decisions.</p></SectionHead>
+        <div data-reveal="scale"><SignatureLab /></div>
+      </div>
+    </section>
+
+    {/* 07 — Technology bento */}
+    <section className="section dark-sec tech-sec">
+      <div className="shell">
+        <SectionHead light index="08" kicker="Technology capabilities" title={<>Engineered for <em>real use.</em></>}><p>Software, AI, data, cloud, enterprise, security and integrations — applied where they change an outcome.</p><Link href="/technology" className="link-arrow">Technology at DigitalBurj <ArrowUpRight size={16} /></Link></SectionHead>
+        <div className="tech-lanes">
+          {capabilities.map((c, i) => <article key={c.t} className="tech-lane" data-reveal="up" style={{ "--i": i, "--a": c.hue[0] } as CSSProperties}>
+            <div className="tech-lane-head"><span>{String(i + 1).padStart(2, "0")} / 07</span><h3>{c.t}</h3><p>{c.d}</p></div>
+            <div className="tech-lane-media tech-lane-glyph" style={{ "--b": c.hue[1] } as CSSProperties}><Glyph name={c.g} size={i === 0 ? 132 : 96} /><span className="tech-lane-spec">{c.spec}</span><span className="tech-lane-scan" /></div>
+          </article>)}
         </div>
       </div>
     </section>
 
-    <section className="band">
-      <div className="wrap">
-        <div className="sec-head"><div data-reveal><span className="eyebrow">How we decide</span><h2 className="h2">Three rules we do not bend.</h2></div></div>
-        <div className="cols cols-3">
-          {beliefs.map((b, i) => <div key={b.t} className="rule-col" data-reveal><span className="num muted small">0{i + 1}</span><h3 className="h3">{b.t}</h3><p>{b.d}</p></div>)}
+    {/* 08 — Channels: web app, mobile app, WhatsApp */}
+    <section className="section channels-sec" id="channels">
+      <div className="shell">
+        <SectionHead index="09" kicker="Web app · Mobile app · WhatsApp" title={<>Start where you <em>already are.</em></>}><p>Three channels, one account and one record of progress. The conversation shown is illustrative.</p></SectionHead>
+        <div data-reveal="up"><ChannelStage /></div>
+      </div>
+    </section>
+
+    {/* 09 — Outcome router */}
+    <section className="section router-sec">
+      <div className="shell">
+        <SectionHead index="10" kicker="Outcome router" title={<>What do you <em>need to happen?</em></>}><Link href="/get-started" className="link-arrow">Open the full path finder <ArrowUpRight size={16} /></Link></SectionHead>
+        <div className="router">
+          {outcomes.map((o, i) => { const d = divisionBySlug[o.division]; return <Link key={o.id} href={o.href} className="route" data-reveal="up" style={{ "--i": i, "--a": d.hue[0], "--b": d.hue[1] } as CSSProperties}>
+            <BrandMark name={outcomeMarks[i]} className="route-mark" />
+            <span className="route-n">{String(i + 1).padStart(2, "0")}</span>
+            <strong>{o.label}</strong>
+            <small>{o.detail}</small>
+            <span className="route-cta">{o.action} <ArrowUpRight size={15} /></span>
+          </Link>; })}
         </div>
       </div>
     </section>
 
-    <section className="band band-rule">
-      <div className="wrap">
-        <div className="sec-head"><div data-reveal><span className="eyebrow">Completed work</span><h2 className="h2">Brands we have helped put into the world.</h2></div><p className="sec-head-aside" data-reveal>Identities from completed projects and partnerships, shown as supplied.</p></div>
-        <ul className="logos" style={{ padding: 0 }}>
-          {partners.map(([name, file, bg]) => <li key={name} title={name} style={{ background: bg }}><Logo src={`/brand/partners/thumbs/${file}`} name={name} /></li>)}
-        </ul>
-      </div>
+    {/* 10 — Principles */}
+    <section className="principles-sec" aria-label="Operating principles">
+      <Marquee items={principles} className="marquee-xl" />
+      <Marquee items={disciplines.slice().reverse()} reverse className="marquee-sm" />
     </section>
 
-    <ChannelRow title="Start in the way that suits you." />
+    {/* Completed project identities supplied by DigitalBurj. */}
+    <section className="section ventures-sec">
+      <div className="shell">
+        <SectionHead index="11" kicker="Completed work · Brand partners" title={<>Work we have <em>put into the world.</em></>}><p>These are identities from completed DigitalBurj projects and brand partnerships. Each mark belongs to its own story; together, they show the range of people and businesses we have worked with.</p></SectionHead>
+      </div>
+      <PartnerShowcase />
+    </section>
+
     <SiteFooter />
   </main>;
 }

@@ -1,21 +1,4 @@
 import Link from "next/link";
-import { SiteHeader, SiteFooter } from "../../site-shell";
-
-const tools = [["Canva", "Create a clear evidence board for a mission.", "https://www.canva.com"], ["Spreadsheet template", "Prepare fictional records and a test log.", null], ["Figma", "Sketch a learner or customer journey.", null], ["GitHub", "Document decisions and test evidence.", null]] as const;
-const labs = ["Virtual office", "Accounting", "Freight forwarding", "Real estate", "HR", "Banking operations", "Insurance operations", "Document processing", "Procurement", "Customer service"];
-
-export default function Tools() {
-  return <main className="site">
-    <SiteHeader />
-    <section className="page-hero"><div className="wrap">
-      <nav className="crumb" aria-label="Breadcrumb"><Link href="/academy">Academy</Link><span>/</span><span>Tool library</span></nav>
-      <h1 className="h1">Tool library</h1>
-      <p className="lede">The right tool for each practical task. External tools have their own accounts and privacy terms; listing one here does not mean it is integrated.</p>
-    </div></section>
-    <section className="band-tight"><div className="wrap">
-      <div className="cols cols-2">{tools.map(([name, description, url]) => <article key={name} className="card"><h2 className="h3">{name}</h2><p>{description}</p>{url ? <a href={url} target="_blank" rel="noopener noreferrer" className="link" style={{ marginTop: 14 }}>Open {name} ↗</a> : <p className="small muted" style={{ marginTop: 14 }}>Set up by your reviewer when a mission needs it.</p>}</article>)}</div>
-      <div className="card" style={{ marginTop: 28 }}><h2 className="h3">Simulation labs with fictional data</h2><p>On the curriculum roadmap; not live integrations yet.</p><div className="tags" style={{ marginTop: 16 }}>{labs.map(l => <span key={l} className="tag">{l}</span>)}</div></div>
-    </div></section>
-    <SiteFooter />
-  </main>;
-}
+const tools=[["Canva","Create a clear evidence board for a mission.","https://www.canva.com"],["Spreadsheet template","Prepare fictional records and a test log.",null],["Figma","Sketch a learner or customer journey.",null],["GitHub","Document decisions and test evidence.",null]];
+const labs=["Virtual Office","Accounting","Freight Forwarding","Real Estate","HR","Banking Operations","Insurance Operations","Document Processing","Procurement","Customer Service"];
+export default function Tools(){return <main className="min-h-screen bg-[#f3f5f7] text-[#102b4c]"><header className="border-b border-[#d6dfe7] bg-white px-6 py-5"><div className="mx-auto flex max-w-6xl justify-between gap-5"><Link href="/academy" className="font-bold text-[#d10b1a]">← Academy</Link><Link href="/workspace/academy" className="font-bold text-[#d10b1a]">My Learning →</Link></div></header><div className="mx-auto max-w-6xl px-6 py-12"><h1 className="font-[Georgia] text-4xl font-semibold">Tool Library</h1><p className="mt-4 max-w-3xl leading-7 text-[#61717a]">Choose the right tool for a practical task. External tools have their own accounts, privacy terms and access requirements; no integration is implied.</p><div className="mt-8 grid gap-4 md:grid-cols-2">{tools.map(([name,description,url])=><article key={name} className="rounded-2xl border border-[#d6dfe7] bg-white p-6"><h2 className="font-[Georgia] text-2xl font-semibold">{name}</h2><p className="mt-3 text-[#61717a]">{description}</p>{url ? <a href={url} target="_blank" rel="noopener noreferrer" className="mt-5 inline-block rounded-lg bg-[#d10b1a] px-4 py-2 font-bold text-white">Open tool ↗</a> : <span className="mt-5 inline-block rounded-lg bg-[#e9eef2] px-4 py-2 text-sm font-bold text-[#61717a]">Setup required</span>}</article>)}</div><section className="mt-9 rounded-2xl border border-[#d6dfe7] bg-white p-6"><h2 className="font-[Georgia] text-2xl font-semibold">Fictional-data simulation labs</h2><p className="mt-3 text-[#61717a]">These labs are on the curriculum roadmap and are not live integrations.</p><div className="mt-5 flex flex-wrap gap-2">{labs.map(l=><span key={l} className="rounded-full border border-[#b8c9d7] px-4 py-2 text-sm font-bold text-[#d10b1a]">{l}</span>)}</div></section></div></main>}

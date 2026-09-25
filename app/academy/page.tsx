@@ -1,10 +1,13 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { ArrowUpRight } from "lucide-react";
 import { academyCourses, academyStages } from "../academy-data";
+import { BrandMark } from "../_ui/brand-mark";
 import { SiteHeader, SiteFooter } from "../site-shell";
 import { divisionBySlug } from "../brand-data";
 import { Scene } from "../_ui/scenes";
-import { Arrow, ChannelRow, PageHero, SectionHead } from "../_ui/sections";
+import { MagneticLink } from "../_ui/magnetic";
+import { ChannelRow, PageHero, SectionHead } from "../_ui/sections";
 
 const d = divisionBySlug.academy;
 const featuredCodes = ["DB-00", "DB-01", "DB-02", "DB-03", "DB-04", "PC-AD01", "PC-AC01", "PC-LG01"];
@@ -26,63 +29,69 @@ const layers = [
 const states = ["Not started", "In progress", "Submitted", "Under review", "Revision required", "Resubmitted", "Passed", "Verification pending", "Verified"];
 
 export default function Academy() {
-  return <main className="site" style={{ "--a": d.hue[0], "--b": d.hue[1] } as CSSProperties}>
+  return <main className="public-site" style={{ "--a": d.hue[0], "--b": d.hue[1] } as CSSProperties}>
     <SiteHeader />
-    <PageHero kicker="DigitalBurj Academy" title={<>Learn it. Apply it. <em>Prove it.</em></>} intro="Choose a unit, do real practical work and get honest feedback on what you can actually do. The evidence stays in your own profile." scene="heroAcademy" hue={d.hue}>
-      <Link href="/academy/catalogue" className="btn btn-primary">Explore the catalogue <Arrow /></Link>
-      <Link href="/workspace/academy" className="btn btn-secondary">My learning</Link>
+    <PageHero kicker={`DigitalBurj Academy · ${d.domain}`} title={<>Learn it. Apply it. <em>Prove it.</em></>} intro="Choose a unit, complete practical work and get feedback on what you can actually do. Keep the resulting evidence in your own profile." scene="heroAcademy" hue={d.hue}>
+      <MagneticLink href="/academy/catalogue">Explore the catalogue</MagneticLink>
+      <MagneticLink href="/workspace/academy" variant="glass">My learning</MagneticLink>
     </PageHero>
 
-    <section className="band">
-      <div className="wrap">
-        <SectionHead kicker="Choose your direction" title="Four ways in."><p>Whether you are starting a career, deepening a specialism or training a whole team.</p></SectionHead>
-        <div className="cols cols-4">
-          {directions.map((x, i) => <Link key={x.t} href="/academy/catalogue" className="card card-accent" style={{ "--a": x.hue[0] } as CSSProperties} data-reveal>
-            <span className="num muted small">0{i + 1}</span>
-            <h3 className="h3" style={{ marginTop: 10 }}>{x.t}</h3><p>{x.d}</p>
+    <section className="section">
+      <div className="shell">
+        <SectionHead index="01" kicker="Choose your direction" title={<>Four ways <em>in.</em></>}><p>Whether you are starting a career, deepening a specialism or training a whole team.</p></SectionHead>
+        <div className="directions">
+          {directions.map((x, i) => { return <Link key={x.t} href="/academy/catalogue" className="direction" data-reveal="up" style={{ "--i": i, "--a": x.hue[0], "--b": x.hue[1] } as CSSProperties}>
+            <BrandMark name={(["studio", "jobs", "academy", "business"] as const)[i]} className="direction-mark" />
+            <span className="direction-n">0{i + 1}</span>
+            <strong>{x.t}</strong><small>{x.d}</small>
+            <span className="orb"><ArrowUpRight size={18} /></span>
+          </Link>; })}
+        </div>
+      </div>
+    </section>
+
+    <section className="section dark-sec">
+      <div className="shell">
+        <SectionHead light index="02" kicker="The mission model" title={<>The work is <em>the lesson.</em></>}><p>Every practical task moves through twelve stages — from the brief to evidence you can defend.</p><Link href="/academy/tools" className="link-arrow">Explore the tool library <ArrowUpRight size={16} /></Link></SectionHead>
+        <ol className="stage-rail">
+          {academyStages.map((s, i) => <li key={s} data-reveal="up" style={{ "--i": i % 6, "--h": `${200 + i * 3}` } as CSSProperties}><span>{String(i + 1).padStart(2, "0")}</span><strong>{s}</strong></li>)}
+        </ol>
+      </div>
+    </section>
+
+    <section className="split-feature">
+      <div className="split-scene"><Scene k="academyReview" /></div>
+      <div className="split-copy">
+        <span className="kicker" data-reveal="up"><b>03</b>Assessment model</span>
+        <h2 className="display" data-reveal="up">Evidence, <em>layer by layer.</em></h2>
+        <ol className="layers">{layers.map(([t, s], i) => <li key={t} data-reveal="left" style={{ "--i": i } as CSSProperties}><span>{i + 1}</span><div><strong>{t}</strong><small>{s}</small></div></li>)}</ol>
+      </div>
+    </section>
+
+    <section className="section tinted-sec">
+      <div className="shell">
+        <SectionHead index="04" kicker="The catalogue" title={<>Find your <em>starting point.</em></>}><Link href="/academy/catalogue" className="link-arrow">View all {academyCourses.length} units <ArrowUpRight size={16} /></Link></SectionHead>
+        <div className="course-grid">
+          {featured.map((c, i) => <Link key={c.code} href={`/academy/catalogue?course=${c.code}`} className="gcard course" data-spotlight data-reveal="up" style={{ "--i": i % 4 } as CSSProperties}>
+            <div className="gcard-index"><BrandMark name="academy" className="gcard-mark" /><span>{c.code}</span></div>
+            <div className="gcard-body"><h3>{c.title}</h3><p>{c.family} · Level {c.level.replace("L", "")} · {c.hours} proposed hours</p><span className={`maturity m-${c.maturity.toLowerCase()}`}>{c.maturity}</span></div>
           </Link>)}
         </div>
       </div>
     </section>
 
-    <section className="band band-ink">
-      <div className="wrap">
-        <SectionHead kicker="The mission model" title="The work is the lesson."><p>Every practical task moves through twelve stages, from the brief to evidence you can defend.</p><p style={{ marginTop: 12 }}><Link href="/academy/tools" className="link">Explore the tool library <Arrow /></Link></p></SectionHead>
-        <ol className="steps steps-wrap">{academyStages.map((st, i) => <li key={st} data-reveal><small className="num">{String(i + 1).padStart(2, "0")}</small><strong>{st.charAt(0) + st.slice(1).toLowerCase()}</strong></li>)}</ol>
-      </div>
-    </section>
-
-    <section className="band">
-      <div className="wrap split-even split">
-        <div className="figure figure-tall" data-reveal><Scene k="academyReview" /></div>
-        <div data-reveal>
-          <span className="eyebrow">Assessment model</span>
-          <h2 className="h2">Evidence, layer by layer.</h2>
-          <ol className="entries" style={{ marginTop: 28 }}>{layers.map(([t, sub], i) => <li key={t}><span className="n num">0{i + 1}</span><div><h3 className="h3">{t}</h3><p>{sub}</p></div></li>)}</ol>
+    <section className="section">
+      <div className="shell mosaic">
+        <div className="mosaic-copy" data-reveal="up">
+          <span className="kicker"><b>05</b>Assessment states</span>
+          <h2 className="display">Honest <em>progress.</em></h2>
+          <p>A draft is not a credential. Every piece of work carries a visible state, and only an independent process can mark it verified.</p>
+          <div className="state-chips">{states.map((s, i) => <span key={s} className={i === states.length - 1 ? "on" : ""}>{s}</span>)}</div>
         </div>
       </div>
     </section>
 
-    <section className="band band-sand">
-      <div className="wrap">
-        <SectionHead kicker="The catalogue" title="Find your starting point."><Link href="/academy/catalogue" className="link">View all {academyCourses.length} units <Arrow /></Link></SectionHead>
-        <div className="cols cols-4">
-          {featured.map(c => <Link key={c.code} href={`/academy/catalogue?course=${c.code}`} className="card" data-reveal>
-            <div className="card-top"><span className="small num" style={{ fontWeight: 600, color: "var(--red-text)" }}>{c.code}</span><span className="pill">{c.maturity}</span></div>
-            <h3 className="h3">{c.title}</h3><p className="small muted" style={{ marginTop: 8 }}>{c.family} · Level {c.level.replace("L", "")} · {c.hours} hours</p>
-          </Link>)}
-        </div>
-      </div>
-    </section>
-
-    <section className="band">
-      <div className="wrap split">
-        <div data-reveal><span className="eyebrow">Assessment states</span><h2 className="h2">Honest progress.</h2><p className="lede" style={{ marginTop: 16 }}>A draft is not a credential. Every piece of work carries a visible state, and only an independent reviewer can mark it verified.</p></div>
-        <div className="tags" data-reveal style={{ alignSelf: "center" }}>{states.map((st, i) => <span key={st} className={i === states.length - 1 ? "tag tag-on" : "tag"}>{st}</span>)}</div>
-      </div>
-    </section>
-
-    <ChannelRow topic="academy" title="Start learning in the way that suits you." />
+    <ChannelRow topic="academy" title="Start learning on the channel that suits you." />
     <SiteFooter />
   </main>;
 }
