@@ -246,6 +246,20 @@
 .js .scene.rv:not(.in) .sc-ledger li { opacity: 0; transform: translateY(6px); }
 
 /* ---------- Placements ---------- */
+.cinematic-image { position: absolute; inset: 0; z-index: -4; overflow: hidden; pointer-events: none; background: #081320; }
+.cinematic-image img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center; animation: cinematic-arrival 1.5s cubic-bezier(.19,1,.22,1) both; }
+.home-hero > .cinematic-image img { object-position: 65% center; }
+.page-hero > .cinematic-image img { object-position: 60% center; }
+.home-hero-backdrop .scene, .page-hero-scene .scene { background: transparent; }
+.home-hero-backdrop .sc-grid, .page-hero-scene .sc-grid { opacity: .55; }
+.home-hero-backdrop .sc-glow, .page-hero-scene .sc-glow { opacity: .35; }
+.home-hero-shade { background: linear-gradient(90deg, #081320f5 0%, #081320ca 42%, #08132058 75%, #08132077 100%), linear-gradient(0deg, #081320e0 0%, transparent 45%); }
+.page-hero-shade, .page-hero-has-scene .page-hero-shade { background: linear-gradient(90deg, #081320f5 0%, #081320d7 42%, #0813205c 80%), linear-gradient(0deg, #081320e8 0%, transparent 50%); }
+.home-hero-grid, .page-hero-inner { animation: cinematic-copy .85s cubic-bezier(.19,1,.22,1) both; }
+@keyframes cinematic-arrival { from { opacity: .3; transform: scale(1.055); filter: brightness(.7); } to { opacity: 1; transform: scale(1); filter: brightness(1); } }
+@keyframes cinematic-copy { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 900px) { .page-hero-shade, .page-hero-has-scene .page-hero-shade { background: linear-gradient(0deg, #081320 0%, #081320f2 44%, #08132077 100%); } }
+@media (prefers-reduced-motion: reduce) { .cinematic-image img, .home-hero-grid, .page-hero-inner { animation: none; } }
 .home-hero-backdrop { position: absolute; inset: 0; z-index: -3; overflow: hidden; }
 .home-hero-backdrop .sc-tower { right: 43%; height: 90%; }
 .home-hero-backdrop .sc-tower-line { stroke: #ffffff6b; fill: color-mix(in srgb, var(--a) 10%, transparent); }
@@ -320,3 +334,12 @@
   .bcard-scene .sc-seal { width: min(46%, 180px); }
 }
 .sc-glow { will-change: transform, opacity; }
+
+/* Final hero art direction, after placement and mobile-specific scene rules. */
+.home-hero > .cinematic-image, .page-hero > .cinematic-image { z-index: -4; }
+.home-hero-backdrop .scene, .page-hero-scene .scene { background: transparent; }
+.home-hero .home-hero-shade { background: linear-gradient(90deg, #081320f5 0%, #081320ca 42%, #08132058 75%, #08132077 100%), linear-gradient(0deg, #081320e0 0%, transparent 45%); }
+.page-hero .page-hero-shade { background: linear-gradient(90deg, #081320f5 0%, #081320d7 42%, #0813205c 80%), linear-gradient(0deg, #081320e8 0%, transparent 50%); }
+@media (max-width: 900px) {
+  .home-hero .home-hero-shade, .page-hero .page-hero-shade { background: linear-gradient(0deg, #081320 0%, #081320f2 45%, #08132082 100%); }
+}

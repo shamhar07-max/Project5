@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { BrandMark, type MarkName } from "./_ui/brand-mark";
 import { HeroSystem } from "./_ui/hero-system";
+import { HeroImage } from "./_ui/hero-image";
 import { PartnerShowcase } from "./_ui/partner-showcase";
 import { SiteHeader, SiteFooter } from "./site-shell";
 import { divisions, outcomes, divisionBySlug, type SceneKey } from "./brand-data";
@@ -45,6 +46,7 @@ export default function Home() {
 
     {/* 01 — Cinematic hero */}
     <section className="home-hero">
+      <HeroImage />
       <div className="home-hero-backdrop"><Scene k="homeHero" /></div>
       <div className="home-hero-shade" />
       <div className="shell home-hero-grid">
