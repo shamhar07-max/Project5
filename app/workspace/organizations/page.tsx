@@ -1,15 +1,17 @@
-import Link from "next/link";
 import { cookies } from "next/headers";
-import { and, eq, inArray } from "drizzle-orm";
-import { requireChatGPTUser } from "../../chatgpt-auth";
+import { eq, inArray } from "drizzle-orm";
 import { getDb } from "../../../db";
-import { organizations, memberships } from "../../../db/schema";
-import { createOrganization, inviteMember, acceptInvitation, switchOrganization } from "./actions";
+import { employerVerifications, memberships, organizations } from "../../../db/schema";
+import { AppShell, Btn, Chip, Empty, Field, PageHead, Panel } from "../../_app/kit";
+import { loadApp } from "../../_app/shell";
+import { can, ORG_ROLES } from "../../../lib/platform";
+import { acceptInvitation, changeRole, createOrganization, inviteMember, removeMember, requestEmployerVerification, switchOrganization } from "./actions";
 
 export const dynamic = "force-dynamic";
 
 export default async function OrganizationsPage() {
-  const user = await requireChatGPTUser("/workspace/organizations");
+  const { ctx, info } = await loadApp();
+  const user = ctx.user;
   const db = getDb();
   const mine = await db.select().from(memberships).where(eq(memberships.email, user.email.toLowerCase()));
   const active = mine.filter(m => m.status === "active" && m.userId === user.userId);
@@ -17,11 +19,40 @@ export default async function OrganizationsPage() {
   const orgs = mine.length ? await db.select().from(organizations).where(inArray(organizations.id, mine.map(m => m.orgId))) : [];
   const selectedId = (await cookies()).get("db_org")?.value;
   const selected = active.find(m => m.orgId === selectedId);
-  const members = selected ? await db.select().from(memberships).where(eq(memberships.orgId, selected.orgId)) : [];
-  return <main className="min-h-screen bg-[#f2f5f7] text-[#10273c]"><header className="bg-[#10273c] px-6 py-5 text-white"><div className="mx-auto flex max-w-5xl items-center justify-between"><Link href="/workspace" className="font-bold">← Workspace</Link><span className="font-extrabold">DIGITAL<span className="text-[#ff555b]">BURJ</span></span></div></header><div className="mx-auto max-w-5xl px-6 py-12"><p className="text-sm font-bold uppercase tracking-[.16em] text-[#e31b23]">Account context</p><h1 className="mt-2 text-4xl font-bold">Organizations</h1><p className="mt-3 text-[#52677a]">Work as an individual or switch to an organization you belong to.</p>
-    <section className="mt-9 grid gap-4 md:grid-cols-2"><form action={switchOrganization} className="border border-[#d7e0e7] bg-white p-6"><h2 className="text-xl font-bold">Individual workspace</h2><p className="mt-2 text-[#52677a]">Your personal goals and records.</p><input type="hidden" name="orgId" value=""/><button className="mt-5 bg-[#10273c] px-5 py-3 font-bold text-white">{!selected ? "Current context" : "Switch to individual"}</button></form>{active.map(m => { const org = orgs.find(o => o.id === m.orgId); return <form action={switchOrganization} key={m.id} className="border border-[#d7e0e7] bg-white p-6"><h2 className="text-xl font-bold">{org?.name || "Organization"}</h2><p className="mt-2 capitalize text-[#52677a]">{m.role.replace("_", " ")}</p><input type="hidden" name="orgId" value={m.orgId}/><button className="mt-5 bg-[#10273c] px-5 py-3 font-bold text-white">{selected?.orgId === m.orgId ? "Current context" : "Switch to organization"}</button></form> })}</section>
-    {!!invites.length && <section className="mt-10"><h2 className="text-2xl font-bold">Invitations</h2><div className="mt-4 space-y-3">{invites.map(m=><form action={acceptInvitation} key={m.id} className="flex flex-wrap items-center justify-between gap-4 border border-[#d7e0e7] bg-white p-5"><span>{orgs.find(o=>o.id===m.orgId)?.name} invited you as a member</span><input type="hidden" name="id" value={m.id}/><button className="font-bold text-[#a91620]">Accept invitation</button></form>)}</div></section>}
-    {selected?.role === "org_owner" && <section className="mt-10 border border-[#d7e0e7] bg-white p-6"><h2 className="text-2xl font-bold">Members</h2><div className="mt-4 space-y-2">{members.map(m=><p key={m.id} className="flex justify-between border-b border-[#e3e9ed] py-2"><span>{m.email}</span><span className="capitalize text-[#52677a]">{m.status} · {m.role.replace("_"," ")}</span></p>)}</div><form action={inviteMember} className="mt-7 flex flex-wrap gap-3"><input type="hidden" name="orgId" value={selected.orgId}/><label className="flex-1 text-sm font-bold">Invite a member<input name="email" type="email" required placeholder="colleague@example.com" className="mt-2 block w-full border border-[#b9cad5] p-3 font-normal"/></label><button className="self-end bg-[#10273c] px-5 py-3 font-bold text-white">Create invitation</button></form><p className="mt-3 text-sm text-[#52677a]">The person can accept after they have access to this private site and sign in with the same email. Email delivery is not connected yet.</p></section>}
-    <section className="mt-10 border border-[#d7e0e7] bg-white p-6"><h2 className="text-2xl font-bold">Create an organization</h2><p className="mt-2 text-[#52677a]">You will be its owner. Business verification and paid seats are not enabled yet.</p><form action={createOrganization} className="mt-5 flex flex-wrap gap-3"><label className="flex-1 text-sm font-bold">Organization name<input name="name" required minLength={2} maxLength={100} className="mt-2 block w-full border border-[#b9cad5] p-3 font-normal"/></label><button className="self-end bg-[#10273c] px-5 py-3 font-bold text-white">Create organization</button></form></section>
-  </div></main>;
+  const manage = selected ? can(selected.role, "org.manage") : false;
+  const [members, verification] = selected ? await Promise.all([
+    db.select().from(memberships).where(eq(memberships.orgId, selected.orgId)),
+    db.select().from(employerVerifications).where(eq(employerVerifications.orgId, selected.orgId)).get(),
+  ]) : [[], undefined];
+  const assignable = Object.entries(ORG_ROLES).filter(([k]) => k !== "org_owner" && (k !== "admin" || selected?.role === "org_owner"));
+  return <AppShell info={info} active="organizations">
+    <PageHead kicker="Identity & organizations" title="Organizations" lede="Work as an individual or inside an organization. Switching context changes which records you can see and change everywhere." />
+    {invites.length > 0 && <Panel title="Invitations" tone="info">{invites.map(i => <form key={i.id} action={acceptInvitation} className="app-row"><input type="hidden" name="id" value={i.id} /><div className="app-row-main"><strong>{orgs.find(o => o.id === i.orgId)?.name ?? "Organization"}</strong><small>Role: {ORG_ROLES[i.role as keyof typeof ORG_ROLES] ?? i.role}</small></div><Btn>Accept</Btn></form>)}</Panel>}
+    <div className="app-grid app-grid-3" style={{ marginBottom: "1rem" }}>
+      <form action={switchOrganization} className="app-panel"><input type="hidden" name="orgId" value="" /><h2 style={{ fontWeight: 800 }}>Personal workspace</h2><p className="app-note" style={{ margin: ".4rem 0 1rem" }}>Your own learning, profile and projects.</p><Btn kind={!selected ? "primary" : "secondary"} disabled={!selected}>{!selected ? "Current context" : "Switch here"}</Btn></form>
+      {active.map(m => <form key={m.id} action={switchOrganization} className="app-panel"><input type="hidden" name="orgId" value={m.orgId} /><h2 style={{ fontWeight: 800 }}>{orgs.find(o => o.id === m.orgId)?.name ?? "Organization"}</h2><p className="app-note" style={{ margin: ".4rem 0 1rem" }}>{ORG_ROLES[m.role as keyof typeof ORG_ROLES] ?? m.role}</p><Btn kind={selected?.orgId === m.orgId ? "primary" : "secondary"} disabled={selected?.orgId === m.orgId}>{selected?.orgId === m.orgId ? "Current context" : "Switch here"}</Btn></form>)}
+    </div>
+    {selected && <div className="app-split">
+      <Panel title="Members & roles" sub={manage ? "Owners can grant admin; owners and admins manage other roles. An organization always keeps at least one owner." : "Only owners and admins can change membership."}>
+        <div className="app-rows">{members.map(m => <div key={m.id} className="app-row">
+          <div className="app-row-main"><strong>{m.email}</strong><small>{m.status === "invited" ? "Invitation pending" : "Active"}</small></div>
+          {manage && m.userId !== user.userId ? <>
+            <form action={changeRole} className="app-inline"><input type="hidden" name="membershipId" value={m.id} /><select name="role" defaultValue={m.role} aria-label={`Role for ${m.email}`} style={{ width: "auto" }}>{Object.entries(ORG_ROLES).filter(([k]) => selected.role === "org_owner" || !["org_owner", "admin"].includes(k) || k === m.role).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select><Btn kind="secondary">Save</Btn></form>
+            <form action={removeMember}><input type="hidden" name="membershipId" value={m.id} /><Btn kind="ghost">Remove</Btn></form>
+          </> : <Chip state="ACTIVE" text={ORG_ROLES[m.role as keyof typeof ORG_ROLES] ?? m.role} />}
+        </div>)}</div>
+        {manage && <form action={inviteMember} className="app-form" style={{ marginTop: "1rem" }}><input type="hidden" name="orgId" value={selected.orgId} /><div className="app-form-row"><Field label="Invite by email"><input name="email" type="email" required placeholder="colleague@example.com" /></Field><Field label="Role"><select name="role" defaultValue="member">{assignable.map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></Field></div><div><Btn>Create invitation</Btn></div><p className="app-note">They accept after signing in with the same email. Email delivery is not connected yet, so share the link to DigitalBurj with them.</p></form>}
+      </Panel>
+      <div>
+        <Panel title="Employer verification" sub="Verified employers can publish jobs and search consenting Talent profiles.">
+          {verification ? <p><Chip state={verification.status === "VERIFIED" ? "VERIFIED" : verification.status === "REJECTED" ? "REJECTED" : "PENDING"} /> <span className="app-note">{verification.companyName}{verification.note ? ` · ${verification.note}` : ""}</span></p> : <p className="app-note">Not requested yet.</p>}
+          {manage && verification?.status !== "VERIFIED" && <form action={requestEmployerVerification} className="app-form" style={{ marginTop: ".8rem" }}><input type="hidden" name="orgId" value={selected.orgId} /><Field label="Registered company name"><input name="companyName" required defaultValue={verification?.companyName ?? orgs.find(o => o.id === selected.orgId)?.name} /></Field><Field label="Website"><input name="website" placeholder="https://" defaultValue={verification?.website} /></Field><Field label="Trade licence / registration number"><input name="registration" defaultValue={verification?.registration} /></Field><div><Btn kind="secondary">{verification ? "Resubmit" : "Request verification"}</Btn></div></form>}
+        </Panel>
+      </div>
+    </div>}
+    <Panel title="Create an organization">
+      <form action={createOrganization} className="app-inline"><input name="name" required minLength={2} maxLength={100} placeholder="Organization name" aria-label="Organization name" style={{ flex: 1 }} /><Btn>Create</Btn></form>
+      {!active.length && <Empty title="You are not in an organization yet">Create one to invite colleagues, share projects and hire.</Empty>}
+    </Panel>
+  </AppShell>;
 }

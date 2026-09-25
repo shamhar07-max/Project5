@@ -12,10 +12,10 @@ const d = divisionBySlug.academy;
 const featuredCodes = ["DB-00", "DB-01", "DB-02", "DB-03", "DB-04", "PC-AD01", "PC-AC01", "PC-LG01"];
 const featured = academyCourses.filter(c => featuredCodes.includes(c.code));
 const directions = [
-  { t: "Technology Academy", d: "Web, backend, data, AI-native development and production engineering.", hue: ["#8b5cf6", "#22d3ee"] as const, v: "circuit" as const },
-  { t: "Professional Career Academy", d: "Accounting, administration, logistics and operations roles, practised in realistic scenarios.", hue: ["#ec4899", "#f59e0b"] as const, v: "wave" as const },
-  { t: "Advanced Programs", d: "Deep professional and operational specialization with high-value assessed evidence.", hue: ["#6366f1", "#ec4899"] as const, v: "orbit" as const },
-  { t: "Academy for Business", d: "Role-based learning paths, rosters, capability gaps and manager reports for teams.", hue: ["#a855f7", "#10b981"] as const, v: "bars" as const },
+  { t: "Technology Academy", d: "Web, backend, data, AI-native development and production engineering.", hue: ["#2563eb", "#22d3ee"] as const, v: "circuit" as const },
+  { t: "Professional Career Academy", d: "Accounting, administration, logistics and operations roles, practised in realistic scenarios.", hue: ["#0284c7", "#f59e0b"] as const, v: "wave" as const },
+  { t: "Advanced Programs", d: "Deep professional and operational specialization with high-value assessed evidence.", hue: ["#1d4ed8", "#38bdf8"] as const, v: "orbit" as const },
+  { t: "Academy for Business", d: "Role-based learning paths, rosters, capability gaps and manager reports for teams.", hue: ["#0369a1", "#14b8a6"] as const, v: "bars" as const },
 ];
 const layers = [
   ["Knowledge check", "Confirm understanding"],
@@ -53,7 +53,7 @@ export default function Academy() {
       <div className="shell">
         <SectionHead light index="02" kicker="The mission model" title={<>The work is <em>the lesson.</em></>}><p>Every practical task moves through twelve stages — from the brief to evidence you can defend.</p><Link href="/academy/tools" className="link-arrow">Explore the tool library <ArrowUpRight size={16} /></Link></SectionHead>
         <ol className="stage-rail">
-          {academyStages.map((s, i) => <li key={s} data-reveal="up" style={{ "--i": i % 6, "--h": `${260 + i * 9}` } as CSSProperties}><span>{String(i + 1).padStart(2, "0")}</span><strong>{s}</strong></li>)}
+          {academyStages.map((s, i) => <li key={s} data-reveal="up" style={{ "--i": i % 6, "--h": `${200 + i * 3}` } as CSSProperties}><span>{String(i + 1).padStart(2, "0")}</span><strong>{s}</strong></li>)}
         </ol>
       </div>
     </section>
@@ -72,7 +72,7 @@ export default function Academy() {
         <SectionHead index="04" kicker="The catalogue" title={<>Find your <em>starting point.</em></>}><Link href="/academy/catalogue" className="link-arrow">View all {academyCourses.length} units <ArrowUpRight size={16} /></Link></SectionHead>
         <div className="course-grid">
           {featured.map((c, i) => <Link key={c.code} href={`/academy/catalogue?course=${c.code}`} className="gcard course" data-spotlight data-reveal="up" style={{ "--i": i % 4 } as CSSProperties}>
-            <div className="gcard-art"><GenArt seed={`course-${c.code}`} variant={variants[i % 5]} hue={i % 2 ? ["#ec4899", "#8b5cf6"] : ["#8b5cf6", "#22d3ee"]} /><span>{c.code}</span></div>
+            <div className="gcard-art"><GenArt seed={`course-${c.code}`} variant={variants[i % 5]} hue={i % 2 ? ["#0ea5e9", "#1d4ed8"] : ["#2563eb", "#22d3ee"]} /><span>{c.code}</span></div>
             <div className="gcard-body"><h3>{c.title}</h3><p>{c.family} · Level {c.level.replace("L", "")} · {c.hours} proposed hours</p><span className={`maturity m-${c.maturity.toLowerCase()}`}>{c.maturity}</span></div>
           </Link>)}
         </div>

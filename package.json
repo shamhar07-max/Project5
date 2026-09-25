@@ -13,7 +13,8 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
     "check:media": "node scripts/check-media.mjs",
-    "deploy:local": "node scripts/deploy-local.mjs"
+    "deploy:local": "node scripts/deploy-local.mjs",
+    "test:e2e": "node scripts/e2e-flows.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

@@ -1,11 +1,14 @@
 import { cookies } from "next/headers";
 import { and, eq } from "drizzle-orm";
 import { requireChatGPTUser } from "../chatgpt-auth";
+import { touchUser } from "../../lib/staff";
 import { getDb } from "../../db";
 import { memberships, auditLog } from "../../db/schema";
 
 export async function workspaceContext() {
   const user = await requireChatGPTUser("/workspace");
+  const seen = await touchUser(user);
+  if (seen?.suspendedAt) throw new Error(`This account is suspended${seen.suspendedReason ? `: ${seen.suspendedReason}` : ""}. Contact DigitalBurj support.`);
   const orgId = (await cookies()).get("db_org")?.value || null;
   if (!orgId) return { user, orgId: null, role: "individual" };
   const membership = await getDb().select().from(memberships).where(and(eq(memberships.orgId, orgId), eq(memberships.userId, user.userId), eq(memberships.status, "active"))).get();

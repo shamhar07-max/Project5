@@ -42,7 +42,7 @@ export function SignatureLab() {
       </div>}
       {tab === "leak" && <div className="lab-leak">
         <div className="lab-list">{leaks.map((x, i) => <button key={x.k} type="button" onClick={() => setL(i)} className={l === i ? "on" : ""} aria-pressed={l === i}><span>{String(i + 1).padStart(2, "0")}</span>{x.k}</button>)}</div>
-        <div className="lab-result" style={{ "--c": "#10b981" } as React.CSSProperties}><span className="lab-kicker">We measure</span><strong>{leaks[l].m}</strong><p>{leaks[l].f}</p><Link href="/workspace/intake?service=business">Diagnose my process <ArrowUpRight size={16} /></Link></div>
+        <div className="lab-result" style={{ "--c": "#14b8a6" } as React.CSSProperties}><span className="lab-kicker">We measure</span><strong>{leaks[l].m}</strong><p>{leaks[l].f}</p><Link href="/workspace/intake?service=business">Diagnose my process <ArrowUpRight size={16} /></Link></div>
       </div>}
       {tab === "risk" && <div className="lab-risk">
         <div className="dial" style={{ "--c": risk[r].c, "--p": (r + .5) / risk.length } as React.CSSProperties}>

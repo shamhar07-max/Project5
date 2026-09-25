@@ -125,6 +125,12 @@ DIGITALBURJ_STAFF_EMAILS=you@example.com
 
 The production build has no mock sign-in, so `/signin-with-chatgpt` returns 404 locally. To open `/workspace` against the production build, send the identity headers the hosting platform would normally add, for example with a browser extension or `curl -H "oai-authenticated-user-id: local" -H "oai-authenticated-user-email: you@example.com"`. To click through the workspace with the built-in local sign-in, use `npm run dev` instead.
 
+Staff areas live under `/admin`. The emails in `DIGITALBURJ_STAFF_EMAILS` are super admins and can grant other staff roles in Admin → Access.
+
+### End-to-end check
+
+With `npm run deploy:local` running and `seedy@sites.test` listed in `DIGITALBURJ_STAFF_EMAILS` (or `E2E_STAFF_EMAIL` set to a listed email), `npm run test:e2e` walks every workflow as four people: Academy mission → review → independent verification → credential, Studio and Business AI approvals, Jobs hiring, support, invoices, status incidents and the API. It needs Playwright (`npm i -g playwright`, or point `PWPATH` at an install).
+
 ## Diagnostic Commands
 
 - `npm run install:ci`: perform the one locked dependency install

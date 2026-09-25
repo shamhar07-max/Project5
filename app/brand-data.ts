@@ -1,3 +1,5 @@
+// Division accents follow blueprint Part III-A: Academy blue, Studio purple/indigo,
+// Business AI teal/green; Talent and Jobs use supporting families.
 // Single source of truth for DigitalBurj divisions, navigation and photography.
 // Every photograph is registered once in `media` and each key is placed in exactly one
 // location on the site (enforced by scripts/check-media.mjs), so no image repeats.
@@ -36,9 +38,9 @@ export type Division = {
 };
 
 export const divisions: Division[] = [
-  { slug: "academy", name: "Academy", verb: "Learn", tagline: "Learn it. Apply it. Prove it.", description: "Capability-building through practical missions, assessed work and evidence you can show.", hue: ["#8b5cf6", "#ec4899"], domain: "academy.digitalburj.com" },
-  { slug: "studio", name: "Studio", verb: "Build", tagline: "Build what deserves to exist.", description: "Validation-first product engineering: discovery, design, software, QA and delivery.", hue: ["#2563eb", "#22d3ee"], domain: "studio.digitalburj.com" },
-  { slug: "business", name: "Business AI", verb: "Transform", tagline: "Fix the process. Then automate it.", description: "Operational diagnosis, workflow redesign and governed automation with measured results.", hue: ["#10b981", "#a3e635"], domain: "business.digitalburj.com" },
+  { slug: "academy", name: "Academy", verb: "Learn", tagline: "Learn it. Apply it. Prove it.", description: "Capability-building through practical missions, assessed work and evidence you can show.", hue: ["#2563eb", "#38bdf8"], domain: "academy.digitalburj.com" },
+  { slug: "studio", name: "Studio", verb: "Build", tagline: "Build what deserves to exist.", description: "Validation-first product engineering: discovery, design, software, QA and delivery.", hue: ["#7c3aed", "#818cf8"], domain: "studio.digitalburj.com" },
+  { slug: "business", name: "Business AI", verb: "Transform", tagline: "Fix the process. Then automate it.", description: "Operational diagnosis, workflow redesign and governed automation with measured results.", hue: ["#0d9488", "#22c55e"], domain: "business.digitalburj.com" },
   { slug: "talent", name: "Verified Talent", verb: "Verify", tagline: "Capability you can see. Evidence you can trust.", description: "A capability passport that separates declared, assessed and verified skills.", hue: ["#f59e0b", "#f97316"], domain: "talent.digitalburj.com" },
   { slug: "jobs", name: "Jobs", verb: "Hire", tagline: "More than applications. Better hiring decisions.", description: "Structured recruitment where candidates and employers see a clear path.", hue: ["#f43f5e", "#fb923c"], domain: "jobs.digitalburj.com" },
 ];
@@ -78,6 +80,14 @@ export const discoveryIndex: { href: string; title: string; group: string; keywo
   { href: "/workspace", title: "Open workspace", group: "Workspace", keywords: "sign in dashboard" },
   { href: "/workspace/support", title: "Support tickets", group: "Workspace", keywords: "help" },
   { href: "/docs", title: "Guides", group: "Resources", keywords: "documentation help" },
+  { href: "/support", title: "Help center", group: "Resources", keywords: "faq how to support knowledge base" },
+  { href: "/docs/api", title: "API reference & webhooks", group: "Resources", keywords: "developers integration api key webhook" },
+  { href: "/jobs/board", title: "Open roles — jobs board", group: "Jobs", keywords: "careers vacancies hiring apply" },
+  { href: "/workspace/approvals", title: "My approvals", group: "Workspace", keywords: "approve milestone offer automation" },
+  { href: "/workspace/notifications", title: "Notifications", group: "Workspace", keywords: "alerts updates" },
+  { href: "/workspace/academy/credentials", title: "My credentials", group: "Learn", keywords: "certificate verified" },
+  { href: "/workspace/jobs/employer", title: "Employer console", group: "Jobs", keywords: "recruit hire post job" },
+  { href: "/workspace/account", title: "Account, privacy & data export", group: "Workspace", keywords: "gdpr delete download consent" },
   { href: "/status", title: "Service status", group: "Resources", keywords: "uptime incidents" },
   { href: "/privacy", title: "Privacy", group: "Resources" },
   { href: "/terms", title: "Terms", group: "Resources" },

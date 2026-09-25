@@ -48,9 +48,9 @@ export default function Home() {
         <div className="home-hero-copy">
           <span className="kicker kicker-glass beam"><i className="pulse" />One technology company · Three engines of progress</span>
           <h1 className="mega">
-            <span className="mw" style={{ "--i": 0, "--a": "#c4b5fd", "--b": "#f0abfc" } as CSSProperties}>Learn.</span>{" "}
-            <span className="mw" style={{ "--i": 1, "--a": "#93c5fd", "--b": "#67e8f9" } as CSSProperties}>Build.</span>{" "}
-            <span className="mw mw-serif" style={{ "--i": 2, "--a": "#fda4af", "--b": "#fde68a" } as CSSProperties}>Transform.</span>
+            <span className="mw" style={{ "--i": 0, "--a": "#93c5fd", "--b": "#7dd3fc" } as CSSProperties}>Learn.</span>{" "}
+            <span className="mw" style={{ "--i": 1, "--a": "#c4b5fd", "--b": "#a5b4fc" } as CSSProperties}>Build.</span>{" "}
+            <span className="mw mw-serif" style={{ "--i": 2, "--a": "#5eead4", "--b": "#86efac" } as CSSProperties}>Transform.</span>
           </h1>
           <p className="hero-lede">Develop real capability. Engineer software that deserves to exist. Redesign how your business works — then automate it, with humans in control.</p>
           <div className="hero-actions">

@@ -1,17 +1,34 @@
 import Link from "next/link";
 import { desc, eq } from "drizzle-orm";
-import { requireChatGPTUser } from "../../chatgpt-auth";
 import { getDb } from "../../../db";
-import { jobTracks } from "../../../db/schema";
+import { jobApplications, jobTracks } from "../../../db/schema";
+import { AppShell, Btn, Chip, Empty, Field, PageHead, Panel, Stat, fmt } from "../../_app/kit";
+import { loadApp } from "../../_app/shell";
+import { can } from "../../../lib/platform";
 import { createJobTrack, removeJobTrack, statuses, updateJobTrack } from "./actions";
 
 export const dynamic = "force-dynamic";
-const input = "mt-2 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 outline-none focus:border-red-500";
-export default async function JobsPage() {
-  const user = await requireChatGPTUser("/workspace/jobs");
-  const items = await getDb().select().from(jobTracks).where(eq(jobTracks.ownerId, user.userId)).orderBy(desc(jobTracks.updatedAt));
-  return <main className="min-h-screen bg-[#f2f5f7] px-5 py-12 text-[#10273c]"><div className="mx-auto max-w-5xl"><Link href="/workspace" className="text-sm font-semibold text-red-700">← Workspace</Link><header className="mt-8 rounded-3xl bg-[#10273c] p-8 text-white md:p-12"><p className="text-xs font-bold uppercase tracking-[.2em] text-red-300">DigitalBurj Jobs</p><h1 className="mt-4 text-4xl font-bold tracking-tight">Your opportunity tracker</h1><p className="mt-4 max-w-2xl text-slate-300">Keep a private record of roles you find and steps you take. Saving or updating a role here does not apply to an employer or confirm an interview or offer.</p></header>
-    <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 md:p-8"><h2 className="text-2xl font-bold">Track an opportunity</h2><form action={createJobTrack} className="mt-5 grid gap-4 md:grid-cols-2"><label className="text-sm font-semibold">Role title<input name="roleTitle" required maxLength={120} className={input}/></label><label className="text-sm font-semibold">Employer<input name="employer" required maxLength={120} className={input}/></label><label className="text-sm font-semibold md:col-span-2">Job posting URL (optional)<input name="sourceUrl" type="url" maxLength={500} placeholder="https://…" className={input}/></label><label className="text-sm font-semibold md:col-span-2">Private notes<textarea name="notes" maxLength={1000} rows={3} className={input}/></label><button className="w-fit rounded-full bg-[#e31b23] px-7 py-3 font-bold text-white transition hover:bg-red-700">Save opportunity</button></form></section>
-    <section className="mt-8"><h2 className="text-2xl font-bold">Saved opportunities ({items.length})</h2><div className="mt-4 grid gap-4">{items.length ? items.map(item=><article key={item.id} className="rounded-2xl border border-slate-200 bg-white p-6"><div className="flex flex-wrap items-start justify-between gap-3"><div><h3 className="text-xl font-bold">{item.roleTitle}</h3><p className="mt-1 text-slate-600">{item.employer}</p></div><span className="rounded-full bg-slate-100 px-4 py-1 text-xs font-semibold">{item.status}</span></div>{item.sourceUrl && <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-block text-sm font-semibold text-red-700 underline">View original posting ↗</a>}{item.notes && <p className="mt-4 whitespace-pre-wrap text-sm text-slate-600">{item.notes}</p>}<div className="mt-5 flex flex-wrap items-end gap-5 border-t border-slate-100 pt-5"><form action={updateJobTrack} className="flex flex-wrap items-end gap-3"><input type="hidden" name="id" value={item.id}/><label className="text-sm font-semibold">Personal status<select name="status" defaultValue={item.status} className={input}>{statuses.map(x=><option key={x}>{x}</option>)}</select></label><button className="rounded-full bg-[#10273c] px-5 py-3 text-sm font-bold text-white">Update</button></form><form action={removeJobTrack}><input type="hidden" name="id" value={item.id}/><button className="py-3 text-sm font-semibold text-red-700">Remove</button></form></div></article>) : <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-slate-600">Your tracker is empty. Add a role above to begin.</p>}</div></section>
-  </div></main>;
+
+export default async function Jobs() {
+  const { ctx, info } = await loadApp();
+  const db = getDb();
+  const [tracks, apps] = await Promise.all([
+    db.select().from(jobTracks).where(eq(jobTracks.ownerId, ctx.user.userId)).orderBy(desc(jobTracks.updatedAt)),
+    db.select().from(jobApplications).where(eq(jobApplications.candidateId, ctx.user.userId)),
+  ]);
+  const employer = ctx.orgId && can(ctx.role, "jobs.manage");
+  return <AppShell info={info} active="jobs">
+    <PageHead kicker="Jobs" title="More than applications." lede="Apply to DigitalBurj-listed roles with a structured application, and keep a private tracker for roles elsewhere. Hiring decisions remain with employers." actions={<><Link className="app-btn app-btn-primary" href="/jobs/board">Browse open roles</Link>{employer && <Link className="app-btn app-btn-secondary" href="/workspace/jobs/employer">Employer console</Link>}</>} />
+    <div className="app-grid app-grid-3" style={{ marginBottom: "1rem" }}>
+      <Stat label="My applications" value={apps.length} href="/workspace/jobs/applications" />
+      <Stat label="In interview" value={apps.filter(a => a.stage === "INTERVIEW").length} href="/workspace/jobs/applications" />
+      <Stat label="Tracked elsewhere" value={tracks.length} />
+    </div>
+    <Panel title="Private tracker" sub="For roles outside DigitalBurj. Statuses are self-reported and visible only to you.">
+      <form action={createJobTrack} className="app-form"><div className="app-form-row"><Field label="Role"><input name="roleTitle" required maxLength={120} /></Field><Field label="Employer"><input name="employer" required maxLength={120} /></Field><Field label="Link"><input name="sourceUrl" type="url" /></Field></div><Field label="Notes"><textarea name="notes" maxLength={1000} rows={2} /></Field><div><Btn>Track role</Btn></div></form>
+      <div className="app-rows" style={{ marginTop: "1rem" }}>{tracks.map(t => <div key={t.id} className="app-row"><div className="app-row-main"><strong>{t.roleTitle} — {t.employer}</strong><small>{fmt(t.updatedAt)}{t.notes ? ` · ${t.notes.slice(0, 80)}` : ""}</small></div><Chip state={t.status.startsWith("Offer") ? "SENT" : t.status === "Rejected" ? "REJECTED" : "ACTIVE"} text={t.status} />
+        <form action={updateJobTrack} className="app-inline"><input type="hidden" name="id" value={t.id} /><select name="status" defaultValue={t.status} style={{ width: "auto" }} aria-label="Status">{statuses.map(s => <option key={s}>{s}</option>)}</select><Btn kind="ghost">Update</Btn></form>
+        <form action={removeJobTrack}><input type="hidden" name="id" value={t.id} /><Btn kind="ghost">Remove</Btn></form></div>)}{!tracks.length && <Empty title="Nothing tracked yet" />}</div>
+    </Panel>
+  </AppShell>;
 }

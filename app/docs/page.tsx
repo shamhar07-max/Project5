@@ -5,5 +5,8 @@ export default function Docs(){return <PublicPage eyebrow="Guides" title={<>Usin
   {title:"Academy",body:"Practical learning should include missions, feedback and evidence. Course completion is separate from independent verification.",href:"/academy"},
   {title:"Studio & Business AI",body:"An initial enquiry begins discovery. It is not a project approval, proposal or payment.",href:"/workspace/intake"},
   {title:"Talent & Jobs",body:"Profiles and applications are separate. Sharing professional evidence should require your explicit consent.",href:"/talent"},
+  {title:"Help center",body:"Step-by-step guides for accounts, Academy, Studio, Business AI, Talent, Jobs, billing and integrations.",href:"/support"},
+  {title:"API & webhooks",body:"Versioned REST API with scoped organization keys, a consistent error model and signed webhooks.",href:"/docs/api"},
+  {title:"Service status",body:"Live component health, incidents and maintenance.",href:"/status"},
   {title:"Support",body:"Create and track a support ticket from your workspace.",href:"/workspace/support"},
  ]}/>;}
