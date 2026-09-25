@@ -47,7 +47,19 @@ if (!existsSync(config)) { console.error(`Missing ${config}. Run without --skip-
 
 console.log("▸ Applying pending D1 migrations…");
 const track = d1(["--command", "CREATE TABLE IF NOT EXISTS local_migrations (tag TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)"]);
-if (!track.ok) { console.error(track.out); process.exit(1); }
+if (!track.ok) {
+  console.error(track.out);
+  if (/write EOF|EPIPE|ECONNRESET/i.test(track.out)) console.error([
+    "The local Cloudflare runtime (workerd) exited as soon as it started.",
+    "Check it directly:",
+    process.platform === "win32"
+      ? "  .\\node_modules\\@cloudflare\\workerd-windows-64\\bin\\workerd.exe --version   (then: echo $LASTEXITCODE)"
+      : "  ./node_modules/workerd/bin/workerd --version",
+    "On Windows, no output with exit code -1073741515 means the Microsoft Visual C++ Redistributable (x64) is missing:",
+    "  https://aka.ms/vs/17/release/vc_redist.x64.exe",
+  ].join("\n"));
+  process.exit(1);
+}
 const applied = new Set(d1(["--command", "SELECT tag FROM local_migrations"]).rows.map(r => r.tag));
 for (const file of readdirSync("drizzle").filter(f => f.endsWith(".sql")).sort()) {
   const tag = file.replace(/\.sql$/, "");
