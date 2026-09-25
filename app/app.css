@@ -127,3 +127,4 @@ details.app-more[open] > summary { margin-bottom: .8rem; }
 .app-nav-group a, .app-steps span { border-radius: 4px; }
 .app-user > span { background: #314253; }
 .app-brand img { background: #f3f3ef; border-radius: 3px; }
+.app-signout { display: inline-block; margin-top: .2rem; font-size: .72rem; font-weight: 700; color: var(--mute, #56657b); text-decoration: underline; text-underline-offset: 2px; }

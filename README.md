@@ -131,6 +131,48 @@ Staff areas live under `/admin`. The emails in `DIGITALBURJ_STAFF_EMAILS` are su
 
 With `npm run deploy:local` running and `seedy@sites.test` listed in `DIGITALBURJ_STAFF_EMAILS` (or `E2E_STAFF_EMAIL` set to a listed email), `npm run test:e2e` walks every workflow as four people: Academy mission → review → independent verification → credential, Studio and Business AI approvals, Jobs hiring, support, invoices, status incidents and the API. It needs Playwright (`npm i -g playwright`, or point `PWPATH` at an install).
 
+## DigitalBurj: deploy to your own Cloudflare account (free)
+
+The site runs on Cloudflare's free plan: Workers (about 100,000 requests a day), D1 for the database and, optionally, R2 for uploaded files. Outside ChatGPT Sites, people sign in with Google, and the Worker keeps a signed, HttpOnly session cookie. ChatGPT identity headers are ignored in this mode (`DIGITALBURJ_AUTH=google`), so they cannot be forged.
+
+### 1. Cloudflare (once)
+
+1. Create a free account at dash.cloudflare.com and open **Workers & Pages** once, which registers your free `*.workers.dev` subdomain.
+2. Optional: open **R2** and enable it to turn on file uploads. Cloudflare may ask for a card even on the free tier. Without R2 the site works and uploads show as unavailable.
+3. **My Profile → API Tokens → Create Token → "Edit Cloudflare Workers"** template, then add **Account · D1 · Edit** (and **Account · Workers R2 Storage · Edit** if you enabled R2). Copy the token.
+4. Copy your **Account ID** from the dashboard sidebar.
+
+### 2. Deploy with GitHub Actions (no local setup)
+
+1. In GitHub, go to **Settings → Secrets and variables → Actions** and add these secrets:
+   - `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (required)
+   - `DIGITALBURJ_STAFF_EMAILS`: your Google email, so you become super admin
+   - `DIGITALBURJ_WHATSAPP_NUMBER` (optional)
+2. Go to **Actions → Deploy to Cloudflare → Run workflow**. The log ends with your address, for example `https://digitalburj.<you>.workers.dev`.
+
+The workflow creates the D1 database and R2 bucket if they are missing, applies every migration, generates a `SESSION_SECRET` once and deploys. It runs again on every push to `main`.
+
+### 3. Turn on Google sign-in
+
+1. Go to console.cloud.google.com → **APIs & Services**.
+2. Configure the **OAuth consent screen** (External, app name DigitalBurj).
+3. Go to **Credentials → Create credentials → OAuth client ID → Web application**.
+4. Under **Authorized redirect URIs**, add `https://<your address>/auth/callback`.
+5. Add the client ID and secret as the GitHub secrets `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`, then run the workflow again.
+
+Until then the public site works and the Sign in links explain that sign-in is not configured.
+
+### Deploying from your own machine instead
+
+```sh
+npx wrangler login
+# optional settings in .prod.vars (ignored by Git):
+#   GOOGLE_CLIENT_ID=… GOOGLE_CLIENT_SECRET=… DIGITALBURJ_STAFF_EMAILS=you@gmail.com
+npm run deploy:cloudflare
+```
+
+Names for the Worker, database and bucket live in `cloudflare.json`. To use your own domain later, add it in Workers & Pages → your Worker → **Domains & Routes**, set the repository variable `PUBLIC_ORIGIN` to `https://your-domain`, and add the matching Google redirect URI.
+
 ## Diagnostic Commands
 
 - `npm run install:ci`: perform the one locked dependency install
@@ -138,6 +180,7 @@ With `npm run deploy:local` running and `seedy@sites.test` listed in `DIGITALBUR
 - `npm run build`: build the deployable Sites artifact
 - `npm run start`: preview the built Worker locally with D1/R2 support
 - `npm run deploy:local`: build, migrate the local D1 database and serve the production Worker
+- `npm run deploy:cloudflare`: create or reuse D1/R2, migrate the remote database and deploy to your Cloudflare account
 - `npm run db:generate`: generate Drizzle migrations after schema changes
 
 When using the Sites plugin, follow its skill instructions for installation, builds, and publishing. These npm commands remain available for standalone use.

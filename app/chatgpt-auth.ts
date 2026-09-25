@@ -1,5 +1,6 @@
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { authMode, readSession, SESSION_COOKIE } from "../lib/session";
 
 export type ChatGPTUser = {
   userId: string;
@@ -17,8 +18,16 @@ const PERCENT_ENCODED_UTF8 = "percent-encoded-utf-8";
 const SIGN_IN_PATH = "/signin-with-chatgpt";
 const SIGN_OUT_PATH = "/signout-with-chatgpt";
 const CALLBACK_PATH = "/callback";
+// Used instead of the Sites routes when DIGITALBURJ_AUTH=google (own Cloudflare deployment).
+const GOOGLE_SIGN_IN_PATH = "/auth/sign-in";
+const GOOGLE_SIGN_OUT_PATH = "/auth/sign-out";
 
 export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
+  // Outside ChatGPT Sites the identity headers are not trustworthy, so they are ignored.
+  if (authMode() === "google") {
+    const session = await readSession((await cookies()).get(SESSION_COOKIE)?.value);
+    return session ? { userId: session.sub, displayName: session.name ?? session.email, email: session.email, fullName: session.name } : null;
+  }
   const requestHeaders = await headers();
   const userId = requestHeaders.get(USER_ID_HEADER);
   const email = requestHeaders.get(USER_EMAIL_HEADER);
@@ -50,15 +59,15 @@ export async function requireChatGPTUser(
 
 export function chatGPTSignInPath(returnTo: string): string {
   const safeReturnTo = safeRelativeReturnPath(returnTo);
-  return `${SIGN_IN_PATH}?return_to=${encodeURIComponent(safeReturnTo)}`;
+  return `${authMode() === "google" ? GOOGLE_SIGN_IN_PATH : SIGN_IN_PATH}?return_to=${encodeURIComponent(safeReturnTo)}`;
 }
 
 export function chatGPTSignOutPath(returnTo = "/"): string {
   const safeReturnTo = safeRelativeReturnPath(returnTo);
-  return `${SIGN_OUT_PATH}?return_to=${encodeURIComponent(safeReturnTo)}`;
+  return `${authMode() === "google" ? GOOGLE_SIGN_OUT_PATH : SIGN_OUT_PATH}?return_to=${encodeURIComponent(safeReturnTo)}`;
 }
 
-function safeRelativeReturnPath(value: string): string {
+export function safeRelativeReturnPath(value: string): string {
   if (!value.startsWith("/") || value.startsWith("//")) return "/";
 
   let url: URL;
@@ -77,7 +86,8 @@ function isReservedAuthPath(pathname: string): boolean {
   return (
     pathname === SIGN_IN_PATH ||
     pathname === SIGN_OUT_PATH ||
-    pathname === CALLBACK_PATH
+    pathname === CALLBACK_PATH ||
+    pathname.startsWith("/auth/")
   );
 }
 

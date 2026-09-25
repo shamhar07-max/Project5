@@ -1,0 +1,8 @@
+{
+  "name": "digitalburj",
+  "d1": "digitalburj-db",
+  "r2": "digitalburj-files",
+  "vars": {
+    "DIGITALBURJ_AUTH": "google"
+  }
+}
