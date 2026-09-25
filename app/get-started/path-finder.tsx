@@ -1,0 +1,15 @@
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import { ArrowUpRight, BookOpen, BriefcaseBusiness, Building2, Code2, MessageCircle, Smartphone } from "lucide-react";
+const paths=[
+  {id:"academy",title:"Learn and build skills",detail:"Explore practical learning routes and save units in your learner workspace.",href:"/academy/catalogue",action:"Browse Academy",Icon:BookOpen},
+  {id:"studio",title:"Build a digital product",detail:"Tell Studio about your idea, intended users and the problem it should solve.",href:"/workspace/intake?service=studio",action:"Start a Studio enquiry",Icon:Code2},
+  {id:"business",title:"Improve a business process",detail:"Describe the work that needs to change and the outcome you want to measure.",href:"/workspace/intake?service=business",action:"Request a consultation",Icon:Building2},
+  {id:"talent",title:"Grow a career or team",detail:"Explore evidence-led talent profiles and the jobs pathway.",href:"/talent",action:"Explore Talent",Icon:BriefcaseBusiness}
+] as const;
+export function PathFinder(){
+  const [choice,setChoice]=useState<(typeof paths)[number]["id"]>("academy");
+  const selected=paths.find(x=>x.id===choice)!;
+  return <section className="section-pad path-section"><div className="shell"><div className="section-heading"><div><span className="eyebrow">01 / Discover your route</span><h2 className="display-title">What brings you <span className="serif-accent">here?</span></h2></div><p>Change your selection at any time.</p></div><div className="path-layout"><div role="group" aria-label="Choose your goal" className="path-options">{paths.map((p,i)=><button type="button" onClick={()=>setChoice(p.id)} aria-pressed={choice===p.id} key={p.id} className={`path-option ${choice===p.id?"selected":""}`}><span className="path-option-index">0{i+1}</span><p.Icon size={23} strokeWidth={1.8}/><strong>{p.title}</strong><ArrowUpRight size={19} className="path-option-arrow"/></button>)}</div><div className="path-result" aria-live="polite"><span className="eyebrow">Recommended next step</span><selected.Icon size={42} strokeWidth={1.3} className="mt-10 text-[#e10613]"/><h3>{selected.title}</h3><p>{selected.detail}</p><Link href={selected.href} className="btn btn-red mt-9">{selected.action} <ArrowUpRight size={18}/></Link><p className="path-note">{choice==="studio"||choice==="business"?"You will sign in before submitting an enquiry. Your request appears in your workspace.":"Explore first. You can sign in when you want to save your progress."}</p></div></div><div className="channel-strip"><div><Smartphone size={23}/><span><strong>On your phone</strong><small>This web app works in a mobile browser; your workspace is the same account.</small></span><Link href="/workspace" aria-label="Open mobile-friendly workspace"><ArrowUpRight size={20}/></Link></div><div><MessageCircle size={23}/><span><strong>Prefer WhatsApp?</strong><small>Check availability of the official DigitalBurj contact channel.</small></span><Link href="/connect/whatsapp" aria-label="Check WhatsApp availability"><ArrowUpRight size={20}/></Link></div></div></div></section>;
+}

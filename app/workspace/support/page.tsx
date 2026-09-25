@@ -1,0 +1,13 @@
+import Link from "next/link";
+import { and, eq, isNull, desc } from "drizzle-orm";
+import { workspaceContext } from "../access";
+import { getDb } from "../../../db";
+import { supportTickets } from "../../../db/schema";
+import { createTicket } from "./actions";
+
+export const dynamic = "force-dynamic";
+export default async function SupportPage() {
+  const ctx = await workspaceContext();
+  const tickets = await getDb().select().from(supportTickets).where(ctx.orgId ? and(eq(supportTickets.ownerId, ctx.user.userId), eq(supportTickets.orgId, ctx.orgId)) : and(eq(supportTickets.ownerId, ctx.user.userId), isNull(supportTickets.orgId))).orderBy(desc(supportTickets.createdAt));
+  return <main className="min-h-screen bg-[#f2f5f7] text-[#10273c]"><header className="bg-[#10273c] px-6 py-5 text-white"><div className="mx-auto max-w-4xl"><Link href="/workspace" className="font-bold">← Workspace</Link></div></header><div className="mx-auto max-w-4xl px-6 py-12"><p className="text-sm font-bold uppercase tracking-[.16em] text-[#e31b23]">Support</p><h1 className="mt-2 text-4xl font-bold">How can we help?</h1><p className="mt-3 text-[#52677a]">Create a support ticket connected to your current {ctx.orgId ? "organization" : "individual"} workspace.</p><form action={createTicket} className="mt-9 grid gap-5 border border-[#d7e0e7] bg-white p-6"><label className="font-bold">Topic<select name="topic" required defaultValue="" className="mt-2 block w-full border border-[#b9cad5] bg-white p-3 font-normal"><option value="" disabled>Choose a topic</option>{["Account and security", "Academy", "Studio", "Business AI", "Talent and Jobs", "Billing", "Other"].map(x=><option key={x}>{x}</option>)}</select></label><label className="font-bold">What happened?<textarea name="message" required minLength={10} maxLength={2000} rows={5} className="mt-2 block w-full border border-[#b9cad5] p-3 font-normal"/></label><button className="w-fit bg-[#10273c] px-6 py-3 font-bold text-white">Create ticket</button></form><section className="mt-10"><h2 className="text-2xl font-bold">Your tickets</h2>{tickets.length ? <div className="mt-4 space-y-3">{tickets.map(t=><article key={t.id} className="border border-[#d7e0e7] bg-white p-5"><div className="flex justify-between gap-4"><h3 className="font-bold">{t.topic}</h3><span className="text-sm">{t.status}</span></div><p className="mt-2 whitespace-pre-wrap text-[#52677a]">{t.message}</p><p className="mt-3 text-xs text-[#718699]">{t.createdAt.toLocaleDateString("en-AE")}</p></article>)}</div> : <p className="mt-4 border border-dashed border-[#b9cad5] bg-white p-6 text-[#52677a]">No tickets yet.</p>}</section></div></main>;
+}
