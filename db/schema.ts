@@ -189,3 +189,27 @@ export const jobTracks = sqliteTable("job_tracks", {
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
 }, table => [index("idx_job_tracks_owner_updated").on(table.ownerId, table.updatedAt)]);
+
+// Conversion requests from the public channels (web, mobile app, WhatsApp composer).
+// Anonymous visitors are allowed; ownerId is set when the visitor was signed in.
+export const leads = sqliteTable("leads", {
+  id: text("id").primaryKey(),
+  reference: text("reference").notNull(),
+  channel: text("channel").notNull(),
+  topic: text("topic").notNull(),
+  intent: text("intent").notNull().default(""),
+  timing: text("timing").notNull().default(""),
+  name: text("name").notNull(),
+  contact: text("contact").notNull(),
+  company: text("company").notNull().default(""),
+  message: text("message").notNull(),
+  sourcePath: text("source_path").notNull().default(""),
+  ownerId: text("owner_id"),
+  clientKey: text("client_key").notNull(),
+  status: text("status").notNull().default("New"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+}, table => [
+  uniqueIndex("idx_leads_reference").on(table.reference),
+  index("idx_leads_client_created").on(table.clientKey, table.createdAt),
+  index("idx_leads_owner_created").on(table.ownerId, table.createdAt),
+]);

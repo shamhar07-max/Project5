@@ -64,6 +64,13 @@
       "when": 1790315517009,
       "tag": "0008_zippy_monster_badoon",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1790318739391,
+      "tag": "0009_useful_impossible_man",
+      "breakpoints": true
     }
   ]
 }

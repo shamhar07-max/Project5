@@ -1,76 +1,59 @@
-# DigitalBurj interface research — 25 September 2026
+# DigitalBurj interface research & redesign — 25 September 2026 (pass 3)
 
-The supplied references were visited individually. The selections below are design observations, not copied components or third-party assets. DigitalBurj's supplied photography, navy/red mark, and its actual service paths define the result.
+## How the research was done
 
-| Source | Applicable pattern | DigitalBurj decision |
-| --- | --- | --- |
-| [Aceternity templates](https://ui.aceternity.com/templates) | Agency heroes, image cards, restrained sticky/scroll reveals, magnetic button concept | Use a service-led editorial journey, short scroll reveals and a subtle pointer response on primary CTA. Avoid shaders, glowing effects and generic SaaS sections. |
-| [Magic UI](https://magicui.design/) | Small animated accents compatible with the existing component model | Give the CTA a quiet highlight sweep; avoid continuous background effects. |
-| [Dribbble Free](https://dribbble.com/search/Free) | Visual exploration across branding, web and typography | Treat as broad composition inspiration only; no shot or artwork copied. |
-| [ReUI components](https://reui.io/components) | Practical forms, navigation, filters and product UI | Keep the existing signed-in forms and data flow, increase their clarity through shared focus and button states. |
-| [LottieFiles finance search](https://app.lottiefiles.com/search?type=premium-assets&listing_type=assets&query=Finance&asset_type=lottie) | Premium finance animations were inaccessible in the public search result | No premium animation imported or claimed. |
-| [shadcn/ui components](https://ui.shadcn.com/docs/components) | Accessible component primitives such as Sheet, Tabs and forms | Reuse the installed primitives where a new control needs them; do not introduce a second UI system. |
-| [shadcn/ui blocks](https://ui.shadcn.com/blocks) | Dashboard and sign-in compositions | Preserve the existing authenticated workspace and its real forms rather than turning it into a marketing mockup. |
-| [Origin UI](https://originui.com/) | Redirects to a Base UI component catalogue | Use as a reminder to keep interactive semantics and keyboard behavior, not a visual copy. |
-| [Kokonut UI](https://kokonutui.com/) | Particle buttons, shimmer text and cards | Use one subtle CTA sheen; reject particles and liquid glass as distracting for this brand. |
-| [Preline UI](https://preline.co/) | Responsive blocks and component guidance | Keep mobile layouts content-first and tappable. |
-| [Preline blocks](https://preline.co/blocks/) | Marketing and application form patterns | Provide a clear next step on each service route and a concise path chooser. |
-| [HyperUI](https://hyperui.dev/) | Marketing and application component categories | Favor readable content and high-contrast calls to action. |
-| [Float UI](https://floatui.com/) | Responsive, easily adapted sections | Use simple grid behavior and preserve readable order at narrow widths. |
-| [SVGator assets](https://www.svgator.com/animation-templates/assets) | Animated vector asset examples | No external vector animation is needed; brand photography and typography carry the story. |
-| [Uiverse animation](https://uiverse.io/tags/animation) | Short hover and focus transitions | Use lift, border and underline feedback with reduced-motion support. |
-| [Uiverse elements](https://uiverse.io/elements) | Buttons/cards/input patterns | Avoid decorative controls that lack a useful action. |
-| [Jitter UI elements](https://jitter.video/templates/ui-elements/) | Animated navigation, arrows and progress | Use short, stateful transitions; avoid looping UI decoration. |
-| [Animate UI](https://animate-ui.com/) | Public result exposes only the site title | No specific component assumed or copied. |
-| [Animata components](https://animata.design/components) | Backgrounds, bento grids and buttons | Use asymmetrical image cards and limited motion rather than an effect-heavy background. |
-| [Framer marketplace](https://www.framer.com/marketplace/templates/) | Category-led discovery for agency, education and software | Let visitors choose a goal first; no template copied. |
-| [21st.dev](https://21st.dev/) | Animated heroes, buttons, cards and navigation catalogues | Bring only context-fitting interactions into the existing codebase. |
+- **This pass could not open the reference sites.** The build environment's network policy blocked every supplied domain (Aceternity, Magic UI, ReUI, Kokonut UI, Animata, 21st.dev and the others returned `EGRESS_BLOCKED`).
+- The patterns below come from two sources: the site-by-site notes made in the earlier pass (kept in the git history of this file), and the public component catalogues of these libraries as they are generally documented.
+- No template, component source code, Lottie file, Dribbble shot or premium asset was copied. Every effect is original CSS/React written in DigitalBurj's own vocabulary.
+- To re-verify against the live sites, allow those domains in the environment's network settings and repeat the review.
 
-## Implemented direction
+## Pattern selection by source
 
-- Editorial photography, oversized type, four clear service paths and a compact conversion path.
-- Scroll entry choreography and CTA motion that stop under reduced-motion preferences.
-- Mobile navigation and a mobile-first path chooser.
-- Existing signed-in Academy, Studio and Business AI flows remain the source of truth.
+| Source | Strongest applicable patterns | What DigitalBurj uses | Where |
+| --- | --- | --- | --- |
+| Aceternity UI templates | Spotlight cards, 3D tilt cards, sticky-scroll reveal, lamp/aurora backgrounds, text-generate effect | Pointer-follow spotlight + subtle 3D tilt on division/route cards; sticky-scroll story with image swap; drifting aurora behind dark sections | `data-spotlight`, `data-tilt`, `.story`, `.aurora` |
+| Magic UI | Border beam, shimmer button, marquee, number ticker, animated beam, orbiting circles, bento grid | Conic "beam" on the hero kicker; shine sweep on every primary CTA; disciplines/principles marquees; counters that animate from real catalogue numbers; beams in the Integrations tile; orbit in the flywheel | `.beam`, `.mag`, `Marquee`, `data-count`, `.v-beam`, `Flywheel` |
+| Dribbble (Free) | Dark luxury fintech/SaaS palettes, oversized editorial type, glass device mockups | Ink + ivory canvas, serif italic accents, floating glass product surfaces in the hero | `HeroStack`, type scale |
+| ReUI | Stepper, segmented tabs, realistic data tables | 3-step path finder with progress bar; segmented channel switcher; workspace tour | `PathFinder`, `.seg`, `WorkspaceTour` |
+| LottieFiles (Finance, premium) | Looping finance/data micro-animations | Not imported (premium licence, and inaccessible). Replaced by CSS micro-visuals: growing bars, neural pulses, scanning shield, stacked systems | `.cap-visual` variants |
+| shadcn/ui components | Command menu (⌘K), sheet, tabs, accessible dialogs | Global ⌘K command palette over every destination; full-screen mobile sheet; ARIA tabs | `CommandPalette`, `MobileNav` |
+| shadcn/ui blocks | Dashboard shells, sidebar navigation | Browser mock of the real workspace sidebar inside the channel stage and the web-app tour | `ChannelStage`, `WorkspaceTour` |
+| Origin UI | Precise inputs, focus rings, segmented controls | Composer inputs with accent-coloured focus rings, chip selectors, honest error states | `WhatsAppComposer` |
+| Kokonut UI | Particle/liquid buttons, shimmer text, card stacks | Glass buttons on dark heroes; stacked floating cards. Particles rejected as noise | `.mag-glass`, `.hs-card` |
+| Preline UI | Mega-menu dropdowns, responsive navbars | "Connect" dropdown with coloured channel icons | `.nav-drop` |
+| Preline blocks | Pricing/model chips, conversion sections | Engagement-model chips per division; channel row on every page | `.models`, `ChannelRow` |
+| HyperUI | Plain, high-contrast marketing cards | Readable `gcard` grid with one action per card | `.gcard` |
+| Float UI | Simple feature grids, CTA bands | Feature grid on the mobile-app page; final CTA band in the footer | `.feature-grid`, `.footer-cta` |
+| SVGator assets | Animated vector illustrations | Original generative SVG art (`GenArt`), deterministic per seed so no two thumbnails match | `app/gen-art.tsx` |
+| Uiverse (animation) | Hover lifts, arrow rotations, typing dots | Arrow-orb rotation, card lift, WhatsApp typing indicator | `.orb`, `.wa-typing` |
+| Uiverse (elements) | Toggle/range controls, loaders | Human-control risk dial driven by a native range input | `SignatureLab` |
+| Jitter UI elements | Animated navigation, progress lines, device mockups | Reading-progress bar, story progress bar, animated phone mockups | `.read-progress`, `AppShowcase` |
+| Animate UI | Motion-first component states | Stateful transitions keyed on tab changes (fade-up), reduced-motion hook | `use-reduced-motion.ts` |
+| Animata | Bento grids, image reveal, text scrub | Asymmetric division bento; clip-path image reveal in the story; scroll-scrubbed statement text | `.bento`, `.story-img`, `ScrubText` |
+| Framer marketplace | Cinematic agency heroes, page-transition curtains | Ken-Burns hero, one-time brand intro curtain, colour wipe between routes | `RouteCurtain` |
+| 21st.dev | Magnetic buttons, command bars, animated heroes | Magnetic shine CTA used across the site | `MagneticLink` |
 
-## Integration boundary
+## What was rejected and why
 
-- A native mobile app is not supplied. The current web app is responsive; native packaging would be a separate build.
-- WhatsApp is not linked until DigitalBurj provides an official business number and approves the destination and message.
-- External component packages and premium assets have not been copied into the project.
+- Particle fields, cursor trails and perpetual neon loops: they compete with the content and hurt mid-range phones.
+- Fake logos, testimonials, metrics or "live" portfolio claims: the blueprint requires evidence before claims. Every number on the page is counted from real data (Academy catalogue, stage model, leak classes, risk tiers). Ventures are shown as "Status under review".
+- Premium Lottie and marketplace templates: licensing is unclear, and they could not be accessed from this environment.
 
-## September 25 refinement: technology-led art direction
+## Art direction
 
-Each reference above was revisited individually for this pass. The components below are reinterpreted in project code; no template, stock shot, premium Lottie, or copied creator artwork was imported.
+- **Palette:** brand navy `#10273c` and red `#e10613` lead. Each division has its own two-tone accent: Academy violet→magenta, Studio cobalt→cyan, Business AI emerald→lime, Talent amber→orange, Jobs rose→coral. Champagne gold marks premium details. WhatsApp green appears only on WhatsApp actions.
+- **Type:** Manrope (UI and display), Instrument Serif italic (emotional accents), JetBrains Mono (system labels). Fallbacks are defined.
+- **Surfaces:** alternating ivory editorial sections and ink "technology" sections with aurora light, grid lines and glass.
 
-| Reference | Strongest relevant pattern reviewed | Actual decision |
-| --- | --- | --- |
-| Aceternity templates | Studio and AI SaaS compositions; spotlight cards, magnetic buttons, sticky reveals | Three equal core-service cards, restrained hover border, clear story order. Existing magnetic CTA retained. |
-| Magic UI | Border Beam, Animated Beam, Shimmer Button, Bento Grid | A quiet optical card edge, flow lines in the product channel display, and CTA sheen; no perpetual neon animation. |
-| Dribbble Free | Broad web/brand/product inspiration gallery | Use composition and color contrast as inspiration only, no art copied. |
-| ReUI | Realistic product components, especially steps, tabs, data views | Channel switcher with semantic tabs and real destinations; structured service steps. |
-| LottieFiles finance search | The supplied premium-assets URL was inaccessible through public retrieval | No finance asset embedded and no license assumption. |
-| shadcn components | Tabs, cards, navigation and form semantics | Existing site primitives and native semantic controls retained; no second component dependency. |
-| shadcn blocks | Dashboard cards and sidebars | Preserve the actual signed-in workspace, not a fictional metrics dashboard. |
-| Origin UI → coss/ui | Base UI cards, drawers, accessible form controls | Keep meaningful focus and keyboard states; no visual clone. |
-| Kokonut UI | Liquid-glass card, particle button, shimmer text | Use glass only for a few controls; avoid particles that obscure DigitalBurj's purpose. |
-| Preline UI | Responsive components and coherent theming | Unified shell and mobile grid behavior. |
-| Preline blocks | Concise product and conversion sections | Put three actual channel paths on one discovery surface. |
-| HyperUI | Readable responsive marketing cards | Prioritize service text and a single route per card. |
-| Float UI | Simple adaptable landing grids | Aligned three-column system with one-column mobile order. |
-| SVGator assets | Interaction-triggered animated vectors | Keep animation authored in CSS and React, no external asset payload. |
-| Uiverse animation | Hover borders and concise CSS interactions | Hover glow on service cards with reduced-motion fallback. |
-| Uiverse elements | Buttons, cards, loaders and patterns | Use polished action states only; no decorative loader. |
-| Jitter UI elements | Frosted navigation, progress line, animated arrows | Existing carousel, timed story progress and mobile navigation refined. |
-| Animate UI | Public landing returned minimal content; button documentation surfaced by search | Translate short, state-driven button motion only; no unsupported claims about its full catalog. |
-| Animata | Gradient bento, case-study cards, animated timelines, image reveal | Three distinct optical card illustrations; image reveal and staggered scroll entry. |
-| Framer marketplace | Software, AI, agency and education categories | Editorial story segmented around real DigitalBurj divisions. |
-| 21st.dev | Animated hero, gradients, buttons, cards and navigation | Layered hero and selective color accents rather than a collage of effects. |
+## No repeated images
 
-### Implementation choices
+- Every photograph is registered once in `app/brand-data.ts` (`media`) and placed exactly once on the site.
+- `npm run check:media` fails the build step if a photo is placed twice, hard-coded outside the registry, missing or empty. (The empty `hero-jobs-generated.webp` in the upload was removed; Jobs now uses the reception photograph.)
+- Thumbnails, course cards, service cards and ventures use `GenArt`, which renders original SVG compositions from a unique seed, so they never repeat either.
 
-- **Brand:** navy and red remain primary; cobalt, teal and warm amber indicate distinct technical disciplines.
-- **Imagery:** three new original abstract software pieces in the core cards. The story carousel uses separate human photography, and the hero retains its cinematic sequence. Images are not repeated within the same card row.
-- **Motion:** image easing, timed carousel, scroll reveal, reading progress and focused hover response. Reduced-motion preferences suppress animated transitions.
-- **Conversion:** Web app opens the real workspace. Mobile means the same responsive web workspace, not an unbuilt native app. WhatsApp checks the configured business number and falls back to structured enquiries when unavailable.
-- **Accuracy:** no fabricated customers, outcomes, revenue KPIs, portfolio projects, or product screens.
+## Motion & accessibility
+
+- Scroll choreography (`MotionLayer`): staggered reveals, scrubbed text, parallax, counters, sticky-story progress, spotlight and tilt. It is all driven by data attributes and uses one `requestAnimationFrame` loop.
+- Route transitions: a three-panel colour wipe, plus a brand intro shown once per session on the home page.
+- `prefers-reduced-motion` disables all of it: animations stop, reveals are shown immediately and tilt/magnetism are off.
+- Keyboard: ⌘K/Ctrl+K palette with arrow-key navigation; Escape closes the palette and the menu; focus rings are visible; tabs and radios use ARIA roles; the honeypot field is hidden from assistive technology.

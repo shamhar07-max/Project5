@@ -1,1 +1,25 @@
-{"name":"DigitalBurj","short_name":"DigitalBurj","description":"Learn. Build. Transform.","start_url":"/","display":"standalone","background_color":"#10273c","theme_color":"#10273c","icons":[{"src":"/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},{"src":"/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"}]}
+{
+  "id": "/",
+  "name": "DigitalBurj",
+  "short_name": "DigitalBurj",
+  "description": "Learn. Build. Transform. Academy, Studio, Business AI, Verified Talent and Jobs in one app.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait-primary",
+  "background_color": "#070d1b",
+  "theme_color": "#070d1b",
+  "categories": ["education", "business", "productivity"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "My learning", "url": "/workspace/academy", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Start a project", "url": "/workspace/intake?service=studio", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "WhatsApp DigitalBurj", "url": "/connect/whatsapp", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Workspace", "url": "/workspace", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

@@ -27,3 +27,24 @@ Reference: DigitalBurj Complete Master Structure (September 2026) and the suppli
 - Perform security review, file malware scanning, backup and restore testing, accessibility QA and cross-role acceptance tests before opening the platform to customers.
 
 No route should label a practice draft as a credential, a prototype price as a confirmed offer, an enquiry as an approved project, or an unverified profile as independently verified.
+
+## September 25 redesign (public experience + conversion channels)
+
+- New luxury-technology design system (`app/experience.css`), shared shell with ⌘K command palette, premium full-screen mobile menu, thumb-reach mobile dock, route curtain transitions and scroll choreography (`app/_ui/`).
+- Home page rebuilt around the blueprint narrative: cinematic hero, scrubbed brand statement, division bento, interactive flywheel, sticky Academy/Studio/Business AI stories, signature decisions lab (BUILD/RESHAPE/STOP, leak finder, AI risk dial), technology bento, channel stage, outcome router, principles and ventures with honest status.
+- Division pages (Studio, Business AI, Talent, Jobs) and the Academy page carry blueprint content: service lines, workflows, states, engagement models.
+- Conversion channels:
+  - **WhatsApp** (`/connect/whatsapp`): guided composer with live preview. It stores a `leads` row with a reference code and opens `wa.me` with the message pre-written when `DIGITALBURJ_WHATSAPP_NUMBER` is set; otherwise it stores the request and says so.
+  - **Mobile app** (`/app`): installable PWA (manifest shortcuts, service worker with offline page, install prompt / iOS steps). Native store apps are not published.
+  - **Web app** (`/platform`): tour of the real workspace areas.
+- Backend: `leads` table (migration `0009`), `POST /api/leads` (zod validation, honeypot, same-origin check, 5 requests / 10 minutes per client hash), `GET /api/leads` (WhatsApp availability), `/workspace/leads` (your own requests; all requests plus status updates for `DIGITALBURJ_STAFF_EMAILS`, audit-logged).
+- Media: every photo is placed once (`npm run check:media`).
+
+### Environment variables
+
+| Variable | Purpose |
+| --- | --- |
+| `DIGITALBURJ_WHATSAPP_NUMBER` | Official WhatsApp Business number in international format, for example `9715XXXXXXXX`. |
+| `DIGITALBURJ_STAFF_EMAILS` | Comma-separated sign-in emails that may see and update all channel requests. |
+
+For local development, put these in `.dev.vars` (ignored by Git) and apply `drizzle/0009_*.sql` to the local D1 database as described in the README.

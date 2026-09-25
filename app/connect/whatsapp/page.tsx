@@ -1,9 +1,39 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
+import type { CSSProperties } from "react";
+import { Clock3, Hash, ShieldCheck } from "lucide-react";
 import { SiteHeader, SiteFooter } from "../../site-shell";
-export const dynamic="force-dynamic";
-export default function WhatsApp(){
-  const number=(process.env.DIGITALBURJ_WHATSAPP_NUMBER||"").replace(/\D/g,"");
-  if(number.length>=8&&number.length<=15) redirect(`https://wa.me/${number}?text=${encodeURIComponent("Hello DigitalBurj, I would like to discuss a project or learning path.")}`);
-  return <main className="public-site"><SiteHeader/><section className="shell section-pad min-h-[60vh]"><span className="eyebrow">Contact / WhatsApp</span><h1 className="display-title max-w-3xl">WhatsApp is <span className="serif-accent">being connected.</span></h1><p className="mt-7 max-w-2xl text-lg leading-8 text-[#526577]">We need an official DigitalBurj business number before we can open a verified conversation. You can still send a Studio or Business AI enquiry through your workspace.</p><div className="mt-9 flex flex-wrap gap-3"><Link href="/workspace/intake?service=studio" className="btn btn-red">Studio enquiry ↗</Link><Link href="/workspace/intake?service=business" className="btn btn-dark">Business AI consultation ↗</Link></div></section><SiteFooter/></main>;
+import { SectionHead } from "../../_ui/sections";
+import { Aurora } from "../../_ui/sections";
+import { leadTopics, whatsappNumber, type LeadTopic } from "../../../lib/leads";
+import { WhatsAppComposer } from "./composer";
+import { outcomes } from "../../brand-data";
+
+export const dynamic = "force-dynamic";
+
+export default async function WhatsApp({ searchParams }: { searchParams: Promise<{ topic?: string; intent?: string; timing?: string }> }) {
+  const p = await searchParams;
+  const topic = (p.topic && p.topic in leadTopics ? p.topic : "general") as LeadTopic;
+  const available = Boolean(whatsappNumber());
+  return <main className="public-site">
+    <SiteHeader />
+    <section className="connect-hero dark-sec">
+      <Aurora hue={["#25d366", "#128c7e"]} third="#e10613" />
+      <div className="shell">
+        <span className="kicker kicker-glass"><i className="pulse" />WhatsApp · {available ? "Official channel" : "Guided request"}</span>
+        <h1 className="hero-title" style={{ "--a": "#86efac", "--b": "#5eead4" } as CSSProperties}>Start with a <em>conversation.</em></h1>
+        <p className="hero-lede">Compose a clear first message in under a minute. We route it to the right team with a reference code, so nothing gets lost between chat and workspace.</p>
+        <ul className="connect-points">
+          <li><Hash size={17} /> A reference code on every request</li>
+          <li><Clock3 size={17} /> Routed to Academy, Studio, Business AI, Talent or Jobs</li>
+          <li><ShieldCheck size={17} /> Nothing is sent without your tap</li>
+        </ul>
+      </div>
+    </section>
+    <section className="section composer-sec">
+      <div className="shell">
+        <SectionHead index="01" kicker="Guided composer" title={<>Say it once. <em>Say it clearly.</em></>} />
+        <WhatsAppComposer available={available} initialTopic={topic} intent={outcomes.find(o => o.id === p.intent)?.label ?? ""} timing={(p.timing || "").slice(0, 20)} />
+      </div>
+    </section>
+    <SiteFooter />
+  </main>;
 }
