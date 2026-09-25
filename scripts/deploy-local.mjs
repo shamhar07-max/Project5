@@ -26,12 +26,21 @@ function run(cmd, cmdArgs, opts = {}) {
 function d1(sqlArgs) {
   const r = run(process.execPath, [...wrangler, "d1", "execute", "DB", "--local", "--config", config, "--persist-to", state, "--json", ...sqlArgs]);
   const out = `${r.stdout}\n${r.stderr}`;
-  return { ok: r.status === 0, out, rows: r.status === 0 ? (JSON.parse(r.stdout.slice(r.stdout.indexOf("[")))[0]?.results ?? []) : [] };
+  return { ok: r.status === 0, out, rows: r.status === 0 ? parseRows(r.stdout) : [] };
+}
+
+// Wrangler may print banners (e.g. "▲ [WARNING] …") before the JSON, so start at the
+// line where the JSON array itself begins.
+function parseRows(stdout) {
+  const start = stdout.search(/^\[\s*$/m);
+  return start < 0 ? [] : (JSON.parse(stdout.slice(start))[0]?.results ?? []);
 }
 
 if (!skipBuild) {
   console.log("▸ Building the Worker…");
-  const b = run("npm", ["run", "build"], { stdio: "inherit" });
+  // Run the build script with this Node binary instead of spawning `npm`, which is
+  // `npm.cmd` on Windows and cannot be launched without a shell.
+  const b = run(process.execPath, ["scripts/run-framework.mjs", "build"], { stdio: "inherit" });
   if (b.status !== 0) process.exit(b.status ?? 1);
 }
 if (!existsSync(config)) { console.error(`Missing ${config}. Run without --skip-build.`); process.exit(1); }
