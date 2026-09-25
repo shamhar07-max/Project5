@@ -1,17 +1,17 @@
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
-import { ArrowUpRight, BookOpen, BriefcaseBusiness, ChartNoAxesCombined, MessageCircle, PanelsTopLeft, ShieldCheck, Users, Waypoints } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { BrandMark, markForTitle } from "./_ui/brand-mark";
 import { SiteHeader, SiteFooter } from "./site-shell";
-import type { MediaKey } from "./brand-data";
+import type { SceneKey } from "./brand-data";
 import { ChannelRow, PageHero, SectionHead } from "./_ui/sections";
 
 type Section = { title: string; body: string; href?: string };
-/** Shared template for company and resource pages. Each page passes its own photo or artwork. */
-export function PublicPage({ eyebrow, title, intro, sections, image, hue = ["#e10613", "#8b5cf6"], lead, children }: { eyebrow: string; title: ReactNode; intro: string; sections: Section[]; image?: MediaKey; hue?: [string, string]; lead?: ReactNode; children?: ReactNode }) {
+/** Shared template for company and resource pages. Each page passes its own scene. */
+export function PublicPage({ eyebrow, title, intro, sections, scene, hue = ["#e10613", "#8b5cf6"], lead, children }: { eyebrow: string; title: ReactNode; intro: string; sections: Section[]; scene?: SceneKey; hue?: [string, string]; lead?: ReactNode; children?: ReactNode }) {
   return <main className="public-site" style={{ "--a": hue[0], "--b": hue[1] } as CSSProperties}>
     <SiteHeader />
-    <PageHero kicker={`DigitalBurj / ${eyebrow}`} title={title} intro={intro} image={image} hue={hue} />
+    <PageHero kicker={`DigitalBurj / ${eyebrow}`} title={title} intro={intro} scene={scene} hue={hue} />
     <section className="section tinted-sec">
       <div className="shell">
         <SectionHead index="01" kicker={`Explore · ${eyebrow}`} title={lead || <>What you <em>need to know.</em></>} />

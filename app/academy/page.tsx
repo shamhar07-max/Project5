@@ -1,10 +1,11 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { ArrowUpRight, BookOpenCheck, BriefcaseBusiness, Building2, Code2, GraduationCap } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { academyCourses, academyStages } from "../academy-data";
 import { BrandMark } from "../_ui/brand-mark";
 import { SiteHeader, SiteFooter } from "../site-shell";
-import { divisionBySlug, media } from "../brand-data";
+import { divisionBySlug } from "../brand-data";
+import { Scene } from "../_ui/scenes";
 import { MagneticLink } from "../_ui/magnetic";
 import { ChannelRow, PageHero, SectionHead } from "../_ui/sections";
 
@@ -30,7 +31,7 @@ const states = ["Not started", "In progress", "Submitted", "Under review", "Revi
 export default function Academy() {
   return <main className="public-site" style={{ "--a": d.hue[0], "--b": d.hue[1] } as CSSProperties}>
     <SiteHeader />
-    <PageHero kicker={`DigitalBurj Academy · ${d.domain}`} title={<>Learn it. Apply it. <em>Prove it.</em></>} intro="Choose a unit, complete practical work and get feedback on what you can actually do. Keep the resulting evidence in your own profile." image="heroAcademy" hue={d.hue}>
+    <PageHero kicker={`DigitalBurj Academy · ${d.domain}`} title={<>Learn it. Apply it. <em>Prove it.</em></>} intro="Choose a unit, complete practical work and get feedback on what you can actually do. Keep the resulting evidence in your own profile." scene="heroAcademy" hue={d.hue}>
       <MagneticLink href="/academy/catalogue">Explore the catalogue</MagneticLink>
       <MagneticLink href="/workspace/academy" variant="glass">My learning</MagneticLink>
     </PageHero>
@@ -59,7 +60,7 @@ export default function Academy() {
     </section>
 
     <section className="split-feature">
-      <div className="split-photo" style={{ backgroundImage: `url('${media.academySpace}')` }} role="img" aria-label="Illustrative scene of learners discussing practical work" data-reveal="image" />
+      <div className="split-scene"><Scene k="academyReview" /></div>
       <div className="split-copy">
         <span className="kicker" data-reveal="up"><b>03</b>Assessment model</span>
         <h2 className="display" data-reveal="up">Evidence, <em>layer by layer.</em></h2>

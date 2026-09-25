@@ -1,8 +1,9 @@
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
-import { ArrowUpRight, BookOpen, FileText, MessageCircle, MonitorSmartphone, PanelsTopLeft, ShieldCheck, Smartphone } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { BrandMark, type MarkName } from "./brand-mark";
-import { media, type MediaKey } from "../brand-data";
+import type { SceneKey } from "../brand-data";
+import { Scene } from "./scenes";
 
 export function Aurora({ hue = ["#e10613", "#2563eb"], third = "#8b5cf6" }: { hue?: readonly [string, string]; third?: string }) {
   return <div className="aurora" aria-hidden="true" style={{ "--a1": hue[0], "--a2": hue[1], "--a3": third } as CSSProperties}><i /><i /><i /><span className="grid-lines" /></div>;
@@ -18,13 +19,11 @@ export function SectionHead({ index, kicker, title, children, light = false, ali
   </div>;
 }
 
-/** Page hero: one registered photograph or a restrained typographic surface. */
-export function PageHero({ kicker, title, intro, image, hue = ["#e10613", "#2563eb"], children }: { kicker: string; title: ReactNode; intro: string; image?: MediaKey; hue?: readonly [string, string]; children?: ReactNode }) {
+/** Page hero: one registered product scene or a restrained typographic surface. */
+export function PageHero({ kicker, title, intro, scene, hue = ["#e10613", "#2563eb"], children }: { kicker: string; title: ReactNode; intro: string; scene?: SceneKey; hue?: readonly [string, string]; children?: ReactNode }) {
   const heroMark: MarkName = /privacy|terms/i.test(kicker) ? "security" : /guides|docs/i.test(kicker) ? "docs" : /contact/i.test(kicker) ? "contact" : /platform|web app/i.test(kicker) ? "platform" : "integrations";
-  return <section className="page-hero" style={{ "--a": hue[0], "--b": hue[1] } as CSSProperties}>
-    <div className="page-hero-media" data-parallax="0.08">
-      {image ? <div className="page-hero-photo" style={{ backgroundImage: `url('${media[image]}')` }} /> : <div className="page-hero-symbol" aria-hidden="true"><BrandMark name={heroMark} className="hero-mark" /></div>}
-    </div>
+  return <section className={`page-hero ${scene ? "page-hero-has-scene" : ""}`} style={{ "--a": hue[0], "--b": hue[1] } as CSSProperties}>
+    {scene ? <div className="page-hero-scene"><Scene k={scene} /></div> : <div className="page-hero-media" data-parallax="0.08"><div className="page-hero-symbol" aria-hidden="true"><BrandMark name={heroMark} className="hero-mark" /></div></div>}
     <div className="page-hero-shade" />
     <Aurora hue={hue} />
     <div className="shell page-hero-inner">

@@ -55,3 +55,14 @@ No route labels a practice draft as a credential, a prototype price as a confirm
 | `DIGITALBURJ_STAFF_EMAILS` | Comma-separated sign-in emails that are always super admins (bootstrap). Other staff roles are granted in Admin → Access. |
 
 For local development, put these in `.dev.vars` (ignored by Git) and run `npm run deploy:local`, which applies every migration in `drizzle/` to the local D1 database.
+
+## Visual direction: authored imagery, no generated photography
+
+Every photograph the site previously used was AI-generated. They have been removed. Imagery is now authored from things that are true about DigitalBurj:
+
+- **Product scenes** (`app/_ui/scenes.tsx`, `app/scenes.css`): each placement shows a real part of the platform — the Academy mission rubric and review console, the credential seal, Studio's BUILD / RESHAPE / STOP gate and release checklist, a Business AI process leak, measured before/after and risk dial, the Capability Passport, the hiring pipeline and an approved offer, the WhatsApp first conversation. They sit on a blueprint of the Burj elevation, with its real coordinates and height.
+- **DigitalBurj glyphs** (`app/_ui/glyphs.tsx`): a bespoke line-icon family on a 48-unit grid. The accent stroke carries the division colour, draws in on reveal, idles gently and speeds up on hover; tiles light a turning ring on hover. All motion stops under reduced-motion settings.
+- **Genuine assets kept:** the approved wordmark and iconmark, and the partner logos from completed work.
+- `npm run check:media` now verifies that each scene is placed exactly once and that no source references a photo outside the brand marks and partner logos.
+
+If DigitalBurj commissions real photography (team, workshops, client sessions), it can be added back through the registry in `app/brand-data.ts`.

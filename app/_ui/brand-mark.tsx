@@ -1,17 +1,19 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
+import { Glyph, type GlyphName } from "./glyphs";
+import { divisionBySlug, type DivisionSlug } from "../brand-data";
 
-export type MarkName = "academy" | "studio" | "business" | "talent" | "jobs" | "platform" | "docs" | "contact" | "security" | "data" | "cloud" | "integrations" | "mobile" | "web" | "whatsapp";
+export type MarkName = GlyphName;
 
-const imageFor: Record<MarkName, string> = {
-  academy: "academy", studio: "studio", business: "business", talent: "talent", jobs: "jobs",
-  platform: "platform", docs: "academy", contact: "contact", security: "security", data: "data",
-  cloud: "cloud", integrations: "studio", mobile: "platform", web: "platform", whatsapp: "contact",
-};
+const label: Partial<Record<MarkName, string>> = { business: "BUSINESS AI", talent: "VERIFIED TALENT" };
+const accent = (name: MarkName): readonly [string, string] | undefined => (divisionBySlug as Record<string, { hue: [string, string] } | undefined>)[name as DivisionSlug]?.hue;
 
+/** A highlighted DigitalBurj glyph tile; `lockup` adds the approved wordmark and division name. */
 export function BrandMark({ name, className = "", lockup = false }: { name: MarkName; className?: string; lockup?: boolean }) {
-  return <span className={`brand-mark ${className}`} aria-hidden="true">
-    <Image src={`/brand/editorial-thumbs/${imageFor[name]}.webp`} width={900} height={600} alt="" unoptimized />
-    {lockup && <span className="brand-mark-lockup"><Image src="/brand/digitalburj-wordmark-approved.webp" width={2048} height={512} alt="" unoptimized /><b>{name === "business" ? "BUSINESS AI" : name === "talent" ? "VERIFIED TALENT" : name.toUpperCase()}</b></span>}
+  const hue = accent(name);
+  return <span className={`brand-mark ${className}`} aria-hidden="true" style={hue ? { "--a": hue[0], "--b": hue[1] } as CSSProperties : undefined}>
+    <Glyph name={name} tile size={64} />
+    {lockup && <span className="brand-mark-lockup"><Image src="/brand/digitalburj-wordmark-approved.webp" width={2048} height={512} alt="" unoptimized /><b>{label[name] ?? name.toUpperCase()}</b></span>}
   </span>;
 }
 

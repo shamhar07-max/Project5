@@ -1,5 +1,5 @@
 import { PublicPage } from "../public-page";
-export default function Company() { return <PublicPage eyebrow="Company" title={<>One technology company. <em>Built on evidence.</em></>} image="companyHero" hue={["#e10613", "#d8b46a"]} intro="A technology company connecting practical education, engineering, operational improvement and professional capability." sections={[
+export default function Company() { return <PublicPage eyebrow="Company" title={<>One technology company. <em>Built on evidence.</em></>} scene="companyHero" hue={["#e10613", "#d8b46a"]} intro="A technology company connecting practical education, engineering, operational improvement and professional capability." sections={[
   {title:"Our purpose",body:"Help people learn useful skills and help organizations build systems that make daily work better."},
   {title:"Our approach",body:"Learn through practice, validate before building, diagnose before automating, and distinguish claimed skills from assessed evidence."},
   {title:"Our people",body:"Our work draws on product strategy, engineering, education, business analysis and careful review. The right specialists join each engagement as needed."},

@@ -1,12 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import { ArrowDown, ArrowUpRight, Cloud, Cpu, Database, Link2, Lock, Server, Terminal } from "lucide-react";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { BrandMark, type MarkName } from "./_ui/brand-mark";
 import { HeroSystem } from "./_ui/hero-system";
 import { PartnerShowcase } from "./_ui/partner-showcase";
 import { SiteHeader, SiteFooter } from "./site-shell";
-import { divisions, media, outcomes, divisionBySlug } from "./brand-data";
+import { divisions, outcomes, divisionBySlug, type SceneKey } from "./brand-data";
+import { Scene } from "./_ui/scenes";
+import { Glyph, type GlyphName } from "./_ui/glyphs";
 import { academyCourses, academyStages } from "./academy-data";
 import { MagneticLink } from "./_ui/magnetic";
 import { ScrubText } from "./_ui/motion";
@@ -15,25 +17,25 @@ import { SignatureLab } from "./_ui/signature-lab";
 import { ChannelStage } from "./_ui/channel-stage";
 import { Marquee, SectionHead } from "./_ui/sections";
 
-const cardImages = { academy: media.cardAcademy, studio: media.cardStudio, business: media.cardBusiness } as const;
+const cardScenes: Record<string, SceneKey> = { academy: "cardAcademy", studio: "cardStudio", business: "cardBusiness" };
+const storyScenes: SceneKey[] = ["storyAcademy", "storyStudio", "storyBusiness"];
 
 const stories = [
   { d: "academy", quote: "Learning should produce capability and evidence, not just completion.", flow: ["Discover", "Mission", "Submit", "Review", "Assess", "Verify", "Evidence"] },
   { d: "studio", quote: "We do not start with code. We start with the problem.", flow: ["Enquiry", "Discovery", "Validation", "Decision", "Engineering", "QA", "Deploy"] },
   { d: "business", quote: "Automating the wrong process only makes the wrong process faster.", flow: ["Observe", "Diagnose", "Baseline", "Redesign", "Approve", "Automate", "Measure"] },
 ] as const;
-const storyMarks: MarkName[] = ["academy", "studio", "business"];
 const outcomeMarks: MarkName[] = ["academy", "studio", "business", "talent", "jobs", "contact"];
 
-const capabilities = [
-  { t: "Software & SaaS", d: "Web platforms, portals, marketplaces and internal systems.", Icon: Terminal, cls: "cap-code", hue: ["#2563eb", "#22d3ee"] },
-  { t: "AI products", d: "Assistants, extraction, classification and decision support — evaluated and governed.", Icon: Cpu, cls: "cap-ai", hue: ["#8b5cf6", "#ec4899"] },
-  { t: "Data & reporting", d: "Baselines, dashboards and before/after measurement.", Icon: Database, cls: "cap-data", hue: ["#10b981", "#a3e635"] },
-  { t: "Cloud & reliability", d: "Deployment, monitoring, backup and rollback plans.", Icon: Cloud, cls: "cap-cloud", hue: ["#0ea5e9", "#6366f1"] },
-  { t: "Enterprise systems", d: "CRM and ERP fit, configuration and data flows.", Icon: Server, cls: "cap-ent", hue: ["#f59e0b", "#f97316"] },
-  { t: "Security", d: "Server-side authorization, tenant boundaries and audit trails.", Icon: Lock, cls: "cap-sec", hue: ["#e10613", "#f43f5e"] },
-  { t: "APIs & integrations", d: "Identity, payments and legacy systems connected cleanly.", Icon: Link2, cls: "cap-int", hue: ["#14b8a6", "#3b82f6"] },
-] as const;
+const capabilities: { t: string; d: string; g: GlyphName; spec: string; hue: [string, string] }[] = [
+  { t: "Software & SaaS", d: "Web platforms, portals, marketplaces and internal systems.", g: "code", spec: "TypeScript · React · edge runtime", hue: ["#2563eb", "#22d3ee"] },
+  { t: "AI products", d: "Assistants, extraction, classification and decision support — evaluated and governed.", g: "ai", spec: "Evaluated · human approval for high risk", hue: ["#8b5cf6", "#ec4899"] },
+  { t: "Data & reporting", d: "Baselines, dashboards and before/after measurement.", g: "data", spec: "Measured vs estimated, always labelled", hue: ["#10b981", "#a3e635"] },
+  { t: "Cloud & reliability", d: "Deployment, monitoring, backup and rollback plans.", g: "cloud", spec: "Rollback plan with every release", hue: ["#0ea5e9", "#6366f1"] },
+  { t: "Enterprise systems", d: "CRM and ERP fit, configuration and data flows.", g: "enterprise", spec: "Fit before customisation", hue: ["#f59e0b", "#f97316"] },
+  { t: "Security", d: "Server-side authorization, tenant boundaries and audit trails.", g: "security", spec: "Every action checked and audited", hue: ["#e10613", "#f43f5e"] },
+  { t: "APIs & integrations", d: "Identity, payments and legacy systems connected cleanly.", g: "integrations", spec: "Scoped keys · signed webhooks", hue: ["#14b8a6", "#3b82f6"] },
+];
 
 const principles = ["Problems before technology", "Practical capability over passive completion", "Evidence before claims", "Validate before major engineering", "Measure before and after transformation", "Human control for consequential automation", "One identity, contextual roles", "Shared infrastructure, bounded domains"];
 const disciplines = ["SaaS platforms", "AI agents & copilots", "Workflow automation", "Data pipelines", "Mobile apps", "APIs & integrations", "Cloud architecture", "Security reviews", "Design systems", "Quality engineering", "Practical missions", "Capability passports"];
@@ -43,11 +45,7 @@ export default function Home() {
 
     {/* 01 — Cinematic hero */}
     <section className="home-hero">
-      <div className="home-hero-reel" aria-hidden="true">
-        <span style={{ backgroundImage: `url('${media.homeHeroAcademy}')` }} />
-        <span style={{ backgroundImage: `url('${media.homeHeroStudio}')` }} />
-        <span style={{ backgroundImage: `url('${media.homeHeroOperations}')` }} />
-      </div>
+      <div className="home-hero-backdrop"><Scene k="homeHero" /></div>
       <div className="home-hero-shade" />
       <div className="shell home-hero-grid">
         <div className="home-hero-copy">
@@ -86,7 +84,7 @@ export default function Home() {
         <SectionHead index="02" kicker="The ecosystem" title={<>Five paths. <em>One company.</em></>}><p>Five connected teams, each with a clear job. Start with the one that matches what you need today.</p></SectionHead>
         <div className="bento">
           {divisions.slice(0, 3).map((d, i) => <Link key={d.slug} href={`/${d.slug}`} className={`bcard bcard-${d.slug}`} data-spotlight data-tilt data-reveal="up" style={{ "--i": i, "--a": d.hue[0], "--b": d.hue[1] } as CSSProperties}>
-            <span className="bcard-img" data-reveal="image" style={{ backgroundImage: `url('${cardImages[d.slug as keyof typeof cardImages]}')` }} />
+            <span className="bcard-scene"><Scene k={cardScenes[d.slug]} /></span>
             <span className="bcard-shade" />
             <span className="bcard-top"><span className="bcard-tag">0{i + 1} · {d.verb}</span><span className="orb"><ArrowUpRight size={20} /></span></span>
             <span className="bcard-body"><span className="bcard-division-lockup"><Image src="/brand/digitalburj-wordmark-approved.webp" alt="" width={2048} height={512} unoptimized /><b>{d.name}</b></span><strong>{d.name}</strong><em>{d.tagline}</em><small>{d.description}</small></span>
@@ -112,7 +110,7 @@ export default function Home() {
     <section className="story" data-sticky-story="3">
       <div className="story-sticky">
         <div className="story-media">
-          {stories.map((s, i) => { return <div key={s.d} className="story-img" data-idx={i} style={{ "--a": divisionBySlug[s.d].hue[0] } as CSSProperties}><div className="story-visual-mark"><BrandMark name={storyMarks[i]} lockup /><span>0{i + 1} / {divisionBySlug[s.d].name}</span></div></div>; })}
+          {stories.map((s, i) => { return <div key={s.d} className="story-img story-scene" data-idx={i} style={{ "--a": divisionBySlug[s.d].hue[0] } as CSSProperties}><Scene k={storyScenes[i]} /><span className="story-scene-tag">0{i + 1} / {divisionBySlug[s.d].name}</span></div>; })}
           <div className="story-media-shade" />
           <div className="story-counter"><span className="story-bar" /><span className="story-dots">{stories.map((s, i) => <i key={s.d} data-idx={i} />)}</span></div>
         </div>
@@ -142,7 +140,7 @@ export default function Home() {
         <div className="tech-lanes">
           {capabilities.map((c, i) => <article key={c.t} className="tech-lane" data-reveal="up" style={{ "--i": i, "--a": c.hue[0] } as CSSProperties}>
             <div className="tech-lane-head"><span>{String(i + 1).padStart(2, "0")} / 07</span><h3>{c.t}</h3><p>{c.d}</p></div>
-            <div className="tech-lane-media"><Image src={`/brand/editorial-thumbs/${(["studio", "business", "data", "cloud", "platform", "security", "academy"] as const)[i]}.webp`} alt="" width={900} height={600} unoptimized loading="lazy" /><span className="tech-lane-scan" /></div>
+            <div className="tech-lane-media tech-lane-glyph" style={{ "--b": c.hue[1] } as CSSProperties}><Glyph name={c.g} size={i === 0 ? 132 : 96} /><span className="tech-lane-spec">{c.spec}</span><span className="tech-lane-scan" /></div>
           </article>)}
         </div>
       </div>

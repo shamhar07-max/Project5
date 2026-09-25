@@ -1,15 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
-import { ArrowUpRight, BadgeCheck, BarChart3, BookOpen, Bot, BriefcaseBusiness, CalendarCheck, Code2, Cog, FileCheck2, FileText, Layers, ListChecks, LockKeyhole, Network, PanelsTopLeft, Search, ShieldCheck, UserRound, Users, Workflow } from "lucide-react";
+import { ArrowUpRight, ShieldCheck } from "lucide-react";
 import { BrandMark, type MarkName } from "../_ui/brand-mark";
 import { SiteHeader, SiteFooter } from "../site-shell";
-import { divisionBySlug, type DivisionSlug, type MediaKey } from "../brand-data";
+import { divisionBySlug, type DivisionSlug, type SceneKey } from "../brand-data";
 import { MagneticLink } from "../_ui/magnetic";
 import { ChannelRow, PageHero, SectionHead } from "../_ui/sections";
 
 type Content = {
-  hero: MediaKey; title: [string, string]; intro: string;
+  hero: SceneKey; title: [string, string]; intro: string;
   position: string; signature: string; output: string;
   services: { t: string; d: string }[];
   flow: string[];
@@ -112,7 +112,7 @@ export default async function DivisionPage({ params }: { params: Promise<{ divis
   const accent = { "--a": d.hue[0], "--b": d.hue[1] } as CSSProperties;
   return <main className="public-site" style={accent}>
     <SiteHeader />
-    <PageHero kicker={`DigitalBurj ${d.name} · ${d.domain}`} title={<>{c.title[0]} <em>{c.title[1]}</em></>} intro={c.intro} image={c.hero} hue={d.hue}>
+    <PageHero kicker={`DigitalBurj ${d.name} · ${d.domain}`} title={<>{c.title[0]} <em>{c.title[1]}</em></>} intro={c.intro} scene={c.hero} hue={d.hue}>
       <MagneticLink href={c.href}>{c.cta}</MagneticLink>
       <MagneticLink href={`/connect/whatsapp?topic=${division}`} variant="glass">Ask on WhatsApp</MagneticLink>
     </PageHero>

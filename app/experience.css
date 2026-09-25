@@ -969,7 +969,7 @@ html.scrolled .header-inner { background: #fcfbf8f2; box-shadow: 0 16px 50px -20
 .story-img[data-idx="1"] { background: #203344; }
 .story-img[data-idx="2"] { background: #293947; }
 
-/* Documentary visual system — photography is editorial, never presented as a customer case study. */
+/* Documentary visual system (superseded by the authored scenes in scenes.css). */
 .header-inner, html.scrolled .header-inner { background: #fbfaf7; border-color: #e3e5e4; backdrop-filter: none; box-shadow: 0 7px 24px #07152613; }
 .brand-wordmark { mix-blend-mode: multiply; }
 .brand-wordmark img { mix-blend-mode: multiply; }
@@ -1139,7 +1139,7 @@ html.scrolled .header-inner { background: #fcfbf8f2; box-shadow: 0 16px 50px -20
 .seg-mark { width: 30px; border: none; }
 .ph-mark { width: 32px; border: none; }
 
-/* The new editorial image system: no icon frames or vector drawings. */
+/* Earlier editorial image system; glyph tiles in scenes.css now override these marks. */
 .brand-mark { border: 0; border-radius: 3px; aspect-ratio: 3 / 2; background: #e6ecec; box-shadow: 0 8px 22px -18px #10283d; }
 .brand-mark > img { object-fit: cover; filter: saturate(.88) contrast(1.04); transition: transform .65s var(--ease-out), filter .65s; }
 .gcard:hover .brand-mark > img, .direction:hover .brand-mark > img, .route:hover .brand-mark > img, .bcard:hover .brand-mark > img { transform: scale(1.07); filter: saturate(1.06) contrast(1.03); }
