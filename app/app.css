@@ -118,3 +118,12 @@ details.app-more[open] > summary { margin-bottom: .8rem; }
 .app-error h1 { font-size: 1.4rem; font-weight: 800; }
 .app-error p { color: var(--mute); line-height: 1.55; }
 .app-error small { color: var(--mute); font-family: var(--font-mono, monospace); }
+
+/* Match the public site's quieter geometry in the signed-in workspace. */
+.app { background: #f3f3f0; }
+.app-side { background: #101e2c; }
+.app-context, .app-panel, .app-stat, .app-empty, .app-denied, .app-code { border-radius: 6px; }
+.app input:not([type=checkbox]):not([type=radio]):not([type=hidden]), .app textarea, .app select, .app-btn { border-radius: 5px; }
+.app-nav-group a, .app-steps span { border-radius: 4px; }
+.app-user > span { background: #314253; }
+.app-brand img { background: #f3f3ef; border-radius: 3px; }

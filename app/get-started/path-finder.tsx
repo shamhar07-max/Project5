@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, Check, MessageCircle, MonitorSmartphone, Smartphone } from "lucide-react";
 import { divisionBySlug, outcomes } from "../brand-data";
+import { BrandMark, type MarkName } from "../_ui/brand-mark";
 import { MagneticLink } from "../_ui/magnetic";
 
 const timings = [
@@ -26,7 +27,7 @@ export function PathFinder() {
   const d = outcome ? divisionBySlug[outcome.division] : null;
   const waHref = `/connect/whatsapp?topic=${outcome?.division ?? "general"}&intent=${outcome?.id ?? ""}&timing=${timing ?? ""}`;
   const primary = channel === "whatsapp" ? waHref : channel === "mobile" ? "/app" : outcome?.href ?? "/workspace";
-  const progress = ((step + (step === 2 ? 1 : 0)) / 3) * 100;
+  const progress = ((step + 1) / 3) * 100;
 
   return <div className="finder" style={d ? ({ "--a": d.hue[0], "--b": d.hue[1] } as CSSProperties) : undefined}>
     <div className="finder-top">
@@ -38,7 +39,7 @@ export function PathFinder() {
       <h3>What do you need to happen?</h3>
       <div className="finder-grid">
         {outcomes.map((o, i) => { const dv = divisionBySlug[o.division]; return <button key={o.id} type="button" className={`finder-opt ${outcome?.id === o.id ? "on" : ""}`} style={{ "--a": dv.hue[0], "--b": dv.hue[1] } as CSSProperties} onClick={() => { setOutcome(o); setStep(1); }}>
-          <span className="finder-n">{String(i + 1).padStart(2, "0")}</span><strong>{o.label}</strong><small>{o.detail}</small><ArrowUpRight size={18} className="finder-arrow" />
+          <span className="finder-n">{String(i + 1).padStart(2, "0")}</span><BrandMark name={o.division as MarkName} className="finder-mark" /><strong>{o.label}</strong><small>{o.detail}</small><ArrowUpRight size={18} className="finder-arrow" />
         </button>; })}
       </div>
     </div>}
@@ -57,12 +58,12 @@ export function PathFinder() {
       <button type="button" className="finder-back" onClick={() => setStep(1)}><ArrowLeft size={16} /> Back</button>
       <span className="kicker">Recommended · DigitalBurj {d.name}</span>
       <h3>{outcome.action}</h3>
-      <p>{outcome.detail} {timing === "now" ? "WhatsApp is the fastest way to reach the right team." : timing === "exploring" ? "Explore freely — sign in only when you want to save progress." : "Your workspace keeps every step in one place."}</p>
-      <div className="finder-channels" role="radiogroup" aria-label="Preferred channel">
-        {channels.map(c => <button key={c.id} type="button" role="radio" aria-checked={channel === c.id} className={channel === c.id ? "on" : ""} onClick={() => setChannel(c.id)}><c.Icon size={17} />{c.label}</button>)}
+      <div className="finder-recommendation"><BrandMark name={outcome.division as MarkName} className="finder-result-mark" /><p><b>Why this path</b>{outcome.detail} {timing === "now" ? "A guided WhatsApp message can put the context in front of our team." : timing === "exploring" ? "Browse the division first, then decide when to create a workspace." : "Your workspace can keep the brief and next steps together."}</p></div>
+      <p className="finder-channel-label">Choose how to continue</p><div className="finder-channels" role="radiogroup" aria-label="Preferred channel">
+        {channels.map(c => <button key={c.id} type="button" role="radio" aria-checked={channel === c.id} className={channel === c.id ? "on" : ""} onClick={() => setChannel(c.id)} onKeyDown={e => { if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return; e.preventDefault(); const at = channels.findIndex(x => x.id === channel); const next = (at + (e.key === "ArrowRight" ? 1 : -1) + channels.length) % channels.length; setChannel(channels[next].id); (e.currentTarget.parentElement?.children[next] as HTMLButtonElement)?.focus(); }}><c.Icon size={17} />{c.label}</button>)}
       </div>
       <div className="finder-actions">
-        <MagneticLink href={primary} variant={channel === "whatsapp" ? "whatsapp" : "red"}>{channel === "whatsapp" ? "Continue on WhatsApp" : channel === "mobile" ? "Install the app" : outcome.action}</MagneticLink>
+        <MagneticLink href={primary} variant="red">{channel === "whatsapp" ? "Continue on WhatsApp" : channel === "mobile" ? "Install the app" : outcome.action}</MagneticLink>
         <Link href={`/${d.slug}`} className="link-arrow">Learn about {d.name} <ArrowUpRight size={16} /></Link>
       </div>
     </div>}

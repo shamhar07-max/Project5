@@ -1,30 +1,29 @@
 // Division accents follow blueprint Part III-A: Academy blue, Studio purple/indigo,
 // Business AI teal/green; Talent and Jobs use supporting families.
-// Single source of truth for DigitalBurj divisions, navigation and photography.
-// Every photograph is registered once in `media` and each key is placed in exactly one
-// location on the site (enforced by scripts/check-media.mjs), so no image repeats.
+// Single source of truth for DigitalBurj divisions, navigation and imagery.
+// The site uses no stock or generated photography. Imagery is authored as scenes
+// (app/_ui/scenes.tsx) drawn from the product itself; each key is placed exactly once
+// (enforced by scripts/check-media.mjs). The description is the scene's accessible label.
 
-export const media = {
-  homeHero: "/brand/hero-digitalburj-v2.webp",
-  cardAcademy: "/brand/system-academy.webp",
-  cardStudio: "/brand/system-studio.webp",
-  cardBusiness: "/brand/system-business.webp",
-  storyAcademy: "/brand/story-academy.webp",
-  storyStudio: "/brand/story-studio-ai.webp",
-  storyBusiness: "/brand/strategy.jpg",
-  heroAcademy: "/brand/hero-academy-generated.webp",
-  heroStudio: "/brand/hero-studio-generated.webp",
-  heroBusiness: "/brand/hero-business-generated.webp",
-  heroTalent: "/brand/hero-talent-generated.webp",
-  heroJobs: "/brand/reception.jpg",
-  academySpace: "/brand/academy.jpg",
-  academyWorkshop: "/brand/workshop.jpg",
-  academyProjects: "/brand/projects.jpg",
-  companyHero: "/brand/studio.jpg",
-  ecosystemHero: "/brand/collaboration.jpg",
-  getStartedHero: "/brand/consulting.jpg",
+export const scenes = {
+  homeHero: "Blueprint elevation of the tower DigitalBurj is named after",
+  cardAcademy: "Academy credential seal, independently verified",
+  cardStudio: "Studio milestone wireframe approved by the client",
+  cardBusiness: "Business AI metric: invoice handling cut from 12 to 3.2 hours a week",
+  storyAcademy: "An assessed Academy mission with its rubric scores",
+  storyStudio: "Studio validation decision scored on eight criteria",
+  storyBusiness: "Business AI process map with a duplicate-entry leak highlighted",
+  heroAcademy: "An Academy unit at stage eight of twelve",
+  heroStudio: "Studio release-readiness checklist",
+  heroBusiness: "High-risk automation dial awaiting go-live approval",
+  heroTalent: "A Capability Passport with declared, assessed and verified evidence",
+  heroJobs: "A hiring pipeline with an approved offer",
+  academyReview: "Academy review console from submission to independent verification",
+  companyHero: "DigitalBurj operating principles over the tower elevation",
+  ecosystemHero: "Five DigitalBurj divisions connected around one identity",
+  getStartedHero: "A guided WhatsApp first conversation",
 } as const;
-export type MediaKey = keyof typeof media;
+export type SceneKey = keyof typeof scenes;
 
 export type DivisionSlug = "academy" | "studio" | "business" | "talent" | "jobs";
 export type Division = {

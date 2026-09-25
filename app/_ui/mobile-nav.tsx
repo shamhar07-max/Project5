@@ -12,6 +12,8 @@ export function MobileNav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const closeBtn = useRef<HTMLButtonElement>(null);
+  const openBtn = useRef<HTMLButtonElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
   // The header uses backdrop-filter, which would trap a fixed sheet inside it; render into <body> instead.
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
   const [lastPath, setLastPath] = useState(pathname);
@@ -20,13 +22,22 @@ export function MobileNav() {
     document.documentElement.classList.toggle("lock-scroll", open);
     if (!open) return;
     closeBtn.current?.focus();
-    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { setOpen(false); return; }
+      if (e.key !== "Tab") return;
+      const controls = Array.from(sheetRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? []);
+      if (!controls.length) return;
+      const first = controls[0], last = controls[controls.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
     window.addEventListener("keydown", esc);
-    return () => window.removeEventListener("keydown", esc);
+    const trigger = openBtn.current;
+    return () => { window.removeEventListener("keydown", esc); trigger?.focus(); };
   }, [open]);
   return <>
-    <button type="button" className="burger" aria-label="Open menu" aria-expanded={open} aria-controls="mobile-sheet" onClick={() => setOpen(true)}><span /><span /></button>
-    {mounted && createPortal(<div id="mobile-sheet" className={`msheet ${open ? "open" : ""}`} role="dialog" aria-modal="true" aria-label="Menu" inert={!open} aria-hidden={!open}>
+    <button ref={openBtn} type="button" className="burger" aria-label="Open menu" aria-expanded={open} aria-controls="mobile-sheet" onClick={() => setOpen(true)}><span /><span /></button>
+    {mounted && createPortal(<div ref={sheetRef} id="mobile-sheet" className={`msheet ${open ? "open" : ""}`} role="dialog" aria-modal="true" aria-label="Menu" inert={!open} aria-hidden={!open}>
       <div className="msheet-aurora" aria-hidden="true" />
       <div className="msheet-top">
         <span className="msheet-kicker">DIGITALBURJ / MENU</span>

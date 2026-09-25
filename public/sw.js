@@ -1,6 +1,6 @@
 // DigitalBurj service worker: network-first pages with an offline fallback,
 // cache-first for static brand assets. Workspace and API traffic is never cached.
-const VERSION = "db-v2";
+const VERSION = "db-v3";
 const OFFLINE = "/offline.html";
 const PRECACHE = ["/icon-192.png", "/icon-512.png", "/brand/db-iconmark.png"];
 
