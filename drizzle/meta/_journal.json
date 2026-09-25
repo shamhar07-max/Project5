@@ -71,6 +71,13 @@
       "when": 1790318739391,
       "tag": "0009_useful_impossible_man",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1790332969991,
+      "tag": "0010_curved_warbird",
+      "breakpoints": true
     }
   ]
 }

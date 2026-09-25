@@ -57,7 +57,3 @@ export function whatsappUrl(text: string) {
   const n = whatsappNumber();
   return n ? `https://wa.me/${n}?text=${encodeURIComponent(text)}` : null;
 }
-
-export function staffEmails() {
-  return (process.env.DIGITALBURJ_STAFF_EMAILS || "").split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
-}

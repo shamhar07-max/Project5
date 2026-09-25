@@ -1,23 +1,55 @@
 import Link from "next/link";
-import { eq, desc } from "drizzle-orm";
-import { requireChatGPTUser } from "../../chatgpt-auth";
+import { desc, eq, inArray } from "drizzle-orm";
 import { getDb } from "../../../db";
-import { academyEnrollments, academySubmissions } from "../../../db/schema";
+import { academyEnrollments, academyMissions, academySubmissions, missionSubmissions } from "../../../db/schema";
 import { academyCourses, academyStages } from "../../academy-data";
+import { AppShell, Btn, Chip, Empty, Field, PageHead, Panel, fmt } from "../../_app/kit";
+import { loadApp } from "../../_app/shell";
 import { saveCourse, savePractice } from "./actions";
 
-export const dynamic="force-dynamic";
-export default async function AcademyWorkspace({searchParams}:{searchParams:Promise<{course?:string}>}) {
-  const user=await requireChatGPTUser("/workspace/academy");
-  const code=(await searchParams).course||"DB-00";
-  const selected=academyCourses.find(c=>c.code===code)||academyCourses[0];
-  const db=getDb();
-  const saved=await db.select().from(academyEnrollments).where(eq(academyEnrollments.ownerId,user.userId)).orderBy(desc(academyEnrollments.createdAt));
-  const drafts=await db.select().from(academySubmissions).where(eq(academySubmissions.ownerId,user.userId)).orderBy(desc(academySubmissions.createdAt));
-  const enrollment=saved.find(x=>x.courseCode===selected.code);
-  const selectedDrafts=drafts.filter(x=>x.enrollmentId===enrollment?.id);
-  return <main className="min-h-screen bg-[linear-gradient(135deg,#f3f5f7,#e9eef2_52%,#fbfcf9)] text-[#102b4c]"><header className="border-b border-[#d6dfe7] bg-white px-6 py-5"><div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4"><Link href="/workspace" className="font-bold text-[#d10b1a]">← DigitalBurj workspace</Link><span className="font-[Georgia] text-xl font-semibold">Academy / My Learning</span><Link href="/academy/catalogue" className="font-bold text-[#d10b1a]">Catalogue</Link></div></header><div className="mx-auto grid max-w-7xl gap-7 px-6 py-10 lg:grid-cols-[240px_1fr]"><aside className="h-fit rounded-2xl border border-[#d6dfe7] bg-white p-5"><h2 className="font-[Georgia] text-xl font-semibold">My Learning</h2><p className="mt-2 text-sm text-[#61717a]">{saved.length} saved units</p><nav className="mt-5 grid gap-2">{saved.map(x=><Link href={`/workspace/academy?course=${x.courseCode}`} key={x.id} className={`rounded-xl px-3 py-3 text-sm font-bold ${selected.code===x.courseCode?"bg-[#ffe8e9] text-[#9f1421]":"hover:bg-[#f3f5f7]"}`}>{x.courseCode} · {academyCourses.find(c=>c.code===x.courseCode)?.title}</Link>)}{!saved.length && <p className="text-sm text-[#61717a]">Save a course to add it here.</p>}</nav><div className="mt-6 grid gap-3 border-t border-[#d6dfe7] pt-5 text-sm font-bold text-[#d10b1a]"><Link href="/academy/catalogue">Browse all courses →</Link><Link href="/workspace/academy/profile">Profile & consent →</Link><Link href="/academy/tools">Tool Library →</Link></div></aside><div><p className="text-xs font-bold uppercase tracking-[.14em] text-[#d10b1a]">{selected.code} · {selected.family}</p><h1 className="mt-3 font-[Georgia] text-3xl font-semibold sm:text-4xl">{selected.title}</h1><p className="mt-3 text-[#61717a]">{selected.level} · {selected.hours} proposed learning hours · prerequisite: {selected.prereq}</p><div className="mt-7 grid gap-4 sm:grid-cols-3">{[["Course contract","Foundations, scenario practice, evidence and assessment."],["Curriculum status",selected.maturity],["Your status",enrollment?"Saved for learning":"Not saved"]].map(x=><div key={x[0]} className="rounded-2xl border border-[#d6dfe7] bg-white p-5"><p className="text-xs font-bold uppercase tracking-[.13em] text-[#61717a]">{x[0]}</p><p className="mt-3 font-semibold">{x[1]}</p></div>)}</div>
-    {!enrollment && <form action={saveCourse} className="mt-6"><input type="hidden" name="code" value={selected.code}/><button className="rounded-xl bg-[#d10b1a] px-6 py-3 font-bold text-white">Save this course</button></form>}
-    <section className="mt-8 rounded-2xl border border-[#d6dfe7] bg-white p-6"><h2 className="font-[Georgia] text-2xl font-semibold">Task Workspace</h2><p className="mt-3 text-sm leading-7 text-[#61717a]">Move from a brief through investigation, building, testing and explanation. Practice drafts are personal work; they are not assessed or verified credentials.</p><div className="mt-6 grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">{academyStages.map((s,i)=><div key={s} className={`rounded-lg border p-2 text-center text-xs font-bold ${i===0?"border-[#d10b1a] bg-[#ffe8e9] text-[#9f1421]":"border-[#d6dfe7] text-[#61717a]"}`}>{s}</div>)}</div>{enrollment ? <form action={savePractice} className="mt-7 grid gap-4"><input type="hidden" name="enrollmentId" value={enrollment.id}/><label className="text-sm font-bold">Describe what you tried<textarea name="text" required minLength={20} maxLength={4000} rows={5} className="mt-2 block w-full rounded-xl border border-[#cbd5df] p-3 font-normal" placeholder="Explain your approach, decisions, tests and what happened."/></label><label className="text-sm font-bold">What did you learn?<textarea name="reflection" maxLength={2000} rows={3} className="mt-2 block w-full rounded-xl border border-[#cbd5df] p-3 font-normal"/></label><button className="w-fit rounded-xl bg-[#d10b1a] px-6 py-3 font-bold text-white">Save practice draft</button></form> : <p className="mt-6 text-sm text-[#61717a]">Save the course to begin a practice draft.</p>}</section>
-    <section className="mt-8 rounded-2xl border border-[#d6dfe7] bg-white p-6"><h2 className="font-[Georgia] text-2xl font-semibold">Evidence & Failure Passport</h2>{selectedDrafts.length ? <div className="mt-5 grid gap-4">{selectedDrafts.map(d=><article key={d.id} className="rounded-xl border border-[#d6dfe7] p-5"><p className="text-xs font-bold uppercase tracking-[.14em] text-[#d10b1a]">Draft · {d.createdAt.toLocaleDateString("en-AE")}</p><p className="mt-3 whitespace-pre-wrap">{d.text}</p>{d.reflection && <p className="mt-3 whitespace-pre-wrap text-[#61717a]">Reflection: {d.reflection}</p>}</article>)}</div> : <p className="mt-4 text-[#61717a]">Your practice drafts will appear here. Independent assessment and verification are separate workflows.</p>}</section></div></div></main>;
+export const dynamic = "force-dynamic";
+
+export default async function AcademyWorkspace({ searchParams }: { searchParams: Promise<{ course?: string }> }) {
+  const { ctx, info } = await loadApp();
+  const me = ctx.user.userId;
+  const code = (await searchParams).course;
+  const db = getDb();
+  const [saved, drafts, subs] = await Promise.all([
+    db.select().from(academyEnrollments).where(eq(academyEnrollments.ownerId, me)).orderBy(desc(academyEnrollments.createdAt)),
+    db.select().from(academySubmissions).where(eq(academySubmissions.ownerId, me)).orderBy(desc(academySubmissions.createdAt)),
+    db.select().from(missionSubmissions).where(eq(missionSubmissions.ownerId, me)).orderBy(desc(missionSubmissions.updatedAt)),
+  ]);
+  const selected = academyCourses.find(c => c.code === (code ?? saved[0]?.courseCode)) ?? academyCourses[0];
+  const enrollment = saved.find(x => x.courseCode === selected.code);
+  const courseMissions = await db.select().from(academyMissions).where(eq(academyMissions.published, true));
+  const forCourse = courseMissions.filter(m => m.courseCode === selected.code);
+  const forSaved = courseMissions.filter(m => saved.some(s => s.courseCode === m.courseCode));
+  const missionTitles = subs.length ? await db.select({ id: academyMissions.id, title: academyMissions.title }).from(academyMissions).where(inArray(academyMissions.id, subs.map(s => s.missionId))) : [];
+  const selectedDrafts = drafts.filter(d => d.enrollmentId === enrollment?.id);
+  return <AppShell info={info} active="academy">
+    <PageHead kicker="Academy · My learning" title="Learn it. Apply it. Prove it." lede="Save units, practise, submit missions for assessor review and request independent verification. Evidence stays private until you choose to share it." actions={<><Link className="app-btn app-btn-secondary" href="/workspace/academy/credentials">My credentials</Link><Link className="app-btn app-btn-primary" href="/academy/catalogue">Catalogue</Link></>} />
+    <div className="app-split">
+      <div>
+        <Panel title="My missions" sub="Discover → submit → review → assess → verify → evidence.">
+          {subs.length ? <div className="app-rows">{subs.map(s => <Link key={s.id} href={`/workspace/academy/missions/${s.missionId}`} className="app-row"><div className="app-row-main"><strong>{missionTitles.find(m => m.id === s.missionId)?.title ?? "Mission"}</strong><small>Attempt {s.attempt} · updated {fmt(s.updatedAt)}{s.score != null ? ` · score ${s.score}%` : ""}</small></div><Chip state={s.status} /></Link>)}</div> : <Empty title="No missions submitted yet">Open a mission below to start.</Empty>}
+        </Panel>
+        <Panel title={`${selected.code} · ${selected.title}`} sub={`${selected.family} · ${selected.level} · ${selected.hours} proposed hours · ${selected.maturity}`} actions={!enrollment && <form action={saveCourse}><input type="hidden" name="code" value={selected.code} /><Btn>Save unit</Btn></form>}>
+          <h3 style={{ fontWeight: 800, marginBottom: ".5rem" }}>Missions for this unit</h3>
+          {forCourse.length ? <div className="app-rows">{forCourse.map(m => <Link key={m.id} href={`/workspace/academy/missions/${m.id}`} className="app-row"><div className="app-row-main"><strong>{m.title}</strong><small>{m.objective}</small></div><Chip state={subs.find(s => s.missionId === m.id)?.status ?? "NEW"} text={subs.find(s => s.missionId === m.id) ? undefined : "Open"} /></Link>)}</div> : <Empty title="No published missions for this unit yet">Assessed missions are released by the Academy team as teaching material is completed.</Empty>}
+          {enrollment && <>
+            <h3 style={{ fontWeight: 800, margin: "1.4rem 0 .5rem" }}>Practice drafts</h3>
+            <p className="app-note">Twelve-stage task model: {academyStages.join(" → ")}. Drafts are private and are not assessed.</p>
+            <form action={savePractice} className="app-form" style={{ marginTop: ".8rem" }}><input type="hidden" name="enrollmentId" value={enrollment.id} /><Field label="What did you build, break, fix or test?"><textarea name="text" required minLength={20} maxLength={4000} rows={4} /></Field><Field label="Reflection"><textarea name="reflection" maxLength={2000} rows={2} /></Field><div><Btn kind="secondary">Save draft</Btn></div></form>
+            <div className="app-rows">{selectedDrafts.map(d => <div key={d.id} className="app-row"><div className="app-row-main"><strong>{d.text.slice(0, 120)}</strong><small>{fmt(d.createdAt)} · {d.status}</small></div></div>)}</div>
+          </>}
+        </Panel>
+      </div>
+      <div>
+        <Panel title="Saved units">
+          {saved.length ? <div className="app-rows">{saved.map(s => { const c = academyCourses.find(x => x.code === s.courseCode); return <Link key={s.id} href={`/workspace/academy?course=${s.courseCode}`} className="app-row"><div className="app-row-main"><strong>{s.courseCode} · {c?.title}</strong><small>{forSaved.filter(m => m.courseCode === s.courseCode).length} missions</small></div></Link>; })}</div> : <Empty title="No saved units"><Link href="/academy/catalogue">Browse the catalogue</Link></Empty>}
+        </Panel>
+        <Panel title="Profile & consent" actions={<Link className="app-btn app-btn-ghost" href="/workspace/academy/profile">Edit</Link>}><p className="app-note">Your learning goal, route and whether verified learning evidence may be added to your Talent profile.</p></Panel>
+      </div>
+    </div>
+  </AppShell>;
 }

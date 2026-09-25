@@ -2,31 +2,38 @@
 
 Reference: DigitalBurj Complete Master Structure (September 2026) and the supplied DigitalBurj Academy HTML prototype.
 
-## Working in the current private Site
+## Built and verified (end-to-end, production build)
 
-- Corporate homepage and company, ecosystem, technology, contact, Get Started, documentation, status, privacy and terms routes.
-- Public division overview routes for Academy, Studio, Business AI, Verified Talent and Jobs.
-- One authenticated workspace with individual and organization context, membership invitations, scoped records, support tickets, organization messages, private document storage and an activity log.
-- Studio and Business AI intake forms with persisted, scoped enquiries.
-- Studio and Business AI working briefs created from enquiries, with structured discovery entries, measured/estimated baseline labels, a discovery request stage and event history. Records are restricted to their individual or organization workspace. A discovery request does not approve a project or automation.
-- Academy public catalogue with the 23 DB units and 12 professional units from the provided HTML. Course detail, search and category filtering are available.
-- Academy learner workspace with saved units, practice drafts, a 12-stage task model and private profile and consent settings. Drafts are not assessed, verified or published.
-- Private Talent profile and self-reported evidence, explicitly marked Declared and Private. No entry can self-assign a verified status.
-- Private Jobs opportunity tracker with personal status updates; it does not send an application to an employer.
+`npm run test:e2e` drives every workflow below as four separate people (client/candidate, DigitalBurj staff, an independent verifier and an employer) against `npm run deploy:local`. All 26 steps pass.
 
-## Required to match the full blueprint
+**Platform core**
+- Identity and organizations: individual and organization context, invitations, org roles (owner, admin, member, finance, project approver, recruiter, hiring manager, learning manager, developer) with permission checks on every action.
+- DigitalBurj staff roles (super admin, academy reviewer/verifier, studio/business delivery, talent verifier, jobs admin, support, finance, auditor), granted by email in Admin → Access and audit-logged. Non-staff get a 404 on `/admin`.
+- Domain events, in-app notifications with preferences, a unified approval center, workflow state machines that reject illegal transitions, global search scoped to what you may see, audit log, account data export and a deletion request.
+- Billing: invoice drafts, issue, paid, void and refund, with numbered invoices shown in the client workspace.
+- Developers: organization API keys (hashed, scoped, revocable), REST API v1 with a consistent error model, request IDs, pagination and rate limits, HMAC-signed webhooks with delivery log, and public docs at `/docs/api`.
 
-- Connect the actual teaching content, assessments, reviewer assignments, feedback, independent verification and credential issuance for Academy. The provided HTML is a planning prototype; it does not contain production course material or a working assessment service.
-- Add Studio staff-side qualification, validation decisions, contracts, project roles, milestones, QA, client approvals, deployment and handover. The current brief covers client-side discovery input only.
-- Add Business AI staff-side diagnosis, proposals, approval gates, controlled workflow execution, run metering and reports. The current brief captures problem and baseline input only.
-- Add Talent evidence review, verifier separation, field-level sharing consent and employer access. Current profiles and evidence are private and self-reported.
-- Add employer-managed Jobs postings, employer verification, actual applications, interviews, offers and hiring outcomes. The current tracker is personal only.
-- Add governed platform administration, billing and a verified plan catalogue, notification delivery, global search, published API contracts and live service monitoring.
-- Obtain production legal and commercial review for privacy, terms, regional content, prices, taxes and refund rules.
-- Connect email, payment, verification and monitoring providers. Set up the proposed DigitalBurj domains and publication access. The current Site remains private and uses ChatGPT sign-in rather than a standalone DigitalBurj identity provider.
-- Perform security review, file malware scanning, backup and restore testing, accessibility QA and cross-role acceptance tests before opening the platform to customers.
+**Divisions**
+- **Academy:** staff-authored practical missions with rubrics, learner submissions, reviewer claim and rubric assessment, independent verification (the assessor can never verify their own work), credential issuance and public verification at `/verify/<code>` without exposing email.
+- **Studio:** qualification scoring, BUILD / RESHAPE / STOP decisions, delivery stages, milestones approved by the client, change requests with impact and quote, and the release-readiness checklist.
+- **Business AI:** diagnosis metrics labelled measured or estimated, automations with risk levels, client approval of the design and a second approval before go-live for high-risk automations.
+- **Verified Talent:** credentials flow into the Capability Passport, evidence visibility is set per item, verification requests are reviewed by staff, and a public or employer-only passport is available at `/talent/p/<slug>`. Only verified employers can search consenting profiles.
+- **Jobs:** employer verification, listings with draft/publish/close, a public board at `/jobs/board`, applications that can share the passport, a stage pipeline, interviews with feedback, offers that need internal approval, and candidate accept or decline through to hired.
 
-No route should label a practice draft as a credential, a prototype price as a confirmed offer, an enquiry as an approved project, or an unverified profile as independently verified.
+**Operations**
+- Support desk: SLA targets by priority, assignment, internal notes, a resolve → reopen → close lifecycle and a public help centre at `/support`.
+- Status: live checks of the database and file storage, incidents with updates on `/status` and `/api/v1/status`.
+- Admin: executive overview plus one area per division, finance, support, status, access and audit.
+
+## Still needs external providers or decisions
+
+- Standalone DigitalBurj identity with MFA/passkeys. Sign-in currently uses ChatGPT accounts.
+- A payment gateway, tax/VAT rules and a verified price list. Invoices are recorded but not charged.
+- Email/SMS/WhatsApp delivery for notifications and invitations. Notifications are in-app only.
+- Malware scanning for uploaded files, a durable global rate limiter (the current limiter is per Worker instance), backups with restore drills, and a third-party security and accessibility audit.
+- Real Academy teaching content (units are listed; staff author missions in Admin), legal review of privacy, terms and refunds, production domains and native app-store apps.
+
+No route labels a practice draft as a credential, a prototype price as a confirmed offer, an enquiry as an approved project, or an unverified profile as independently verified.
 
 ## September 25 redesign (public experience + conversion channels)
 
@@ -45,6 +52,6 @@ No route should label a practice draft as a credential, a prototype price as a c
 | Variable | Purpose |
 | --- | --- |
 | `DIGITALBURJ_WHATSAPP_NUMBER` | Official WhatsApp Business number in international format, for example `9715XXXXXXXX`. |
-| `DIGITALBURJ_STAFF_EMAILS` | Comma-separated sign-in emails that may see and update all channel requests. |
+| `DIGITALBURJ_STAFF_EMAILS` | Comma-separated sign-in emails that are always super admins (bootstrap). Other staff roles are granted in Admin → Access. |
 
-For local development, put these in `.dev.vars` (ignored by Git) and apply `drizzle/0009_*.sql` to the local D1 database as described in the README.
+For local development, put these in `.dev.vars` (ignored by Git) and run `npm run deploy:local`, which applies every migration in `drizzle/` to the local D1 database.

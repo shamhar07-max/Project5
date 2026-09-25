@@ -54,8 +54,8 @@ export function SiteFooter() {
       </div>
       <div><h2>Academy</h2><Link href="/academy">Overview</Link><Link href="/academy/catalogue">Catalogue</Link><Link href="/academy/tools">Tool library</Link><Link href="/workspace/academy">My learning</Link></div>
       <div><h2>Studio &amp; AI</h2><Link href="/studio">Studio</Link><Link href="/workspace/intake?service=studio">Start a project</Link><Link href="/business">Business AI</Link><Link href="/workspace/intake?service=business">Consultation</Link></div>
-      <div><h2>Ecosystem</h2><Link href="/talent">Verified Talent</Link><Link href="/jobs">Jobs</Link><Link href="/ecosystem">How it connects</Link><Link href="/technology">Technology</Link></div>
-      <div><h2>Resources</h2><Link href="/platform">Web app</Link><Link href="/app">Mobile app</Link><Link href="/docs">Guides</Link><Link href="/status">Status</Link><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></div>
+      <div><h2>Ecosystem</h2><Link href="/talent">Verified Talent</Link><Link href="/jobs">Jobs</Link><Link href="/jobs/board">Open roles</Link><Link href="/ecosystem">How it connects</Link><Link href="/technology">Technology</Link></div>
+      <div><h2>Resources</h2><Link href="/platform">Web app</Link><Link href="/app">Mobile app</Link><Link href="/support">Help center</Link><Link href="/docs/api">API</Link><Link href="/status">Status</Link><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></div>
     </div>
     <div className="shell footer-bottom"><span>© {new Date().getFullYear()} DigitalBurj</span><Link href="/company">Evidence before claims <ArrowUpRight size={14} /></Link></div>
   </footer>;

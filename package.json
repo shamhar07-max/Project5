@@ -12,7 +12,9 @@
     "start": "node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.json --local --persist-to .wrangler/state --ip 127.0.0.1 --inspector-port 0",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
-    "check:media": "node scripts/check-media.mjs"
+    "check:media": "node scripts/check-media.mjs",
+    "deploy:local": "node scripts/deploy-local.mjs",
+    "test:e2e": "node scripts/e2e-flows.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

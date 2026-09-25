@@ -108,12 +108,36 @@ node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1
 
 Replace the filename with the pending migration and `DB` with your D1 binding name if different. Use `.wrangler/state`, not `.wrangler/state/v3`; Wrangler adds the versioned directories. Do not replay migrations already applied locally. This updates only the preview database; publishing applies production migrations separately.
 
+## DigitalBurj: full-stack local deployment
+
+`npm run deploy:local` runs the production build locally with its database:
+
+1. Builds the Worker (`npm run build`). Add `-- --skip-build` to reuse `dist/`.
+2. Applies pending `drizzle/*.sql` migrations to the local D1 database in `.wrangler/state`. Applied migrations are recorded in a `local_migrations` table, so reruns skip them. A database migrated by hand before this script existed is detected and recorded.
+3. Serves the built Worker with Wrangler on `http://127.0.0.1:8787`. Add `-- --port 9000` to choose another port.
+
+Optional Worker variables go in `.dev.vars` at the project root (ignored by Git). The script copies the file next to the built config, where Wrangler looks for it:
+
+```
+DIGITALBURJ_WHATSAPP_NUMBER=9715XXXXXXXX
+DIGITALBURJ_STAFF_EMAILS=you@example.com
+```
+
+The production build has no mock sign-in, so `/signin-with-chatgpt` returns 404 locally. To open `/workspace` against the production build, send the identity headers the hosting platform would normally add, for example with a browser extension or `curl -H "oai-authenticated-user-id: local" -H "oai-authenticated-user-email: you@example.com"`. To click through the workspace with the built-in local sign-in, use `npm run dev` instead.
+
+Staff areas live under `/admin`. The emails in `DIGITALBURJ_STAFF_EMAILS` are super admins and can grant other staff roles in Admin → Access.
+
+### End-to-end check
+
+With `npm run deploy:local` running and `seedy@sites.test` listed in `DIGITALBURJ_STAFF_EMAILS` (or `E2E_STAFF_EMAIL` set to a listed email), `npm run test:e2e` walks every workflow as four people: Academy mission → review → independent verification → credential, Studio and Business AI approvals, Jobs hiring, support, invoices, status incidents and the API. It needs Playwright (`npm i -g playwright`, or point `PWPATH` at an install).
+
 ## Diagnostic Commands
 
 - `npm run install:ci`: perform the one locked dependency install
 - `npm run dev`: start the Vite/Vinext development server
 - `npm run build`: build the deployable Sites artifact
 - `npm run start`: preview the built Worker locally with D1/R2 support
+- `npm run deploy:local`: build, migrate the local D1 database and serve the production Worker
 - `npm run db:generate`: generate Drizzle migrations after schema changes
 
 When using the Sites plugin, follow its skill instructions for installation, builds, and publishing. These npm commands remain available for standalone use.

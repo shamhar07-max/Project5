@@ -2,10 +2,10 @@
 import { useEffect, useState } from "react";
 
 const steps = [
-  { t: "Learn", d: "Academy turns study into practical capability through missions and review.", c: "#8b5cf6" },
-  { t: "Demonstrate", d: "Assessed work becomes evidence the learner owns and controls.", c: "#ec4899" },
-  { t: "Build", d: "Studio validates ideas before engineering commitment, then ships them.", c: "#2563eb" },
-  { t: "Transform", d: "Business AI redesigns the operation first, then automates what should be automated.", c: "#10b981" },
+  { t: "Learn", d: "Academy turns study into practical capability through missions and review.", c: "#2563eb" },
+  { t: "Demonstrate", d: "Assessed work becomes evidence the learner owns and controls.", c: "#0ea5e9" },
+  { t: "Build", d: "Studio validates ideas before engineering commitment, then ships them.", c: "#7c3aed" },
+  { t: "Transform", d: "Business AI redesigns the operation first, then automates what should be automated.", c: "#0d9488" },
   { t: "Verify", d: "Declared, assessed and verified capability are always shown separately.", c: "#f59e0b" },
   { t: "Opportunity", d: "Verified Talent and Jobs connect capability with employers — and feed demand back into learning.", c: "#f43f5e" },
 ];

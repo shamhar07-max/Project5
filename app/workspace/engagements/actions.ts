@@ -6,6 +6,8 @@ import { getDb } from "../../../db";
 import { auditLog, enquiries, engagements, engagementEntries, engagementEvents } from "../../../db/schema";
 import { engagementKinds, validateEntry } from "../../../lib/engagement-workflow";
 import { workspaceContext } from "../access";
+import { publish } from "../../../lib/platform";
+import { staffIdsWith } from "../../../lib/staff";
 
 type Context = Awaited<ReturnType<typeof workspaceContext>>;
 const scope = (ctx: Context) => ctx.orgId ? eq(engagements.orgId, ctx.orgId) : and(eq(engagements.ownerId, ctx.user.userId), isNull(engagements.orgId));
@@ -70,6 +72,9 @@ export async function requestDiscovery(formData: FormData) {
     db.insert(engagementEvents).values({ id: crypto.randomUUID(), engagementId: id, actorId: ctx.user.userId, action: "discovery.requested", detail: "Client submitted working brief; no project approval implied", createdAt: now }),
     db.insert(auditLog).values(auditValue(ctx, "engagement.discovery.request", id)),
   ]);
+  const staff = await staffIdsWith([item.service === "studio" ? "studio_admin" : "business_admin"]);
+  if (staff.length) await publish({ type: `${item.service}.discovery.requested`, actorId: ctx.user.userId, orgId: ctx.orgId, resourceType: "engagement", resourceId: id, payload: { title: item.title } },
+    staff.map(userId => ({ userId, title: `Discovery requested: ${item.title}`, href: `/admin/engagements/${id}`, category: item.service === "studio" ? "Studio" : "Business AI", priority: "high" as const })));
   revalidatePath(`/workspace/engagements/${id}`);
   revalidatePath("/workspace/engagements");
 }

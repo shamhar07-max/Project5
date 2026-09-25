@@ -7,7 +7,7 @@ import { ArrowUpRight, CheckCheck, CheckCircle2, Copy, Loader2, MessageCircle } 
 import { composeWhatsAppMessage, leadTopics, type LeadTopic } from "../../../lib/leads";
 
 const hue: Record<LeadTopic, [string, string]> = {
-  academy: ["#8b5cf6", "#ec4899"], studio: ["#2563eb", "#22d3ee"], business: ["#10b981", "#a3e635"],
+  academy: ["#2563eb", "#38bdf8"], studio: ["#7c3aed", "#818cf8"], business: ["#0d9488", "#22c55e"],
   talent: ["#f59e0b", "#f97316"], jobs: ["#f43f5e", "#fb923c"], general: ["#25d366", "#128c7e"],
 };
 const starters: Record<LeadTopic, string[]> = {
