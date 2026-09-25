@@ -25,6 +25,7 @@ export function PageHero({ kicker, title, intro, scene, hue = ["#e10613", "#2563
   return <section className={`page-hero ${scene ? "page-hero-has-scene" : ""}`} style={{ "--a": hue[0], "--b": hue[1] } as CSSProperties}>
     {scene ? <div className="page-hero-scene"><Scene k={scene} /></div> : <div className="page-hero-media" data-parallax="0.08"><div className="page-hero-symbol" aria-hidden="true"><BrandMark name={heroMark} className="hero-mark" /></div></div>}
     <div className="page-hero-shade" />
+    <div className="lx-aurora lx-aurora-page" aria-hidden="true"><i /><i /><i /><i /></div>
     <Aurora hue={hue} />
     <div className="shell page-hero-inner">
       <span className="kicker kicker-glass"><i className="pulse" />{kicker}</span>

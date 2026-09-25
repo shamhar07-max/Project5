@@ -4,6 +4,7 @@ import { MotionLayer } from "./_ui/motion";
 import { PaletteHost } from "./_ui/palette-host";
 import { MobileDock } from "./_ui/mobile-nav";
 import { PwaRegister } from "./_ui/pwa";
+import { Concierge } from "./_ui/lux/concierge";
 
 export const metadata: Metadata = {
   title: "DigitalBurj | Learn. Build. Transform.",
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <MobileDock />
         <PaletteHost />
         <PwaRegister />
+        <Concierge />
       </body>
     </html>
   );

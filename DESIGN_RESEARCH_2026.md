@@ -1,4 +1,38 @@
-# DigitalBurj interface research & redesign — 25 September 2026 (pass 3)
+# DigitalBurj interface research & redesign — 25 September 2026 (pass 4: colour and conversion)
+
+## How this pass was done
+
+- **The reference sites were blocked again.** Every supplied domain (Aceternity, Magic UI, ReUI, Animata, 21st.dev and the rest) returned `EGRESS_BLOCKED` from this environment, both from the shell and the web fetch tool. The patterns below come from the earlier passes' notes and from how these libraries publicly document their components. Nothing was copied; all code is original.
+- The aim of this pass: more colour, more technology character and stronger conversion, without turning the page into a collage.
+
+## What changed and where the idea came from
+
+| Pattern (source) | DigitalBurj version | File |
+| --- | --- | --- |
+| Aurora / lamp backgrounds (Aceternity), meteors (Magic UI) | Four drifting colour fields (red, violet, blue, teal) plus five falling light lines behind the home hero. Inner page heroes get the same light, tinted with their division's own pair. | `lux.css` `.lx-aurora`, `.lx-meteors`; `sections.tsx` `PageHero` |
+| 3D card / device mockups (Aceternity, Magic UI "Safari" and "iPhone" mocks, Jitter) | **Hero constellation**: the web workspace, the mobile app and a WhatsApp chat float as layers that respond to the pointer, with live chart bars, a progress ring and typing dots. It shows the three channels in one image. | `_ui/lux/hero-constellation.tsx` |
+| Animated gradient text, word rotate (Magic UI, Animata) | "Learn. Build. Transform." with a sheen and a flowing spectrum on *Transform*; a rotator for learners, founders, operations teams and employers | `.lx-word`, `.lx-rotator` |
+| Expanding cards / accordion gallery (Animata, Kokonut) | **Division panels**: five coloured panels; one opens at a time with hover, tap, focus or arrow keys. Each has its own motif: Academy rings, a Studio code editor, a Business AI process graph with a leak, a Talent passport with a shine, and a Jobs pipeline. On phones they become an accordion. | `_ui/lux/division-panels.tsx` |
+| Bento grid, border beam, spotlight (Magic UI, Aceternity) | **Technology bento**: seven tiles in varied sizes, each with its own colour pair and a unique micro-visual (typing code, neural net, bars, uptime pulse, shield scan, system blocks, API wiring). A beam traces the border on hover. | `_ui/lux/tech-bento.tsx` |
+| Stepper, segmented tabs, form fields (ReUI, Origin UI, Preline blocks) | **Launch pad**: pick Web app, Mobile app or WhatsApp → pick a goal → leave a three-field brief. It posts to `/api/leads` with the chosen channel, returns a reference code, then opens WhatsApp, continues to the right workspace intake, or goes to the app install page. | `_ui/lux/launch-pad.tsx` |
+| Floating chat / dock (21st.dev, Preline) | **Concierge**: a floating "Talk to us" button on desktop that opens the three channels and passes the current division to WhatsApp as a topic. Hidden in the workspace and admin; phones keep the existing dock. | `_ui/lux/concierge.tsx` |
+| Shimmer / gradient borders (Magic UI, Uiverse) | Spectrum hairline under the header, spectrum reading-progress bar, gradient-topped stat tiles, colour-edged outcome cards and footer CTA | `lux.css` |
+
+## No repeated imagery
+
+- The three near-identical dark "card scenes" in the old division bento were removed (`cardAcademy`, `cardStudio`, `cardBusiness`). Each division now has a different visual motif.
+- `npm run check:media` still passes: every registered scene is placed exactly once.
+
+## Speed
+
+- No new dependencies. All motion is CSS (transform, opacity) or small inline SVG; the only new JavaScript is three small client components.
+- Blur filters and blend modes were kept off the animated layers; looping animations still pause off screen through `[data-offscreen]`, and `content-visibility: auto` skips rendering the lower sections until they are near.
+- Measured on the production build (headless Chromium): desktop home transfer 596 KB (was 934 KB), LCP about 0.75 s; mobile LCP 0.38 s with no long frames while scrolling.
+- `prefers-reduced-motion` stops every new animation.
+
+---
+
+# Pass 3 (kept for reference)
 
 ## How the research was done
 
