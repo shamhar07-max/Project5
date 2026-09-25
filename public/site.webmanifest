@@ -8,8 +8,8 @@
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone"],
   "orientation": "portrait-primary",
-  "background_color": "#070d1b",
-  "theme_color": "#070d1b",
+  "background_color": "#f6f3ee",
+  "theme_color": "#f6f3ee",
   "categories": ["education", "business", "productivity"],
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },

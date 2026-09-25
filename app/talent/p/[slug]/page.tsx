@@ -30,10 +30,10 @@ export default async function Passport({ params }: { params: Promise<{ slug: str
   ]);
   const verified = evidence.filter(e => e.status === "Verified");
   const declared = evidence.filter(e => e.status !== "Verified");
-  return <main className="public-site" style={{ "--a": "#f59e0b", "--b": "#f97316" } as CSSProperties}>
+  return <main className="site" style={{ "--a": "#f59e0b", "--b": "#f97316" } as CSSProperties}>
     <SiteHeader />
-    <section className="section" style={{ paddingTop: "8rem" }}>
-      <div className="shell">
+    <section className="band-tight page-top">
+      <div className="wrap">
         <SectionHead index="✓" kicker="Capability Passport" title={<>{s.displayName || "DigitalBurj professional"} <em>{profile?.headline ? `· ${profile.headline}` : ""}</em></>}>{profile && <p>{profile.location}{profile.location && " · "}{profile.availability}</p>}</SectionHead>
         {profile?.summary && <p className="passport-summary">{profile.summary}</p>}
         <div className="passport-grid">

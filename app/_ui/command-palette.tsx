@@ -4,11 +4,11 @@ import { useRouter } from "next/navigation";
 import { CornerDownLeft, Search, X } from "lucide-react";
 import { discoveryIndex } from "../brand-data";
 
-export const OPEN_PALETTE = "db:open-palette";
+import { OPEN_PALETTE } from "./palette-host";
 
-/** ⌘K / Ctrl+K discovery across every public destination and conversion route. */
-export function CommandPalette() {
-  const [open, setOpen] = useState(false);
+/** ⌘K search. Loaded on first use by PaletteHost, then kept mounted. */
+export default function CommandPalette({ startOpen = true }: { startOpen?: boolean }) {
+  const [open, setOpen] = useState(startOpen);
   const [q, setQ] = useState("");
   const [idx, setIdx] = useState(0);
   const input = useRef<HTMLInputElement>(null);
@@ -67,10 +67,4 @@ export function CommandPalette() {
       </div>
     </div>
   );
-}
-
-export function PaletteButton({ className = "" }: { className?: string }) {
-  return <button type="button" className={`palette-trigger ${className}`} onClick={() => window.dispatchEvent(new Event(OPEN_PALETTE))} aria-label="Search DigitalBurj (Ctrl K)">
-    <Search size={16} aria-hidden="true" /><span>Search</span><kbd>⌘K</kbd>
-  </button>;
 }
