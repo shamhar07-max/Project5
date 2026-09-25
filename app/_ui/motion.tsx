@@ -29,55 +29,101 @@ export function MotionLayer() {
       cleanups.push(() => io.disconnect());
     }
 
+    // In the sticky story only the active panel is visible; keep SVG animations in the others paused.
+    const syncStorySvgs = (story: HTMLElement) => {
+      const active = story.dataset.active ?? "0";
+      const on = !story.closest("[data-offscreen]");
+      story.querySelectorAll<HTMLElement>(".story-img").forEach(img => img.querySelectorAll("svg").forEach(svg => { if (on && img.dataset.idx === active) svg.unpauseAnimations(); else svg.pauseAnimations(); }));
+    };
+
+    // Pause looping CSS animations in sections that are off screen; they resume just
+    // before they scroll back into view, so nothing visible changes.
+    if ("IntersectionObserver" in window) {
+      const zones = Array.from(document.querySelectorAll<HTMLElement>(".public-site > section, .public-site > footer, .site-footer"));
+      const zio = new IntersectionObserver(es => es.forEach(e => {
+        const off = !e.isIntersecting;
+        (e.target as HTMLElement).toggleAttribute("data-offscreen", off);
+        // SVG (SMIL) animations ignore CSS play state, so pause them directly.
+        e.target.querySelectorAll("svg").forEach(svg => { if (off) svg.pauseAnimations(); else svg.unpauseAnimations(); });
+        const target = e.target as HTMLElement;
+        (target.matches("[data-sticky-story]") ? [target] : Array.from(target.querySelectorAll<HTMLElement>("[data-sticky-story]"))).forEach(syncStorySvgs);
+      }), { rootMargin: "200px 0px" });
+      zones.forEach(z => zio.observe(z));
+      cleanups.push(() => { zio.disconnect(); zones.forEach(z => z.removeAttribute("data-offscreen")); });
+    }
+
     // Counters
     const counters = Array.from(document.querySelectorAll<HTMLElement>("[data-count]"));
-    const cio = new IntersectionObserver(es => es.forEach(e => {
-      if (!e.isIntersecting) return;
-      const el = e.target as HTMLElement; cio.unobserve(el);
+    const countUp = (el: HTMLElement) => {
       const to = Number(el.dataset.count || 0);
       if (still) { el.textContent = String(to); return; }
       const t0 = performance.now();
       const step = (t: number) => { const p = Math.min(1, (t - t0) / 1400); el.textContent = String(Math.round(to * (1 - Math.pow(1 - p, 3)))); if (p < 1) requestAnimationFrame(step); };
       requestAnimationFrame(step);
+    };
+    const cio = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target as HTMLElement; cio.unobserve(el);
+      countUp(el);
     }), { threshold: .6 });
     counters.forEach(c => cio.observe(c));
     cleanups.push(() => cio.disconnect());
 
     const scrubs = Array.from(document.querySelectorAll<HTMLElement>("[data-scrub]"));
+    const visibleScrubs = new Set<HTMLElement>();
+    const scrubWords = new Map(scrubs.map(el => [el, Array.from(el.querySelectorAll<HTMLElement>(".w"))]));
+    const scrubObserver = new IntersectionObserver(entries => entries.forEach(entry => {
+      const el = entry.target as HTMLElement;
+      if (entry.isIntersecting) visibleScrubs.add(el);
+      else visibleScrubs.delete(el);
+      onScroll();
+    }), { rootMargin: "50% 0px" });
+    scrubs.forEach(el => scrubObserver.observe(el));
+    cleanups.push(() => scrubObserver.disconnect());
 
     const parallax = window.matchMedia("(pointer: fine)").matches && !still ? Array.from(document.querySelectorAll<HTMLElement>("[data-parallax]")) : [];
     const stories = Array.from(document.querySelectorAll<HTMLElement>("[data-sticky-story]"));
+    const bar = document.querySelector<HTMLElement>(".read-progress");
     let ticking = false;
     const frame = () => {
       const vh = window.innerHeight;
       const max = root.scrollHeight - vh;
-      root.style.setProperty("--read", `${max > 0 ? (window.scrollY / max) * 100 : 0}%`);
-      root.classList.toggle("scrolled", window.scrollY > 24);
+      // Write progress on the bar itself: a custom property on <html> would force a
+      // style recalculation of every element on each scroll frame.
+      const read = `${(max > 0 ? (window.scrollY / max) * 100 : 0).toFixed(1)}%`;
+      if (bar && bar.style.width !== read) bar.style.width = read;
+      const scrolled = window.scrollY > 24;
+      if (root.classList.contains("scrolled") !== scrolled) root.classList.toggle("scrolled", scrolled);
       if (!still) {
-        parallax.forEach(el => { const r = el.getBoundingClientRect(); const k = Number(el.dataset.parallax || .12); el.style.transform = `translate3d(0, ${((r.top + r.height / 2 - vh / 2) * -k).toFixed(1)}px, 0)`; });
-        scrubs.forEach(el => {
+        parallax.forEach(el => { const r = el.getBoundingClientRect(); if (r.bottom < -vh || r.top > vh * 2) return; const k = Number(el.dataset.parallax || .12); el.style.transform = `translate3d(0, ${((r.top + r.height / 2 - vh / 2) * -k).toFixed(1)}px, 0)`; });
+        visibleScrubs.forEach(el => {
           const r = el.getBoundingClientRect();
           const p = Math.min(1, Math.max(0, (vh * .85 - r.top) / (r.height + vh * .45)));
-          const words = el.querySelectorAll<HTMLElement>(".w");
+          const words = scrubWords.get(el)!;
           const lit = Math.round(p * words.length);
-          words.forEach((w, i) => w.classList.toggle("lit", i < lit));
+          if (el.dataset.lit !== String(lit)) {
+            words.forEach((w, i) => w.classList.toggle("lit", i < lit));
+            el.dataset.lit = String(lit);
+          }
         });
       } else scrubs.forEach(el => el.querySelectorAll(".w").forEach(w => w.classList.add("lit")));
       stories.forEach(el => {
         const r = el.getBoundingClientRect();
         const p = Math.min(.999, Math.max(0, -r.top / Math.max(1, r.height - vh)));
-        el.style.setProperty("--story", p.toFixed(3));
+        const progress = p.toFixed(3);
+        if (el.style.getPropertyValue("--story") !== progress) el.style.setProperty("--story", progress);
         const n = Number(el.dataset.stickyStory || 1);
         const active = Math.min(n - 1, Math.floor(p * n));
-        if (el.dataset.active !== String(active)) el.dataset.active = String(active);
+        if (el.dataset.active !== String(active)) { el.dataset.active = String(active); syncStorySvgs(el); }
       });
       ticking = false;
     };
-    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } };
+    const onScroll = () => { if (!ticking && !document.hidden) { ticking = true; requestAnimationFrame(frame); } };
     frame();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
-    cleanups.push(() => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); });
+    document.addEventListener("visibilitychange", onScroll);
+    cleanups.push(() => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); document.removeEventListener("visibilitychange", onScroll); });
 
     // Spotlight + tilt (delegated)
     const fine = window.matchMedia("(pointer: fine)").matches;

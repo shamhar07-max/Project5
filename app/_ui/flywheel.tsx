@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const steps = [
   { t: "Learn", d: "Academy turns study into practical capability through missions and review.", c: "#2563eb" },
@@ -14,13 +14,29 @@ const steps = [
 export function Flywheel() {
   const [active, setActive] = useState(0);
   const [hold, setHold] = useState(false);
+  // Only rotate while the flywheel is on screen and the tab is visible.
+  const wheel = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const [tabVisible, setTabVisible] = useState(true);
   useEffect(() => {
-    if (hold || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const update = () => setTabVisible(!document.hidden);
+    document.addEventListener("visibilitychange", update);
+    return () => document.removeEventListener("visibilitychange", update);
+  }, []);
+  useEffect(() => {
+    const el = wheel.current;
+    if (!el || !("IntersectionObserver" in window)) { setVisible(true); return; }
+    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    if (hold || !visible || !tabVisible || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const t = setInterval(() => setActive(a => (a + 1) % steps.length), 2600);
     return () => clearInterval(t);
-  }, [hold]);
+  }, [hold, visible, tabVisible]);
   const R = 150;
-  return <div className="flywheel" onMouseLeave={() => setHold(false)}>
+  return <div ref={wheel} className="flywheel" onMouseLeave={() => setHold(false)}>
     <div className="fw-orbit" style={{ "--c": steps[active].c } as React.CSSProperties}>
       <svg viewBox="-200 -200 400 400" aria-hidden="true">
         <defs><linearGradient id="fwg" x1="0" x2="1"><stop offset="0" stopColor="#e10613" /><stop offset=".5" stopColor="#8b5cf6" /><stop offset="1" stopColor="#22d3ee" /></linearGradient></defs>
