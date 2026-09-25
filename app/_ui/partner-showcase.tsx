@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { Img } from "./img";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useReducedMotion } from "./use-reduced-motion";
 
@@ -40,7 +40,7 @@ export function PartnerShowcase() {
     <div className="shell partner-showcase-top"><span>SELECTED IDENTITIES / 01—09</span><div className="partner-controls"><span aria-live="polite">{String(active + 1).padStart(2, "0")} / {String(partners.length).padStart(2, "0")}</span><button type="button" aria-label="Previous project" onClick={() => go(active - 1)}><ArrowLeft size={19} /></button><button type="button" aria-label="Next project" onClick={() => go(active + 1)}><ArrowRight size={19} /></button></div></div>
     <div className="partner-gallery" ref={rail} onScroll={() => { const el = rail.current; if (!el) return; const cards = Array.from(el.children) as HTMLElement[]; let closest = 0, distance = Infinity; cards.forEach((card, i) => { const d = Math.abs(card.offsetLeft - el.offsetLeft - el.scrollLeft); if (d < distance) { distance = d; closest = i; } }); setActive(closest); }} aria-label="Completed DigitalBurj projects and brand partners">
       {partners.map((partner, i) => <article className={`partner-feature ${i === active ? "is-active" : ""}`} key={partner.name}>
-        <div className="partner-feature-art"><Image src={`/brand/partners/${partner.image}`} alt={`${partner.name} logo`} width={1200} height={800} unoptimized loading="lazy" /><span className="partner-feature-sheen" aria-hidden="true" /></div>
+        <div className="partner-feature-art"><Img src={`/brand/partners/${partner.image}`} alt={`${partner.name} logo`} width={1200} height={800} loading="lazy" /><span className="partner-feature-sheen" aria-hidden="true" /></div>
         <div className="partner-feature-meta"><span>{String(i + 1).padStart(2, "0")}</span><strong>{partner.name}</strong><small>Completed project · Brand partner</small></div>
       </article>)}
     </div>

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { Img } from "./img";
 import { divisions } from "../brand-data";
 import { useReducedMotion } from "./use-reduced-motion";
 
@@ -20,7 +20,7 @@ export function HeroSystem() {
     <div className="hero-system-top"><span>ONE COMPANY / FIVE WAYS FORWARD</span><span>0{active + 1} — 05</span></div>
     <div className="hero-system-board" style={{ "--active-color": divisions[active].hue[0] } as React.CSSProperties}>
       <div className="hero-system-lines" aria-hidden="true"><i /><i /><i /><i /></div>
-      <div className="hero-system-core"><Image src="/brand/digitalburj-wordmark-approved.webp" alt="DigitalBurj" width={2048} height={512} unoptimized /><span key={active}>{verbs[active]}</span><b className="hero-system-signal" /></div>
+      <div className="hero-system-core"><Img src="/brand/digitalburj-wordmark-800.webp" alt="DigitalBurj" width={2048} height={512} loading="eager" /><span key={active}>{verbs[active]}</span><b className="hero-system-signal" /></div>
       {divisions.map((d, i) => <Link key={d.slug} href={`/${d.slug}`} className={`hero-system-node hero-system-node-${i + 1} ${active === i ? "is-active" : ""}`} onMouseEnter={() => setActive(i)} onFocus={() => setActive(i)} style={{ "--i": i, "--a": d.hue[0] } as React.CSSProperties} aria-current={active === i ? "step" : undefined}>
         <span className="hero-system-node-n">0{i + 1}</span><strong>{d.name}</strong><small>{d.tagline}</small>
       </Link>)}

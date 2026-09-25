@@ -5,6 +5,13 @@
    Talent amber/orange, Jobs rose/coral). Champagne gold marks premium detail.
    ========================================================================== */
 
+
+/* Self-hosted fonts (same families and weights that were loaded from Google Fonts). */
+@font-face { font-family: "Manrope"; src: url("/fonts/manrope.woff2") format("woff2"); font-weight: 200 800; font-style: normal; font-display: swap; }
+@font-face { font-family: "Instrument Serif"; src: url("/fonts/instrument-serif.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Instrument Serif"; src: url("/fonts/instrument-serif-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "JetBrains Mono"; src: url("/fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 100 800; font-style: normal; font-display: swap; }
+
 :root {
   --ink: #070d1b; --ink-2: #0b1628; --ink-3: #111f38;
   --navy: #10273c; --red: #e10613; --red-2: #ff3b47; --gold: #d8b46a;

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { MotionLayer } from "./_ui/motion";
-import { CommandPalette } from "./_ui/command-palette";
+import { PaletteHost } from "./_ui/palette-host";
 import { MobileDock } from "./_ui/mobile-nav";
 import { PwaRegister } from "./_ui/pwa";
 
@@ -23,16 +23,16 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&family=Manrope:wght@400;500;600;700;800&display=swap" />
+        {/* Fonts are self-hosted; the two used above the fold are preloaded. */}
+        <link rel="preload" href="/fonts/manrope.woff2" as="font" type="font/woff2" crossOrigin="" />
+        <link rel="preload" href="/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossOrigin="" />
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
       </head>
       <body className="antialiased">
         <MotionLayer />
         {children}
         <MobileDock />
-        <CommandPalette />
+        <PaletteHost />
         <PwaRegister />
       </body>
     </html>

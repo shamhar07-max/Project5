@@ -1,15 +1,15 @@
 import Link from "next/link";
-import Image from "next/image";
+import { Img } from "./_ui/img";
 import { ArrowUpRight, ChevronDown, MessageCircle, MonitorSmartphone, Smartphone } from "lucide-react";
 import { channelNav, divisions, primaryNav } from "./brand-data";
 import { MagneticLink } from "./_ui/magnetic";
-import { PaletteButton } from "./_ui/command-palette";
+import { PaletteButton } from "./_ui/palette-host";
 import { MobileNav } from "./_ui/mobile-nav";
 
 export { divisions };
 
 function Wordmark({ light = false }: { light?: boolean }) {
-  return <span className={`brand-wordmark ${light ? "brand-wordmark-tile" : ""}`}><Image src="/brand/digitalburj-wordmark-approved.webp" width={2048} height={512} alt="" unoptimized /></span>;
+  return <span className={`brand-wordmark ${light ? "brand-wordmark-tile" : ""}`}><Img src="/brand/digitalburj-wordmark-800.webp" width={2048} height={512} alt="" loading={light ? "lazy" : "eager"} /></span>;
 }
 
 export function SiteHeader() {

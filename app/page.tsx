@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { Img } from "./_ui/img";
 import type { CSSProperties } from "react";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { BrandMark, type MarkName } from "./_ui/brand-mark";
@@ -87,7 +87,7 @@ export default function Home() {
             <span className="bcard-scene"><Scene k={cardScenes[d.slug]} /></span>
             <span className="bcard-shade" />
             <span className="bcard-top"><span className="bcard-tag">0{i + 1} · {d.verb}</span><span className="orb"><ArrowUpRight size={20} /></span></span>
-            <span className="bcard-body"><span className="bcard-division-lockup"><Image src="/brand/digitalburj-wordmark-approved.webp" alt="" width={2048} height={512} unoptimized /><b>{d.name}</b></span><strong>{d.name}</strong><em>{d.tagline}</em><small>{d.description}</small></span>
+            <span className="bcard-body"><span className="bcard-division-lockup"><Img src="/brand/digitalburj-wordmark-800.webp" alt="" width={2048} height={512} /><b>{d.name}</b></span><strong>{d.name}</strong><em>{d.tagline}</em><small>{d.description}</small></span>
           </Link>)}
           {divisions.slice(3).map((d, i) => { return <Link key={d.slug} href={`/${d.slug}`} className="bcard bcard-slim" data-reveal="up" style={{ "--i": i + 3, "--a": d.hue[0], "--b": d.hue[1] } as CSSProperties}>
             <BrandMark name={d.slug as MarkName} className="bcard-symbol-mark" lockup />
