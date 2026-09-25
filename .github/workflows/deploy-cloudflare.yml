@@ -1,0 +1,50 @@
+# Deploys DigitalBurj to your Cloudflare account (free plan).
+# Add repository secrets (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID                 required
+#   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET                      Google sign-in
+#   DIGITALBURJ_STAFF_EMAILS, DIGITALBURJ_WHATSAPP_NUMBER       optional
+#   SESSION_SECRET                                              optional (generated once if unset)
+# Then run it from the Actions tab ("Deploy to Cloudflare" → Run workflow).
+# It also runs on every push to main.
+name: Deploy to Cloudflare
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-cloudflare
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Check Cloudflare secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID as repository secrets."
+            exit 1
+          fi
+      - run: npm ci --no-audit --no-fund
+      - name: Deploy
+        run: npm run deploy:cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          DIGITALBURJ_STAFF_EMAILS: ${{ secrets.DIGITALBURJ_STAFF_EMAILS }}
+          DIGITALBURJ_WHATSAPP_NUMBER: ${{ secrets.DIGITALBURJ_WHATSAPP_NUMBER }}
+          PUBLIC_ORIGIN: ${{ vars.PUBLIC_ORIGIN }}

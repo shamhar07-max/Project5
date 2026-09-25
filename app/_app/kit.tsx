@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { ArrowLeft, Bell, BookOpen, Briefcase, Building2, CheckSquare, CreditCard, Files, Home, Layers3, LifeBuoy, MessagesSquare, Search, Shield, ShieldCheck, Sparkles, UserCog, Webhook, BadgeCheck, Inbox } from "lucide-react";
 import { label, tone } from "../../lib/workflow";
 import { ChoiceButton } from "./choice-button";
+import { chatGPTSignOutPath } from "../chatgpt-auth";
 
 export type ShellInfo = { name: string; email: string; context: string; role: string; unread: number; pendingApprovals: number; staff: boolean };
 
@@ -49,7 +50,7 @@ export function AppShell({ info, active, children }: { info: ShellInfo; active: 
         })}</div>)}
         {info.staff && <div className="app-nav-group"><p>DigitalBurj staff</p><Link href="/admin"><ShieldCheck size={17} aria-hidden="true" /><span>Admin</span></Link></div>}
       </nav>
-      <div className="app-user"><span>{info.name.slice(0, 1).toUpperCase()}</span><div><strong>{info.name}</strong><small>{info.email}</small></div></div>
+      <div className="app-user"><span>{info.name.slice(0, 1).toUpperCase()}</span><div><strong>{info.name}</strong><small>{info.email}</small><a href={chatGPTSignOutPath("/")} className="app-signout">Sign out</a></div></div>
     </aside>
     <main className="app-main">{children}</main>
   </div>;

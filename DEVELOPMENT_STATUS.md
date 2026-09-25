@@ -27,7 +27,7 @@ Reference: DigitalBurj Complete Master Structure (September 2026) and the suppli
 
 ## Still needs external providers or decisions
 
-- Standalone DigitalBurj identity with MFA/passkeys. Sign-in currently uses ChatGPT accounts.
+- Standalone DigitalBurj identity with MFA/passkeys. On ChatGPT Sites, sign-in uses ChatGPT accounts; on your own Cloudflare deployment it uses Google sign-in with a signed session cookie (see README). Server-side session revocation is not built yet: signing out clears the cookie, and sessions expire after 30 days.
 - A payment gateway, tax/VAT rules and a verified price list. Invoices are recorded but not charged.
 - Email/SMS/WhatsApp delivery for notifications and invitations. Notifications are in-app only.
 - Malware scanning for uploaded files, a durable global rate limiter (the current limiter is per Worker instance), backups with restore drills, and a third-party security and accessibility audit.
@@ -66,3 +66,10 @@ Every photograph the site previously used was AI-generated. They have been remov
 - `npm run check:media` now verifies that each scene is placed exactly once and that no source references a photo outside the brand marks and partner logos.
 
 If DigitalBurj commissions real photography (team, workshops, client sessions), it can be added back through the registry in `app/brand-data.ts`.
+
+## Own Cloudflare deployment
+
+`npm run deploy:cloudflare` (or the **Deploy to Cloudflare** GitHub Action) deploys to a free Cloudflare account. It creates or reuses D1 and R2, applies migrations remotely, generates a session secret once and deploys. With `DIGITALBURJ_AUTH=google`, identity headers are ignored and people sign in with Google (`/auth/sign-in`, `/auth/callback`, `/auth/sign-out`; PKCE, state check, verified email only). Tested locally:
+- Forged identity headers are ignored.
+- Tampered or expired sessions redirect to sign-in.
+- Sign-out rejects external redirects.
