@@ -632,3 +632,107 @@ export const userDirectory = sqliteTable("user_directory", {
   suspendedAt: integer("suspended_at", { mode: "timestamp_ms" }),
   suspendedReason: text("suspended_reason").notNull().default(""),
 }, table => [index("idx_user_directory_email").on(table.email)]);
+
+// ---------------------------------------------------------------------------
+// DigitalBurj Academy accounts, packages and learning records.
+// Academy accounts can register with email + password, or link a DigitalBurj
+// platform identity (ChatGPT / Google sign-in). Access to paid content comes only
+// from an active row in academy_entitlements.
+export const academyAccounts = sqliteTable("academy_accounts", {
+  id: text("id").primaryKey(),
+  email: text("email").notNull(),
+  name: text("name").notNull(),
+  passwordHash: text("password_hash"),
+  platformUserId: text("platform_user_id"),
+  role: text("role").notNull().default("learner"),
+  goal: text("goal").notNull().default(""),
+  // Diagnostic (planning edition): experience, weekly availability, preferred route
+  experience: text("experience").notNull().default(""),
+  availability: text("availability").notNull().default(""),
+  route: text("route").notNull().default("Technology"),
+  progressConsent: integer("progress_consent", { mode: "boolean" }).notNull().default(false),
+  marketingConsent: integer("marketing_consent", { mode: "boolean" }).notNull().default(false),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  lastSignInAt: integer("last_sign_in_at", { mode: "timestamp_ms" }),
+}, table => [uniqueIndex("idx_academy_accounts_email").on(table.email), index("idx_academy_accounts_platform").on(table.platformUserId)]);
+
+export const academyOrders = sqliteTable("academy_orders", {
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
+  plan: text("plan").notNull(),
+  billing: text("billing").notNull().default("monthly"),
+  amount: integer("amount").notNull(),
+  discount: integer("discount").notNull().default(0),
+  currency: text("currency").notNull().default("AED"),
+  coupon: text("coupon"),
+  // payment_pending | paid | free | cancelled
+  status: text("status").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  decidedAt: integer("decided_at", { mode: "timestamp_ms" }),
+  decidedBy: text("decided_by"),
+}, table => [index("idx_academy_orders_account").on(table.accountId), index("idx_academy_orders_status").on(table.status)]);
+
+export const academyEntitlements = sqliteTable("academy_entitlements", {
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
+  plan: text("plan").notNull(),
+  orderId: text("order_id"),
+  // active | superseded | revoked
+  status: text("status").notNull(),
+  source: text("source").notNull(),
+  startsAt: integer("starts_at", { mode: "timestamp_ms" }).notNull(),
+  endsAt: integer("ends_at", { mode: "timestamp_ms" }),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+}, table => [index("idx_academy_entitlements_account").on(table.accountId, table.status)]);
+
+export const academyCouponRedemptions = sqliteTable("academy_coupon_redemptions", {
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
+  code: text("code").notNull(),
+  plan: text("plan").notNull(),
+  orderId: text("order_id").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+}, table => [uniqueIndex("idx_academy_coupon_once").on(table.accountId, table.code, table.plan)]);
+
+export const academyProgress = sqliteTable("academy_progress", {
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
+  courseCode: text("course_code").notNull(),
+  // JSON arrays of completed lesson ids and mission stage names
+  lessons: text("lessons").notNull().default("[]"),
+  stages: text("stages").notNull().default("[]"),
+  startedAt: integer("started_at", { mode: "timestamp_ms" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+}, table => [uniqueIndex("idx_academy_progress_course").on(table.accountId, table.courseCode)]);
+
+export const academyActivity = sqliteTable("academy_activity", {
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
+  kind: text("kind").notNull(),
+  detail: text("detail").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+}, table => [index("idx_academy_activity_account").on(table.accountId, table.createdAt)]);
+
+// Studio creations: explainer videos, lesson plans, course outlines and slide decks.
+export const academyCreations = sqliteTable("academy_creations", {
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
+  tool: text("tool").notNull(),
+  title: text("title").notNull(),
+  data: text("data").notNull(),
+  source: text("source").notNull().default("template"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+}, table => [index("idx_academy_creations_account").on(table.accountId, table.tool)]);
+
+// Failure Passport: useful failures, their causes and corrections. Private to the learner.
+export const academyPassport = sqliteTable("academy_passport", {
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
+  courseCode: text("course_code").notNull(),
+  stage: text("stage").notNull(),
+  what: text("what").notNull(),
+  cause: text("cause").notNull(),
+  fix: text("fix").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+}, table => [index("idx_academy_passport_account").on(table.accountId, table.createdAt)]);

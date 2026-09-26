@@ -80,7 +80,8 @@ export function MobileDock() {
     window.addEventListener("scroll", on, { passive: true });
     return () => window.removeEventListener("scroll", on);
   }, []);
-  if (pathname.startsWith("/workspace")) return null;
+  // The Academy has its own header, menu and learner sidebar.
+  if (pathname.startsWith("/workspace") || pathname.startsWith("/academy")) return null;
   const items = [
     { href: "/", label: "Home", Icon: Home },
     { href: "/get-started", label: "Explore", Icon: Compass },

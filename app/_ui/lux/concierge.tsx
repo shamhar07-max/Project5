@@ -26,7 +26,7 @@ export function Concierge() {
     document.addEventListener("pointerdown", away);
     return () => { document.removeEventListener("keydown", esc); document.removeEventListener("pointerdown", away); };
   }, [open]);
-  if (/^\/(workspace|admin|connect)/.test(pathname)) return null;
+  if (/^\/(workspace|admin|connect)/.test(pathname) || /^\/academy\/(learn|checkout|sign-in|register)/.test(pathname)) return null;
   const topic = ["academy", "studio", "business", "talent", "jobs"].find(t => pathname.startsWith(`/${t}`));
 
   return <div className={`lx-concierge ${open ? "open" : ""}`}>

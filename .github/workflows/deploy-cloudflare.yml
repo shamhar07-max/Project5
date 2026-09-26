@@ -4,6 +4,7 @@
 #   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET                      Google sign-in
 #   DIGITALBURJ_STAFF_EMAILS, DIGITALBURJ_WHATSAPP_NUMBER       optional
 #   SESSION_SECRET                                              optional (generated once if unset)
+#   ANTHROPIC_API_KEY                                           optional (Academy Creator Studio drafting)
 # Then run it from the Actions tab ("Deploy to Cloudflare" → Run workflow).
 # It also runs on every push to main.
 name: Deploy to Cloudflare
@@ -47,4 +48,5 @@ jobs:
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
           DIGITALBURJ_STAFF_EMAILS: ${{ secrets.DIGITALBURJ_STAFF_EMAILS }}
           DIGITALBURJ_WHATSAPP_NUMBER: ${{ secrets.DIGITALBURJ_WHATSAPP_NUMBER }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           PUBLIC_ORIGIN: ${{ vars.PUBLIC_ORIGIN }}

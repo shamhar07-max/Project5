@@ -11,6 +11,7 @@
 //   SESSION_SECRET                           optional; generated once and kept if unset
 //   DIGITALBURJ_STAFF_EMAILS                 comma-separated super-admin emails
 //   DIGITALBURJ_WHATSAPP_NUMBER              official WhatsApp number, digits only
+//   ANTHROPIC_API_KEY                        optional; enables Claude drafting in the Academy Creator Studio
 //   PUBLIC_ORIGIN                            optional, e.g. https://digitalburj.com
 // Values in a root .prod.vars file (KEY=value lines, ignored by Git) are used when the
 // environment does not set them.
@@ -103,7 +104,7 @@ for (const file of readdirSync("drizzle").filter(f => f.endsWith(".sql")).sort()
 step("Preparing secrets");
 const existing = new Set((json(run(["secret", "list", "--config", config, "--format", "json"], { quiet: true }).stdout) ?? []).map(s => s.name));
 const secrets = {};
-for (const k of ["GOOGLE_CLIENT_SECRET", "SESSION_SECRET", "DIGITALBURJ_STAFF_EMAILS"]) if (process.env[k]) secrets[k] = process.env[k];
+for (const k of ["GOOGLE_CLIENT_SECRET", "SESSION_SECRET", "DIGITALBURJ_STAFF_EMAILS", "ANTHROPIC_API_KEY"]) if (process.env[k]) secrets[k] = process.env[k];
 if (!secrets.SESSION_SECRET && !existing.has("SESSION_SECRET")) { secrets.SESSION_SECRET = randomBytes(48).toString("base64url"); console.log("  ✓ generated SESSION_SECRET (kept for future deploys)"); }
 console.log(`  ✓ uploading: ${Object.keys(secrets).join(", ") || "none (existing secrets are kept)"}`);
 
