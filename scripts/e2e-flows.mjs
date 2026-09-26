@@ -8,7 +8,7 @@ const { chromium } = require(process.env.PWPATH || "playwright");
 const B = process.env.E2E_BASE_URL || "http://127.0.0.1:8787";
 const SHOTS = process.env.E2E_SHOTS || "";
 const run = Date.now().toString(36);
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 const people = {
   client: { id: `client-${run}`, email: `client-${run}@example.com`, name: "Layla Haddad" },
   staff: { id: "staff-e2e", email: process.env.E2E_STAFF_EMAIL || "seedy@sites.test", name: "DigitalBurj Staff" },

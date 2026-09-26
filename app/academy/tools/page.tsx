@@ -1,4 +1,43 @@
-import Link from "next/link";
-const tools=[["Canva","Create a clear evidence board for a mission.","https://www.canva.com"],["Spreadsheet template","Prepare fictional records and a test log.",null],["Figma","Sketch a learner or customer journey.",null],["GitHub","Document decisions and test evidence.",null]];
-const labs=["Virtual Office","Accounting","Freight Forwarding","Real Estate","HR","Banking Operations","Insurance Operations","Document Processing","Procurement","Customer Service"];
-export default function Tools(){return <main className="min-h-screen bg-[#f3f5f7] text-[#102b4c]"><header className="border-b border-[#d6dfe7] bg-white px-6 py-5"><div className="mx-auto flex max-w-6xl justify-between gap-5"><Link href="/academy" className="font-bold text-[#d10b1a]">← Academy</Link><Link href="/workspace/academy" className="font-bold text-[#d10b1a]">My Learning →</Link></div></header><div className="mx-auto max-w-6xl px-6 py-12"><h1 className="font-[Georgia] text-4xl font-semibold">Tool Library</h1><p className="mt-4 max-w-3xl leading-7 text-[#61717a]">Choose the right tool for a practical task. External tools have their own accounts, privacy terms and access requirements; no integration is implied.</p><div className="mt-8 grid gap-4 md:grid-cols-2">{tools.map(([name,description,url])=><article key={name} className="rounded-2xl border border-[#d6dfe7] bg-white p-6"><h2 className="font-[Georgia] text-2xl font-semibold">{name}</h2><p className="mt-3 text-[#61717a]">{description}</p>{url ? <a href={url} target="_blank" rel="noopener noreferrer" className="mt-5 inline-block rounded-lg bg-[#d10b1a] px-4 py-2 font-bold text-white">Open tool ↗</a> : <span className="mt-5 inline-block rounded-lg bg-[#e9eef2] px-4 py-2 text-sm font-bold text-[#61717a]">Setup required</span>}</article>)}</div><section className="mt-9 rounded-2xl border border-[#d6dfe7] bg-white p-6"><h2 className="font-[Georgia] text-2xl font-semibold">Fictional-data simulation labs</h2><p className="mt-3 text-[#61717a]">These labs are on the curriculum roadmap and are not live integrations.</p><div className="mt-5 flex flex-wrap gap-2">{labs.map(l=><span key={l} className="rounded-full border border-[#b8c9d7] px-4 py-2 text-sm font-bold text-[#d10b1a]">{l}</span>)}</div></section></div></main>}
+import type { CSSProperties } from "react";
+import { FlaskConical, Wrench } from "lucide-react";
+import { PublicFrame, SectionHead } from "../_components/chrome";
+
+export const metadata = { title: "Tools & labs · DigitalBurj Academy" };
+const TOOLS = [
+  ["Design and Content", "Canva", "Layouts, presentations and visual learning artefacts.", "BRIEF, BUILD, SHIP", "External · setup required"],
+  ["Software Development", "OpenCode", "Coding workflow, reviewing changes and practising implementation.", "TRY, BUILD, BREAK, FIX, TEST", "External · setup required"],
+  ["Software Development", "Git / GitHub", "Version control, branches, reviews and evidence of change.", "BUILD, FIX, TEST, EVIDENCE", "External · setup required"],
+  ["Design and Content", "Figma", "Interface design, flows, prototypes and design review.", "BRIEF, INVESTIGATE, BUILD, EXPLAIN", "External · setup required"],
+  ["Software Development", "VS Code", "Local development, inspection, testing and debugging.", "BUILD, BREAK, FIX, TEST", "Learner-side"],
+  ["AI and Automation", "AI assistant", "Explanation, ideation, drafting and critique — always with human review.", "LEARN, INVESTIGATE, EXPLAIN", "External · paid access"],
+  ["Data and Operations", "Excel / Google Sheets", "Office work, accounting practice, calculations and analysis.", "INVESTIGATE, BUILD, TEST, EVIDENCE", "External · setup required"],
+  ["Data and Analytics", "PostgreSQL", "Queries, schemas, constraints and reporting data in a sandbox.", "BUILD, BREAK, FIX, TEST", "Setup required"],
+  ["Data and Analytics", "Power BI", "Reporting, dashboards and business data interpretation.", "INVESTIGATE, BUILD, EXPLAIN", "External · paid access"],
+  ["Business Operations", "CRM / ERP / HRM", "Records, workflows, permissions and data quality in a fictional tenant.", "BRIEF, BUILD, TEST, EVIDENCE", "External · setup required"],
+  ["Communication", "Email / calendar / documents", "Professional communication, scheduling and hand-offs.", "EXPLAIN, SHIP, EVIDENCE", "External · setup required"],
+  ["Evidence", "Evidence storage", "Collect, retain, review and share evidence packs.", "EVIDENCE", "Setup required"],
+];
+const LABS = [["Virtual Office", "Scheduling, correspondence, records, templates and escalation."], ["Accounting", "Fictional invoices, ledgers, reconciliation and exceptions."], ["Freight Forwarding", "Shipment records, documents, exceptions and hand-offs."], ["Real Estate", "Listings, client records, viewing workflows and follow-up."], ["HR", "Fictional recruitment, employee records, onboarding and privacy decisions."], ["Banking Operations", "Service requests, controls, escalation and reconciliation."], ["Insurance", "Policy administration, claims intake and escalation."], ["Document Processing", "Classification, completeness checks and exception handling."], ["Procurement", "Requests, supplier comparison, approvals and purchase records."], ["Customer Service", "Tickets, service standards, escalation and response quality."]];
+
+export default function Tools() {
+  return <PublicFrame active="/academy/tools">
+    <section className="a-hero" style={{ paddingBottom: "2rem" }}>
+      <div className="a-grid-bg" aria-hidden="true" />
+      <div className="a-shell" style={{ position: "relative" }}><SectionHead eyebrow="Dedicated tool library" title={<>Approved tools, <em className="a-grad">controlled use.</em></>} lede="A tool is marked configured only after its permitted use, URL, entitlement, privacy handling and test path are confirmed. External tools have their own accounts and terms; no integration is implied." /></div>
+    </section>
+    <section style={{ paddingBottom: "4rem" }}>
+      <div className="a-shell" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1rem" }}>
+        {TOOLS.map(([cat, name, purpose, stages, status], i) => <div key={name} className="a-card" data-reveal="up" style={{ "--i": i % 3, display: "grid", gap: ".7rem", alignContent: "start" } as CSSProperties}>
+          <div style={{ display: "flex", justifyContent: "space-between", gap: ".5rem" }}><span className="a-icon-tile" style={{ width: 40, height: 40 }}><Wrench size={18} /></span><span className={`a-chip ${status.startsWith("Learner") ? "a-chip-green" : "a-chip-amber"}`}>{status}</span></div>
+          <p className="a-mono a-muted" style={{ fontSize: ".68rem", letterSpacing: ".1em" }}>{cat.toUpperCase()}</p><h2 className="a-h3">{name}</h2><p className="a-muted" style={{ lineHeight: 1.55, fontSize: ".92rem" }}>{purpose}</p>
+          <p style={{ fontSize: ".78rem" }} className="a-muted">Stages: <span style={{ color: "var(--tx-2)" }}>{stages}</span></p>
+        </div>)}
+      </div>
+    </section>
+    <section className="a-sec" style={{ paddingTop: 0 }}>
+      <div className="a-shell"><SectionHead eyebrow="Simulation labs" title={<>Fictional-data <em className="a-grad">practice environments.</em></>} lede="Labs never represent access to live customer, employer, government, banking, healthcare or production systems. Status: planning." />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: "1rem" }}>{LABS.map(([n, s], i) => <div key={n} className="a-card" data-reveal="up" style={{ "--i": i % 4 } as CSSProperties}><FlaskConical size={20} color="#a78bfa" /><h3 className="a-h3" style={{ marginTop: ".7rem" }}>{n}</h3><p className="a-muted" style={{ marginTop: ".4rem", fontSize: ".88rem", lineHeight: 1.55 }}>{s}</p><span className="a-chip a-chip-amber" style={{ marginTop: ".8rem" }}>Planning</span></div>)}</div>
+      </div>
+    </section>
+  </PublicFrame>;
+}

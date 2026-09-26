@@ -5,7 +5,9 @@ import { academyCourses } from "../../academy-data";
 import { Btn, Chip, Empty, Field, PageHead, Panel, fmt } from "../../_app/kit";
 import { AdminShell, Tabs } from "../shell";
 import { adminContext } from "../../../lib/platform";
-import { assess, claimReview, createMission, revokeCredential, toggleMission, verify } from "./actions";
+import { assess, cancelAcademyOrder, claimReview, confirmAcademyOrder, createMission, grantAcademyAccess, revokeAcademyAccess, revokeCredential, toggleMission, verify } from "./actions";
+import { academyAccounts, academyEntitlements, academyOrders } from "../../../db/schema";
+import { isPlanId, planById, withVat } from "../../../lib/academy/plans";
 
 export const dynamic = "force-dynamic";
 
@@ -21,10 +23,18 @@ export default async function AcademyAdmin({ searchParams }: { searchParams: Pro
   ]);
   const mTitle = (id: string) => missions.find(m => m.id === id);
   const reviewIds = [...queue, ...verifyQueue].map(s => s.id);
+  const [pendingOrders, recentOrders, activeEnts, accounts] = await Promise.all([
+    db.select().from(academyOrders).where(eq(academyOrders.status, "payment_pending")).orderBy(academyOrders.createdAt),
+    db.select().from(academyOrders).orderBy(desc(academyOrders.createdAt)).limit(30),
+    db.select().from(academyEntitlements).where(eq(academyEntitlements.status, "active")).orderBy(desc(academyEntitlements.createdAt)).limit(100),
+    db.select({ id: academyAccounts.id, email: academyAccounts.email, name: academyAccounts.name }).from(academyAccounts),
+  ]);
+  const who = (id: string) => accounts.find(a => a.id === id);
+  const planName = (p: string) => isPlanId(p) ? planById[p].name : p;
   const reviews = reviewIds.length ? await db.select().from(submissionReviews).where(inArray(submissionReviews.submissionId, reviewIds)).orderBy(desc(submissionReviews.createdAt)) : [];
   return <AdminShell roles={roles} email={user.email} active="academy">
     <PageHead kicker="Admin · Academy" title="Assessment & verification" lede="Assessors review against published rubrics; a different person independently verifies before a credential is issued." />
-    <Tabs base="/admin/academy" active={tab} tabs={[["review", `Review queue (${queue.length})`], ["verify", `Verification (${verifyQueue.length})`], ["missions", `Missions (${missions.length})`], ["credentials", "Credentials"]]} />
+    <Tabs base="/admin/academy" active={tab} tabs={[["review", `Review queue (${queue.length})`], ["verify", `Verification (${verifyQueue.length})`], ["missions", `Missions (${missions.length})`], ["credentials", "Credentials"], ["access", `Orders & access (${pendingOrders.length})`]]} />
     {tab === "review" && <Panel title="Submissions awaiting assessment" sub="Oldest first. Claim a submission, score every criterion 0–4, then decide.">
       {queue.length ? <div className="app-rows">{queue.map(s => { const m = mTitle(s.missionId); const rubric = JSON.parse(m?.rubric ?? "[]") as string[]; const mine = s.assessorId === user.userId; return <div key={s.id} className="app-row" style={{ alignItems: "flex-start" }}>
         <div className="app-row-main"><strong>{m?.title}</strong><small>{s.ownerEmail} · attempt {s.attempt} · {fmt(s.updatedAt)}</small>
@@ -66,6 +76,18 @@ export default async function AcademyAdmin({ searchParams }: { searchParams: Pro
         </form>
       </Panel>
     </div>}
+    {tab === "access" && <>
+      <Panel title="Orders awaiting payment" sub="No payment provider is connected. Confirm only after payment has been received; confirming activates the package.">
+        {pendingOrders.length ? <div className="app-rows">{pendingOrders.map(o => <div key={o.id} className="app-row"><div className="app-row-main"><strong>{planName(o.plan)} · {o.billing} · AED {withVat(o.amount).toLocaleString()} incl. VAT</strong><small>{who(o.accountId)?.name} · {who(o.accountId)?.email} · order {o.id.slice(0, 8).toUpperCase()} · {fmt(o.createdAt)}</small></div>
+          <form action={confirmAcademyOrder} className="app-inline"><input type="hidden" name="id" value={o.id} /><Btn>Confirm payment</Btn></form>
+          <form action={cancelAcademyOrder} className="app-inline"><input type="hidden" name="id" value={o.id} /><Btn kind="secondary">Cancel</Btn></form></div>)}</div> : <Empty title="No orders awaiting payment" />}
+      </Panel>
+      <Panel title="Grant a package" sub="For scholarships, pilots and corrections. Audit-logged.">
+        <form action={grantAcademyAccess} className="app-form"><Field label="Academy account email"><input name="email" type="email" required /></Field><Field label="Package"><select name="plan"><option value="plus">Academy Plus</option><option value="creator">Educator & Creator</option><option value="professional">Professional</option></select></Field><Field label="Days"><input name="days" type="number" min={1} max={730} defaultValue={30} /></Field><div><Btn>Grant access</Btn></div></form>
+      </Panel>
+      <Panel title="Active packages">{activeEnts.length ? <div className="app-rows">{activeEnts.map(e => <div key={e.id} className="app-row"><div className="app-row-main"><strong>{planName(e.plan)} · {who(e.accountId)?.email}</strong><small>via {e.source} · since {fmt(e.startsAt, false)}{e.endsAt ? ` · until ${fmt(e.endsAt, false)}` : ""}</small></div><form action={revokeAcademyAccess} className="app-inline"><input type="hidden" name="id" value={e.id} /><Btn kind="danger">Revoke</Btn></form></div>)}</div> : <Empty title="No active paid packages" />}</Panel>
+      <Panel title="Recent orders">{recentOrders.length ? <div className="app-rows">{recentOrders.map(o => <div key={o.id} className="app-row"><div className="app-row-main"><strong>{planName(o.plan)} · {who(o.accountId)?.email}</strong><small>{o.status} · {o.coupon ?? "no promotion"} · {fmt(o.createdAt)}</small></div></div>)}</div> : <Empty title="No orders yet" />}</Panel>
+    </>}
     {tab === "credentials" && <Panel title="Issued credentials">{creds.length ? <div className="app-rows">{creds.map(c => <div key={c.id} className="app-row" style={{ alignItems: "flex-start" }}><div className="app-row-main"><strong>{c.code} · {c.title}</strong><small>{c.holderName} · {fmt(c.issuedAt, false)}{c.statusReason ? ` · ${c.statusReason}` : ""}</small></div><Chip state={c.status === "active" ? "VERIFIED" : "REVOKED"} />{c.status === "active" && <form action={revokeCredential} className="app-inline"><input type="hidden" name="id" value={c.id} /><input name="reason" required minLength={10} placeholder="Reason (required)" /><Btn kind="danger">Revoke</Btn></form>}</div>)}</div> : <Empty title="No credentials issued yet" />}</Panel>}
   </AdminShell>;
 }

@@ -127,6 +127,10 @@ The production build has no mock sign-in, so `/signin-with-chatgpt` returns 404 
 
 Staff areas live under `/admin`. The emails in `DIGITALBURJ_STAFF_EMAILS` are super admins and can grant other staff roles in Admin → Access.
 
+### DigitalBurj Academy
+
+The Academy lives under `/academy` with its own email/password accounts (or "Continue with DigitalBurj account"), packages and learner app at `/academy/learn`. Add `SESSION_SECRET` (32+ characters) to `.dev.vars` for `deploy:local`; `ANTHROPIC_API_KEY` optionally enables Claude drafting in the Creator Studio. Paid orders wait for an Academy Admin to confirm payment in Admin → Academy → Orders & access. `npm run test:academy` walks the learner and staff journey against `npm run deploy:local`. See `DEVELOPMENT_STATUS.md` for details.
+
 ### End-to-end check
 
 With `npm run deploy:local` running and `seedy@sites.test` listed in `DIGITALBURJ_STAFF_EMAILS` (or `E2E_STAFF_EMAIL` set to a listed email), `npm run test:e2e` walks every workflow as four people: Academy mission → review → independent verification → credential, Studio and Business AI approvals, Jobs hiring, support, invoices, status incidents and the API. It needs Playwright (`npm i -g playwright`, or point `PWPATH` at an install).

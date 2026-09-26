@@ -5,6 +5,7 @@
 @import "./app.css";
 @import "./scenes.css";
 @import "./lux.css";
+@import "./academy/academy.css";
 
 @utility scrollbar-thin {
   scrollbar-width: thin;

@@ -6,6 +6,9 @@ import { academyMissions, auditLog, credentials, missionSubmissions, submissionR
 import { academyCourses } from "../../academy-data";
 import { auditRow, oneOf, publish, readableCode, requireStaff, str, opt, uuid, type StaffRole } from "../../../lib/platform";
 import { assertTransition } from "../../../lib/workflow";
+import { academyAccounts, academyEntitlements, academyOrders } from "../../../db/schema";
+import { grantPlan, logActivity } from "../../../lib/academy/access";
+import { isPlanId, planById, termDays } from "../../../lib/academy/plans";
 
 const has = (roles: Set<StaffRole>, ...r: StaffRole[]) => roles.has("super_admin") || r.some(x => roles.has(x));
 
@@ -116,5 +119,57 @@ export async function revokeCredential(form: FormData) {
   await publish({ type: "academy.credential.revoked", actorId: user.userId, orgId: null, resourceType: "credential", resourceId: id, payload: { code: c.code } },
     [{ userId: c.ownerId, title: `Credential ${c.code} was revoked`, body: reason, href: "/workspace/academy/credentials", category: "Academy", priority: "high" }],
     [db.update(credentials).set({ status: "revoked", statusReason: reason }).where(eq(credentials.id, id)), db.insert(auditLog).values(auditRow(user, null, "academy.credential.revoke", "credential", id, "allow", reason))]);
+  revalidatePath("/admin/academy");
+}
+
+// ─── Academy packages: orders and entitlements ───
+// No payment provider is connected, so paid orders wait here until an Academy Admin
+// confirms payment. Confirming grants the package; every decision is audit-logged.
+
+async function academyAdmin(action: string) {
+  const ctx = await requireStaff("academy", action);
+  if (!has(ctx.roles, "academy_admin")) throw new Error("Only an Academy Admin can change Academy access.");
+  return ctx;
+}
+
+export async function confirmAcademyOrder(form: FormData) {
+  const { user } = await academyAdmin("academy.order.confirm");
+  const db = getDb(); const id = uuid(form, "id");
+  const order = await db.select().from(academyOrders).where(eq(academyOrders.id, id)).get();
+  if (!order || order.status !== "payment_pending" || !isPlanId(order.plan)) throw new Error("This order is not awaiting payment.");
+  await db.update(academyOrders).set({ status: "paid", decidedAt: new Date(), decidedBy: user.userId }).where(eq(academyOrders.id, id));
+  await grantPlan(order.accountId, planById[order.plan], "payment", order.id, termDays(order.billing === "annual" ? "annual" : "monthly"));
+  await logActivity(order.accountId, "plan", `Payment confirmed — ${planById[order.plan].name} is active`);
+  await db.insert(auditLog).values(auditRow(user, null, "academy.order.confirm", "academy_order", id));
+  revalidatePath("/admin/academy");
+}
+
+export async function cancelAcademyOrder(form: FormData) {
+  const { user } = await academyAdmin("academy.order.cancel");
+  const db = getDb(); const id = uuid(form, "id");
+  await db.update(academyOrders).set({ status: "cancelled", decidedAt: new Date(), decidedBy: user.userId }).where(and(eq(academyOrders.id, id), eq(academyOrders.status, "payment_pending")));
+  await db.insert(auditLog).values(auditRow(user, null, "academy.order.cancel", "academy_order", id));
+  revalidatePath("/admin/academy");
+}
+
+export async function grantAcademyAccess(form: FormData) {
+  const { user } = await academyAdmin("academy.access.grant");
+  const db = getDb();
+  const email = str(form, "email", 3, 160, "Email").toLowerCase();
+  const plan = oneOf(form, "plan", ["plus", "creator", "professional"] as const, "Package");
+  const days = Math.max(1, Math.min(730, Number(form.get("days")) || 30));
+  const account = await db.select().from(academyAccounts).where(eq(academyAccounts.email, email)).get();
+  if (!account) throw new Error("No Academy account uses that email.");
+  await grantPlan(account.id, planById[plan], "manual_grant", null, days);
+  await logActivity(account.id, "plan", `${planById[plan].name} granted by DigitalBurj`);
+  await db.insert(auditLog).values(auditRow(user, null, "academy.access.grant", "academy_account", account.id, "allow", `${plan} ${days}d`));
+  revalidatePath("/admin/academy");
+}
+
+export async function revokeAcademyAccess(form: FormData) {
+  const { user } = await academyAdmin("academy.access.revoke");
+  const db = getDb(); const id = uuid(form, "id");
+  await db.update(academyEntitlements).set({ status: "revoked" }).where(and(eq(academyEntitlements.id, id), eq(academyEntitlements.status, "active")));
+  await db.insert(auditLog).values(auditRow(user, null, "academy.access.revoke", "academy_entitlement", id));
   revalidatePath("/admin/academy");
 }
